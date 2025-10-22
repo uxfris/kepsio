@@ -94,7 +94,7 @@ const Modal: React.FC<ModalProps> = ({
       onClick={handleOverlayClick}
     >
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
+      <div className="fixed inset-0 bg-primary/50 backdrop-blur-sm" />
 
       {/* Modal */}
       <div
@@ -123,10 +123,7 @@ const Modal: React.FC<ModalProps> = ({
                 </h2>
               )}
               {description && (
-                <p
-                  id="modal-description"
-                  className="mt-1 text-sm text-text-body"
-                >
+                <p id="modal-description" className="mt-1 text-sm">
                   {description}
                 </p>
               )}

@@ -112,7 +112,7 @@ export default function CaptionInputPage() {
                 <CardTitle className="text-lg font-semibold text-primary">
                   New Caption
                 </CardTitle>
-                <p className="text-sm text-text-body mt-1">
+                <p className="text-sm mt-1">
                   Describe your content and we'll craft the perfect caption
                 </p>
               </div>
@@ -320,11 +320,11 @@ export default function CaptionInputPage() {
       <div className="flex-1 flex flex-col">
         {generatedCaptions.length === 0 ? (
           /* Empty State */
-          <div className="flex-1 flex items-center justify-center p-12 bg-linear-to-br from-bg to-section-light">
+          <div className="flex-1 flex items-center justify-center p-12 bg-section">
             <div className="text-center max-w-md">
               {/* Illustration */}
               <div className="mb-8 relative">
-                <div className="inline-flex items-center justify-center w-32 h-32 bg-linear-to-br from-accent/10 to-accent/5 rounded-2xl shadow-lg mb-6">
+                <div className="inline-flex items-center justify-center w-32 h-32 bg-accent/10 rounded-2xl shadow-lg mb-6">
                   <div className="relative">
                     <Sparkles className="w-16 h-16 text-accent" />
                   </div>
@@ -335,7 +335,7 @@ export default function CaptionInputPage() {
               <h2 className="text-2xl font-semibold mb-3">
                 Your captions will appear here
               </h2>
-              <p className="text-text-body mb-8 leading-relaxed">
+              <p className="mb-8 leading-relaxed">
                 Describe your content on the left, and we'll generate 5
                 variations in your voice
               </p>
@@ -343,7 +343,7 @@ export default function CaptionInputPage() {
               {/* Tip Callout */}
               <div className="inline-flex items-start gap-3 px-4 py-3 bg-surface rounded-lg border border-border">
                 <span className="text-xl">💡</span>
-                <p className="text-sm text-secondary text-left">
+                <p className="text-sm text-left">
                   <span className="font-medium text-primary">Pro tip:</span> The
                   more context you add, the better your captions
                 </p>
@@ -358,9 +358,7 @@ export default function CaptionInputPage() {
                 <h2 className="text-xl font-semibold text-primary mb-2">
                   Generated Captions
                 </h2>
-                <p className="text-secondary">
-                  Choose your favorite or copy to use right away
-                </p>
+                <p>Choose your favorite or copy to use right away</p>
               </div>
 
               <div className="space-y-4">
@@ -373,9 +371,7 @@ export default function CaptionInputPage() {
                       <CardContent padding="md">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1">
-                            <p className="text-secondary leading-relaxed mb-3">
-                              {caption}
-                            </p>
+                            <p className="leading-relaxed mb-3">{caption}</p>
                             <div className="flex items-center gap-2 text-xs text-hint">
                               <span>#{index + 1}</span>
                               <span>•</span>

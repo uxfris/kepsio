@@ -219,7 +219,7 @@ export default function StyleGuide() {
             <CardDescription>Card description goes here</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-secondary">
+            <p className="text-sm">
               This is the card content area with proper spacing and typography.
             </p>
           </CardContent>
@@ -242,7 +242,7 @@ export default function StyleGuide() {
             description="This is an example modal with proper accessibility"
           >
             <ModalBody>
-              <p className="text-secondary">
+              <p>
                 This modal demonstrates proper focus management, keyboard
                 navigation, and accessibility features.
               </p>
@@ -284,7 +284,7 @@ export default function StyleGuide() {
       <header className="bg-surface border-b border-border sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <h1 className="text-2xl font-semibold">Design System</h1>
-          <p className="text-text-body mt-1">
+          <p className="mt-1">
             Inspired by Claude.ai's clean and minimal aesthetic
           </p>
         </div>
@@ -302,7 +302,7 @@ export default function StyleGuide() {
                       onClick={() => setActiveSection(item.id)}
                       className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
                         activeSection === item.id
-                          ? "bg-primary text-white"
+                          ? "bg-primary text-surface"
                           : "text-text-body hover:bg-section-light hover:text-text-head"
                       }`}
                     >
@@ -320,7 +320,7 @@ export default function StyleGuide() {
             {activeSection === "colors" && (
               <section>
                 <h2 className="text-3xl font-semibold mb-6">Colors</h2>
-                <p className="text-text-body mb-8 text-lg">
+                <p className="text-lg mb-8">
                   Our color palette emphasizes trustworthiness and depth while
                   maintaining accessibility. Colors are designed to work
                   harmoniously across light and dark modes.
@@ -349,7 +349,7 @@ export default function StyleGuide() {
             {activeSection === "typography" && (
               <section>
                 <h2 className="text-3xl font-semibold mb-6">Typography</h2>
-                <p className="text-text-body mb-8 text-lg">
+                <p className="text-lg mb-8">
                   Our typography system uses Sora for headings, Inter for body
                   text, and JetBrains Mono for code, with careful attention to
                   hierarchy and readability. All text maintains excellent
@@ -389,7 +389,7 @@ export default function StyleGuide() {
                           ? "const example = 'Hello World';"
                           : "The quick brown fox jumps over the lazy dog"}
                       </div>
-                      <p className="text-sm text-text-body">{type.usage}</p>
+                      <p className="text-sm">{type.usage}</p>
                     </div>
                   ))}
                 </div>
@@ -402,7 +402,7 @@ export default function StyleGuide() {
                 <h2 className="text-3xl font-semibold text-text-head mb-6">
                   Components
                 </h2>
-                <p className="text-text-body mb-8 text-lg">
+                <p className="text-lg mb-8">
                   Our component library focuses on simplicity and functionality.
                   Each component is designed to feel conversational rather than
                   mechanical, with purposeful interactions.
@@ -417,9 +417,7 @@ export default function StyleGuide() {
                       <h3 className="font-semibold text-text-head mb-2">
                         {component.name}
                       </h3>
-                      <p className="text-text-body mb-4 text-sm">
-                        {component.description}
-                      </p>
+                      <p className="text-sm mb-4">{component.description}</p>
                       <div className="flex items-center justify-center p-4 bg-section-light rounded-lg">
                         {component.element}
                       </div>
@@ -435,7 +433,7 @@ export default function StyleGuide() {
                 <h2 className="text-3xl font-semibold text-text-head mb-6">
                   Layout Components
                 </h2>
-                <p className="text-text-body mb-8 text-lg">
+                <p className="text-lg mb-8">
                   Layout components provide structure and navigation for your
                   application. They are designed to be flexible and accessible
                   across all devices.
@@ -447,7 +445,7 @@ export default function StyleGuide() {
                     <h3 className="font-semibold text-text-head mb-4">
                       Navbar Component
                     </h3>
-                    <p className="text-text-body mb-4 text-sm">
+                    <p className="text-sm mb-4">
                       Responsive navigation component with mobile menu support
                     </p>
                     <div className="mb-4 p-4 bg-section-light rounded-lg">
@@ -472,7 +470,7 @@ export default function StyleGuide() {
                     <h3 className="font-semibold text-text-head mb-4">
                       Footer Component
                     </h3>
-                    <p className="text-text-body mb-4 text-sm">
+                    <p className="text-sm mb-4">
                       Flexible footer component with multiple layout options
                     </p>
                     <div className="mb-4 p-4 bg-section-light rounded-lg">
@@ -513,7 +511,7 @@ export default function StyleGuide() {
                 <h2 className="text-3xl font-semibold text-text-head mb-6">
                   Spacing & Layout
                 </h2>
-                <p className="text-text-body mb-8 text-lg">
+                <p className="text-lg mb-8">
                   Consistent spacing creates visual rhythm and hierarchy. We use
                   an 8px base unit system with a 12-column grid for optimal
                   alignment across all screen sizes.
@@ -568,7 +566,7 @@ export default function StyleGuide() {
                         </div>
                       ))}
                     </div>
-                    <p className="text-sm text-text-body mt-4">
+                    <p className="text-sm mt-4">
                       12-column grid with 16px gutters for consistent alignment
                     </p>
                   </div>

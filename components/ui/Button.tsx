@@ -32,9 +32,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       primary:
-        "bg-primary text-white hover:bg-primary-hover focus:ring-primary shadow-sm",
+        "bg-primary text-surface hover:bg-primary-hover focus:ring-primary shadow-sm",
       accent:
-        "bg-accent text-white hover:bg-accent-hover focus:ring-accent shadow-sm",
+        "bg-accent text-surface hover:bg-accent-hover focus:ring-accent shadow-sm",
       outline:
         "border border-border text-text-head hover:bg-section-light focus:ring-primary",
       ghost: "text-text-head hover:bg-section-light focus:ring-primary",

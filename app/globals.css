@@ -39,12 +39,12 @@
   /* Shadows */
   --shadow-border-text: 0px 0px 0px 1px #d1cfc5;
 
-  /* Typography Tokens - Inter as default */
-  --font-sans: var(--font-inter);
+  /* Typography Tokens - Manrope as default */
+  --font-sans: var(--font-manrope);
   --font-display: var(--font-sora);
   --font-mono: var(--font-jetbrains-mono);
   --font-sora: var(--font-sora);
-  --font-inter: var(--font-inter);
+  --font-manrope: var(--font-manrope);
   --font-jetbrains-mono: var(--font-jetbrains-mono);
 
   /* Z-Index Scale */
@@ -86,23 +86,350 @@
     background-color: var(--color-section);
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+  /* Typography Scale */
+  h1 {
     font-family: var(--font-display);
     color: var(--color-text-head);
+    font-size: 2.5rem;
+    font-weight: 600;
+    line-height: 1.2;
     margin-top: 1rem;
     margin-bottom: 0.5rem;
   }
 
+  h2 {
+    font-family: var(--font-display);
+    color: var(--color-text-head);
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    color: var(--color-text-head);
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  h4 {
+    font-family: var(--font-display);
+    color: var(--color-text-head);
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  h5 {
+    font-family: var(--font-display);
+    color: var(--color-text-head);
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  h6 {
+    font-family: var(--font-display);
+    color: var(--color-text-head);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Paragraph Styles */
+  p {
+    font-family: var(--font-sans);
+    color: var(--color-text-body);
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+
+  /* Paragraph Variants */
+  .text-lead {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  .text-muted {
+    color: var(--color-hint);
+  }
+
+  .text-secondary {
+    color: var(--color-text-body);
+  }
+
+  /* Text Sizes */
+  .text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  .text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  .text-base {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .text-lg {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  .text-xl {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
+  .text-2xl {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .text-3xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+
+  .text-4xl {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+
+  /* Font Weights */
+  .font-thin {
+    font-weight: 100;
+  }
+
+  .font-extralight {
+    font-weight: 200;
+  }
+
+  .font-light {
+    font-weight: 300;
+  }
+
+  .font-normal {
+    font-weight: 400;
+  }
+
+  .font-medium {
+    font-weight: 500;
+  }
+
+  .font-semibold {
+    font-weight: 600;
+  }
+
+  .font-bold {
+    font-weight: 700;
+  }
+
+  .font-extrabold {
+    font-weight: 800;
+  }
+
+  .font-black {
+    font-weight: 900;
+  }
+
+  /* Color Utilities */
+  .text-primary {
+    color: var(--color-primary);
+  }
+
+  .text-accent {
+    color: var(--color-accent);
+  }
+
+  .text-text-head {
+    color: var(--color-text-head);
+  }
+
+  .text-text-body {
+    color: var(--color-text-body);
+  }
+
+  .text-hint {
+    color: var(--color-hint);
+  }
+
+  .text-secondary {
+    color: var(--color-text-body);
+  }
+
+  .text-success {
+    color: var(--color-success);
+  }
+
+  .text-warning {
+    color: var(--color-warning);
+  }
+
+  .text-error {
+    color: var(--color-error);
+  }
+
+  .text-info {
+    color: var(--color-info);
+  }
+
+  /* Background Colors */
+  .bg-section {
+    background-color: var(--color-section);
+  }
+
+  .bg-section-light {
+    background-color: var(--color-section-light);
+  }
+
+  .bg-surface {
+    background-color: var(--color-surface);
+  }
+
+  .bg-primary {
+    background-color: var(--color-primary);
+  }
+
+  .bg-accent {
+    background-color: var(--color-accent);
+  }
+
+  .bg-chip-bg {
+    background-color: var(--color-chip-bg);
+  }
+
+  .bg-success {
+    background-color: var(--color-success);
+  }
+
+  .bg-warning {
+    background-color: var(--color-warning);
+  }
+
+  .bg-error {
+    background-color: var(--color-error);
+  }
+
+  .bg-info {
+    background-color: var(--color-info);
+  }
+
+  /* Border Colors */
+  .border-border {
+    border-color: var(--color-border);
+  }
+
+  .border-border-alt {
+    border-color: var(--color-border-alt);
+  }
+
+  .border-divider {
+    border-color: var(--color-divider);
+  }
+
+  .border-primary {
+    border-color: var(--color-primary);
+  }
+
+  .border-accent {
+    border-color: var(--color-accent);
+  }
+
+  /* Interactive States */
+  .hover\:bg-primary:hover {
+    background-color: var(--color-primary-hover);
+  }
+
+  .hover\:bg-accent:hover {
+    background-color: var(--color-accent-hover);
+  }
+
+  .hover\:bg-surface:hover {
+    background-color: var(--color-surface-hover);
+  }
+
+  .focus\:border-focus:focus {
+    border-color: var(--color-border-focus);
+  }
+
+  .focus\:ring-focus:focus {
+    --tw-ring-color: var(--color-border-focus);
+  }
+
+  /* Shadow Utilities */
+  .shadow-border-text {
+    box-shadow: var(--shadow-border-text);
+  }
+
+  /* Font Family Utilities */
+  .font-sans {
+    font-family: var(--font-sans);
+  }
+
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  .font-sora {
+    font-family: var(--font-sora);
+  }
+
+  .font-manrope {
+    font-family: var(--font-manrope);
+  }
+
+  .font-jetbrains-mono {
+    font-family: var(--font-jetbrains-mono);
+  }
+
+  /* Links */
   a {
     color: var(--color-text-body);
     text-decoration: none;
   }
+
   a:hover {
     color: var(--color-text-body);
+  }
+
+  /* Form Elements */
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-hint);
+  }
+
+  /* Common Layout Utilities */
+  .text-center {
+    text-align: center;
+  }
+
+  .text-left {
+    text-align: left;
+  }
+
+  .text-right {
+    text-align: right;
   }
 }

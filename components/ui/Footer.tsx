@@ -52,9 +52,7 @@ const Footer = React.forwardRef<HTMLElement, FooterProps>(
             {/* Brand Section */}
             <div className="md:col-span-2">
               <div className="mb-4">{brand}</div>
-              {description && (
-                <p className="text-text-body text-sm max-w-md">{description}</p>
-              )}
+              {description && <p className="text-sm max-w-md">{description}</p>}
             </div>
 
             {/* Links Section */}
@@ -103,11 +101,11 @@ const Footer = React.forwardRef<HTMLElement, FooterProps>(
           {/* Bottom Section */}
           <div className="mt-8 pt-8 border-t border-divider">
             <div className="flex flex-col md:flex-row justify-between items-center">
-              <p className="text-sm text-hint">
+              <p className="text-sm text-muted">
                 © {new Date().getFullYear()} Your Company. All rights reserved.
               </p>
               <div className="mt-4 md:mt-0">
-                <p className="text-sm text-hint">
+                <p className="text-sm text-muted">
                   Built with our design system
                 </p>
               </div>

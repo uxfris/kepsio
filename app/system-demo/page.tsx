@@ -99,7 +99,7 @@ export default function SystemDemo() {
           <h1 className="text-4xl font-display text-primary mb-6">
             Design System Live Demo
           </h1>
-          <p className="text-lg text-secondary max-w-3xl mx-auto mb-8">
+          <p className="text-lg max-w-3xl mx-auto mb-8">
             This page demonstrates the live implementation of our design system.
             Explore real-world examples of our components in action, showcasing
             consistency, accessibility, and the clean aesthetic inspired by
@@ -117,16 +117,7 @@ export default function SystemDemo() {
       </section>
 
       {/* Stats Section */}
-      <section
-        className="py-12 px-4 sm:px-6 lg:px-8 bg-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light"
-      >
+      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-section-light">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
@@ -148,7 +139,7 @@ section-light"
             <h2 className="text-3xl font-display text-primary mb-4">
               System Features
             </h2>
-            <p className="text-lg text-secondary">
+            <p className="text-lg">
               Built with modern web standards and best practices
             </p>
           </div>
@@ -175,22 +166,13 @@ section-light"
       </section>
 
       {/* Dashboard Example */}
-      <section
-        className="py-16 px-4 sm:px-6 lg:px-8 bg-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light"
-      >
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-section-light">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-display text-text-head mb-4">
               Dashboard Example
             </h2>
-            <p className="text-lg text-text-body">
+            <p className="text-lg">
               Real-world layout using our design system components
             </p>
           </div>
@@ -207,44 +189,17 @@ section-light"
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div
-                      className="flex items-center justify-between p-4 bg-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light rounded-lg"
-                    >
+                    <div className="flex items-center justify-between p-4 bg-section-light rounded-lg">
                       <span className="text-text-body">Tasks Completed</span>
                       <span className="font-semibold text-text-head">
                         24/30
                       </span>
                     </div>
-                    <div
-                      className="flex items-center justify-between p-4 bg-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light rounded-lg"
-                    >
+                    <div className="flex items-center justify-between p-4 bg-section-light rounded-lg">
                       <span className="text-text-body">Team Members</span>
                       <span className="font-semibold text-text-head">8</span>
                     </div>
-                    <div
-                      className="flex items-center justify-between p-4 bg-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light rounded-lg"
-                    >
+                    <div className="flex items-center justify-between p-4 bg-section-light rounded-lg">
                       <span className="text-text-body">Deadline</span>
                       <span className="font-semibold text-text-head">
                         Dec 15
@@ -270,14 +225,7 @@ section-light rounded-lg"
                     ].map((activity, index) => (
                       <div
                         key={index}
-                        className="flex items-center gap-3 p-3 bg-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light rounded-md"
+                        className="flex items-center gap-3 p-3 bg-section-light rounded-md"
                       >
                         <div className="w-2 h-2 bg-accent rounded-full"></div>
                         <span className="text-sm text-text-body">
@@ -322,7 +270,7 @@ section-light rounded-md"
                       "Emma Davis",
                     ].map((member, index) => (
                       <div key={index} className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-white text-sm font-medium">
+                        <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-surface text-sm font-medium">
                           {member
                             .split(" ")
                             .map((n) => n[0])
@@ -346,7 +294,7 @@ section-light rounded-md"
             <h2 className="text-3xl font-display text-text-head mb-4">
               Contact Form Example
             </h2>
-            <p className="text-lg text-text-body">
+            <p className="text-lg">
               Demonstrating form components with validation and accessibility
             </p>
           </div>
@@ -408,22 +356,13 @@ section-light rounded-md"
       </section>
 
       {/* Component Showcase */}
-      <section
-        className="py-16 px-4 sm:px-6 lg:px-8 bg-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light"
-      >
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-section-light">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-display text-text-head mb-4">
               Component Showcase
             </h2>
-            <p className="text-lg text-text-body">
+            <p className="text-lg">
               Interactive examples of all design system components
             </p>
           </div>
@@ -495,7 +434,7 @@ section-light"
             <h2 className="text-3xl font-display text-text-head mb-4">
               Typography System
             </h2>
-            <p className="text-lg text-text-body">
+            <p className="text-lg">
               Demonstrating our three-font system: Sora for headings, Inter for
               body text, and JetBrains Mono for code
             </p>
@@ -515,19 +454,10 @@ section-light"
                   <h3 className="text-lg font-display mb-2">
                     Sora (Display Font)
                   </h3>
-                  <p className="text-sm text-text-body mb-2">
+                  <p className="text-sm mb-2">
                     Used for headings and important text
                   </p>
-                  <div
-                    className="p-4 bg-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light rounded-lg"
-                  >
+                  <div className="p-4 bg-section-light rounded-lg">
                     <h4 className="text-xl font-display mb-2">
                       Beautiful Typography
                     </h4>
@@ -541,19 +471,10 @@ section-light rounded-lg"
                   <h3 className="text-lg font-display mb-2">
                     Inter (Body Font)
                   </h3>
-                  <p className="text-sm text-text-body mb-2">
+                  <p className="text-sm mb-2">
                     Used for body text, labels, and UI elements
                   </p>
-                  <div
-                    className="p-4 bg-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light rounded-lg"
-                  >
+                  <div className="p-4 bg-section-light rounded-lg">
                     <p className="text-sm mb-2">
                       This is body text using Inter font. It's designed for
                       optimal readability at all sizes and provides excellent
@@ -576,16 +497,7 @@ section-light rounded-lg"
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div
-                  className="p-4 bg-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light rounded-lg"
-                >
+                <div className="p-4 bg-section-light rounded-lg">
                   <h4 className="text-sm font-display mb-3">Example Code:</h4>
                   <pre className="text-sm overflow-x-auto font-mono">
                     {`// Design System Component
@@ -646,20 +558,11 @@ export function MyComponent() {
         size="md"
       >
         <ModalBody>
-          <p className="text-text-body mb-4">
+          <p className="mb-4">
             Thank you for your interest in our design system. We'll get back to
             you soon!
           </p>
-          <div
-            className="p-4 bg-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light
-section-light rounded-lg"
-          >
+          <div className="p-4 bg-section-light rounded-lg">
             <h4 className="font-semibold text-text-head mb-2">What's Next?</h4>
             <ul className="text-sm text-text-body space-y-1">
               <li>• Review your message within 24 hours</li>
