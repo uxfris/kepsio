@@ -28,18 +28,17 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+      "inline-flex items-center justify-center font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed font-display";
 
     const variants = {
       primary:
-        "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] focus:ring-[var(--color-primary)] shadow-sm",
+        "bg-primary text-white hover:bg-primary-hover focus:ring-primary shadow-sm",
       accent:
-        "bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-hover)] focus:ring-[var(--color-accent)] shadow-sm",
+        "bg-accent text-white hover:bg-accent-hover focus:ring-accent shadow-sm",
       outline:
-        "border border-[var(--color-border)] text-[var(--color-text-head)] hover:bg-[var(--color-bg-highlight)] focus:ring-[var(--color-primary)]",
-      ghost:
-        "text-[var(--color-text-head)] hover:bg-[var(--color-bg-highlight)] focus:ring-[var(--color-primary)]",
-      link: "text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] underline-offset-4 hover:underline focus:ring-[var(--color-accent)] p-0",
+        "border border-border text-text-head hover:bg-bg-highlight focus:ring-primary",
+      ghost: "text-text-head hover:bg-bg-highlight focus:ring-primary",
+      link: "text-accent hover:text-accent-hover underline-offset-4 hover:underline focus:ring-accent p-0",
     };
 
     const sizes = {

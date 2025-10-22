@@ -236,9 +236,9 @@ export default function CaptionInputPage() {
             <Card variant="outlined" className="overflow-hidden">
               <button
                 onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
-                className="w-full flex items-center justify-between px-4 py-4 hover:bg-bg-highlight transition-colors"
+                className="w-full flex items-center justify-between px-4 py-4 hover:bg-bg-highlight transition-colors rounded-lg"
               >
-                <span className="text-sm font-medium text-primary">
+                <span className="text-sm font-medium text-text-head">
                   Advanced Options
                 </span>
                 <motion.div
@@ -267,7 +267,7 @@ export default function CaptionInputPage() {
                         <select
                           value={ctaType}
                           onChange={(e) => setCtaType(e.target.value)}
-                          className="w-full px-3 py-2 border border-primary rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-focus focus:border-focus bg-surface"
+                          className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-focus focus:border-focus bg-surface"
                         >
                           <option value="link-in-bio">Link in bio</option>
                           <option value="shop-now">Shop now</option>
@@ -389,7 +389,7 @@ export default function CaptionInputPage() {
       >
         {generatedCaptions.length === 0 ? (
           /* Empty State */
-          <div className="flex-1 flex items-center justify-center p-12 bg-gradient-to-br from-bg to-bg-highlight">
+          <div className="flex-1 flex items-center justify-center p-12 bg-linear-to-br from-bg to-bg-highlight">
             <motion.div
               className="text-center max-w-md"
               variants={containerVariants}
@@ -398,7 +398,7 @@ export default function CaptionInputPage() {
             >
               {/* Illustration */}
               <motion.div className="mb-8 relative" variants={itemVariants}>
-                <div className="inline-flex items-center justify-center w-32 h-32 bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl shadow-lg mb-6">
+                <div className="inline-flex items-center justify-center w-32 h-32 bg-linear-to-br from-accent/10 to-accent/5 rounded-2xl shadow-lg mb-6">
                   <div className="relative">
                     <Sparkles className="w-16 h-16 text-accent animate-pulse" />
                     {/* Floating caption bubbles */}
@@ -432,13 +432,13 @@ export default function CaptionInputPage() {
 
               {/* Empty State Text */}
               <motion.h2
-                className="text-2xl font-semibold text-primary mb-3"
+                className="text-2xl font-semibold text-text-head mb-3"
                 variants={itemVariants}
               >
                 Your captions will appear here
               </motion.h2>
               <motion.p
-                className="text-secondary mb-8 leading-relaxed"
+                className="text-text-body mb-8 leading-relaxed"
                 variants={itemVariants}
               >
                 Describe your content on the left, and we'll generate 5
@@ -447,7 +447,7 @@ export default function CaptionInputPage() {
 
               {/* Tip Callout */}
               <motion.div
-                className="inline-flex items-start gap-3 px-4 py-3 bg-surface rounded-lg border border-primary shadow-sm"
+                className="inline-flex items-start gap-3 px-4 py-3 bg-surface rounded-lg border border-border"
                 variants={itemVariants}
               >
                 <span className="text-xl">💡</span>
