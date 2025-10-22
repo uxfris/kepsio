@@ -90,7 +90,11 @@ export default function SystemDemo() {
           { label: "Style Guide", href: "/style-guide", active: false },
           { label: "Demo", href: "/system-demo", active: true },
         ]}
-        actions={<Button size="sm">Get Started</Button>}
+        actions={
+          <Button size="sm" className="h-10">
+            Get Started
+          </Button>
+        }
       />
 
       {/* Hero Section */}

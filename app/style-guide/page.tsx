@@ -460,7 +460,11 @@ export default function StyleGuide() {
                           { label: "About", href: "#" },
                           { label: "Contact", href: "#" },
                         ]}
-                        actions={<Button size="sm">Get Started</Button>}
+                        actions={
+                          <Button size="sm" className="h-10">
+                            Get Started
+                          </Button>
+                        }
                       />
                     </div>
                   </div>

@@ -92,7 +92,7 @@ const Navbar = React.forwardRef<HTMLElement, NavbarProps>(
             <div className="md:hidden">
               <button
                 type="button"
-                className="inline-flex items-center justify-center rounded-md p-2 text-text-body hover:bg-section-light hover:text-text-head focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                className="inline-flex items-center justify-center rounded-md p-2 text-text-body hover:bg-section-light Get er:text-text-head focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-expanded={isMobileMenuOpen}
                 aria-label="Toggle navigation menu"
