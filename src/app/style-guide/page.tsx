@@ -1,6 +1,23 @@
 "use client";
 
 import { useState } from "react";
+import {
+  Button,
+  Input,
+  Textarea,
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Navbar,
+  Footer,
+} from "../../../design-system/components/ui";
 
 export default function StyleGuide() {
   const [activeSection, setActiveSection] = useState("colors");
@@ -127,67 +144,119 @@ export default function StyleGuide() {
     },
   ];
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const components = [
     {
-      name: "Primary Button",
+      name: "Button Variants",
       element: (
-        <button className="px-6 py-3 bg-[#141413] text-white rounded-lg font-medium hover:bg-[#2A2A28] transition-colors">
-          Primary Action
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <Button variant="primary">Primary</Button>
+          <Button variant="accent">Accent</Button>
+          <Button variant="outline">Outline</Button>
+          <Button variant="ghost">Ghost</Button>
+          <Button variant="link">Link</Button>
+        </div>
       ),
-      description: "Main call-to-action buttons",
+      description: "Button component with multiple variants and states",
     },
     {
-      name: "Accent Button",
+      name: "Button Sizes",
       element: (
-        <button className="px-6 py-3 bg-[#C96442] text-white rounded-lg font-medium hover:bg-[#B55A3A] transition-colors">
-          Accent Action
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button size="sm">Small</Button>
+          <Button size="md">Medium</Button>
+          <Button size="lg">Large</Button>
+          <Button size="icon">⚙</Button>
+        </div>
       ),
-      description: "Accent actions and highlights",
-    },
-    {
-      name: "Outline Button",
-      element: (
-        <button className="px-6 py-3 border border-[#E8E6DC] text-[#141413] rounded-lg font-medium hover:bg-[#F0EEE6] transition-colors">
-          Outline Action
-        </button>
-      ),
-      description: "Subtle actions and alternatives",
+      description: "Button component in different sizes",
     },
     {
       name: "Input Field",
       element: (
-        <input
-          type="text"
-          placeholder="Enter text here"
-          className="w-full px-4 py-3 border border-[#E8E6DC] rounded-xl focus:border-[#141413] focus:outline-none transition-colors bg-white"
-        />
-      ),
-      description: "Text input fields",
-    },
-    {
-      name: "Card",
-      element: (
-        <div className="p-6 bg-white border border-[#F0EEE6] rounded-2xl">
-          <h3 className="text-lg font-semibold text-[#141413] mb-2">
-            Card Title
-          </h3>
-          <p className="text-[#5E5D59]">
-            This is a card component with subtle styling.
-          </p>
+        <div className="w-full max-w-sm">
+          <Input
+            label="Email Address"
+            placeholder="Enter your email"
+            helperText="We'll never share your email"
+          />
         </div>
       ),
-      description: "Content containers and cards",
+      description: "Input component with label and helper text",
     },
     {
-      name: "Chip",
+      name: "Input States",
       element: (
-        <span className="px-3 py-1 bg-[#F0EEE6] text-[#141413] text-sm font-medium rounded-full">
-          Tag
-        </span>
+        <div className="w-full max-w-sm space-y-4">
+          <Input placeholder="Default state" />
+          <Input placeholder="Error state" error="This field is required" />
+          <Input placeholder="Success state" success />
+        </div>
       ),
-      description: "Tags and labels",
+      description: "Input component with different states",
+    },
+    {
+      name: "Textarea",
+      element: (
+        <div className="w-full max-w-sm">
+          <Textarea
+            label="Message"
+            placeholder="Enter your message here..."
+            helperText="Please provide detailed information"
+            rows={4}
+          />
+        </div>
+      ),
+      description: "Textarea component for longer text input",
+    },
+    {
+      name: "Card Component",
+      element: (
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle>Card Title</CardTitle>
+            <CardDescription>Card description goes here</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-[var(--color-text-body)]">
+              This is the card content area with proper spacing and typography.
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Button size="sm">Action</Button>
+          </CardFooter>
+        </Card>
+      ),
+      description: "Card component with header, content, and proper structure",
+    },
+    {
+      name: "Modal Component",
+      element: (
+        <div>
+          <Button onClick={() => setIsModalOpen(true)}>Open Modal</Button>
+          <Modal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            title="Example Modal"
+            description="This is an example modal with proper accessibility"
+          >
+            <ModalBody>
+              <p className="text-[var(--color-text-body)]">
+                This modal demonstrates proper focus management, keyboard
+                navigation, and accessibility features.
+              </p>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={() => setIsModalOpen(false)}>Confirm</Button>
+            </ModalFooter>
+          </Modal>
+        </div>
+      ),
+      description: "Modal component with accessibility features",
     },
   ];
 
@@ -205,6 +274,7 @@ export default function StyleGuide() {
     { id: "colors", label: "Colors" },
     { id: "typography", label: "Typography" },
     { id: "components", label: "Components" },
+    { id: "layout", label: "Layout" },
     { id: "spacing", label: "Spacing & Layout" },
   ];
 
@@ -367,6 +437,84 @@ export default function StyleGuide() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </section>
+            )}
+
+            {/* Layout Section */}
+            {activeSection === "layout" && (
+              <section>
+                <h2 className="text-3xl font-semibold text-[#141413] mb-6">
+                  Layout Components
+                </h2>
+                <p className="text-[#5E5D59] mb-8 text-lg">
+                  Layout components provide structure and navigation for your
+                  application. They are designed to be flexible and accessible
+                  across all devices.
+                </p>
+
+                <div className="space-y-8">
+                  {/* Navbar Example */}
+                  <div className="bg-white rounded-lg p-6 border border-[#E8E6DC]">
+                    <h3 className="font-semibold text-[#141413] mb-4">
+                      Navbar Component
+                    </h3>
+                    <p className="text-[#5E5D59] mb-4 text-sm">
+                      Responsive navigation component with mobile menu support
+                    </p>
+                    <div className="mb-4 p-4 bg-[#F0EEE6] rounded-lg">
+                      <Navbar
+                        brand={
+                          <span className="text-xl font-bold text-[#141413]">
+                            Brand
+                          </span>
+                        }
+                        items={[
+                          { label: "Home", href: "#", active: true },
+                          { label: "About", href: "#" },
+                          { label: "Contact", href: "#" },
+                        ]}
+                        actions={<Button size="sm">Get Started</Button>}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Footer Example */}
+                  <div className="bg-white rounded-lg p-6 border border-[#E8E6DC]">
+                    <h3 className="font-semibold text-[#141413] mb-4">
+                      Footer Component
+                    </h3>
+                    <p className="text-[#5E5D59] mb-4 text-sm">
+                      Flexible footer component with multiple layout options
+                    </p>
+                    <div className="mb-4 p-4 bg-[#F0EEE6] rounded-lg">
+                      <Footer
+                        brand={
+                          <span className="text-lg font-bold text-[#141413]">
+                            Your Company
+                          </span>
+                        }
+                        description="Building amazing products with our design system"
+                        links={[
+                          { label: "Privacy Policy", href: "#" },
+                          { label: "Terms of Service", href: "#" },
+                          { label: "Contact", href: "#" },
+                        ]}
+                        socialLinks={[
+                          {
+                            label: "Twitter",
+                            href: "#",
+                            icon: <span className="text-lg">🐦</span>,
+                          },
+                          {
+                            label: "GitHub",
+                            href: "#",
+                            icon: <span className="text-lg">🐙</span>,
+                          },
+                        ]}
+                      />
+                    </div>
+                  </div>
                 </div>
               </section>
             )}
