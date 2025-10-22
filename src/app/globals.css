@@ -12,6 +12,7 @@
   --font-mono: var(--font-geist-mono);
   --font-sora: var(--font-sora);
   --font-inter: var(--font-inter);
+  --font-jetbrains-mono: var(--font-jetbrains-mono);
 }
 
 @media (prefers-color-scheme: dark) {

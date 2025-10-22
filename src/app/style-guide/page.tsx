@@ -122,7 +122,7 @@ export default function StyleGuide() {
       size: "0.875rem",
       weight: "400",
       lineHeight: "1.4",
-      fontFamily: "Inter",
+      fontFamily: "JetBrains Mono",
       usage: "Code snippets",
     },
   ];
@@ -161,7 +161,7 @@ export default function StyleGuide() {
         <input
           type="text"
           placeholder="Enter text here"
-          className="w-full px-4 py-3 border border-[#E8E6DC] rounded-lg focus:border-[#141413] focus:outline-none transition-colors bg-white"
+          className="w-full px-4 py-3 border border-[#E8E6DC] rounded-xl focus:border-[#141413] focus:outline-none transition-colors bg-white"
         />
       ),
       description: "Text input fields",
@@ -169,7 +169,7 @@ export default function StyleGuide() {
     {
       name: "Card",
       element: (
-        <div className="p-6 bg-white border border-[#E8E6DC] rounded-lg shadow-sm">
+        <div className="p-6 bg-white border border-[#F0EEE6] rounded-2xl">
           <h3 className="text-lg font-semibold text-[#141413] mb-2">
             Card Title
           </h3>
@@ -292,10 +292,10 @@ export default function StyleGuide() {
                   Typography
                 </h2>
                 <p className="text-[#5E5D59] mb-8 text-lg">
-                  Our typography system uses Sora for headings and Inter for
-                  body text, with careful attention to hierarchy and
-                  readability. All text maintains excellent contrast ratios for
-                  accessibility.
+                  Our typography system uses Sora for headings, Inter for body
+                  text, and JetBrains Mono for code, with careful attention to
+                  hierarchy and readability. All text maintains excellent
+                  contrast ratios for accessibility.
                 </p>
 
                 <div className="space-y-8">
@@ -322,10 +322,14 @@ export default function StyleGuide() {
                           fontFamily:
                             type.fontFamily === "Sora"
                               ? "var(--font-sora)"
+                              : type.fontFamily === "JetBrains Mono"
+                              ? "var(--font-jetbrains-mono)"
                               : "var(--font-inter)",
                         }}
                       >
-                        The quick brown fox jumps over the lazy dog
+                        {type.fontFamily === "JetBrains Mono"
+                          ? "const example = 'Hello World';"
+                          : "The quick brown fox jumps over the lazy dog"}
                       </div>
                       <p className="text-sm text-[#5E5D59]">{type.usage}</p>
                     </div>
