@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import CaptionInputWireframe from "./caption-input/caption-input-wireframe";
 
 export default function Home() {
-  redirect("/system-demo");
+  return <CaptionInputWireframe />;
 }
