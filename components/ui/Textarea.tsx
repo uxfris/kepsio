@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useId } from "react";
 import { cn } from "../../utils/cn";
 
 export interface TextareaProps
@@ -24,8 +24,8 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     },
     ref
   ) => {
-    const textareaId =
-      id || `textarea-${Math.random().toString(36).substr(2, 9)}`;
+    const generatedId = useId();
+    const textareaId = id || `textarea-${generatedId}`;
     const hasError = !!error;
     const hasSuccess = success && !hasError;
 
