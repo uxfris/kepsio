@@ -17,7 +17,7 @@ import {
   ModalFooter,
   Navbar,
   Footer,
-} from "../../../design-system/components/ui";
+} from "../../components/ui";
 
 export default function SystemDemo() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -77,7 +77,7 @@ export default function SystemDemo() {
   ];
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen">
       {/* Navigation */}
       <Navbar
         brand={
@@ -117,7 +117,16 @@ export default function SystemDemo() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-bg-highlight">
+      <section
+        className="py-12 px-4 sm:px-6 lg:px-8 bg-section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light"
+      >
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
@@ -166,7 +175,16 @@ export default function SystemDemo() {
       </section>
 
       {/* Dashboard Example */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-bg-highlight">
+      <section
+        className="py-16 px-4 sm:px-6 lg:px-8 bg-section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light"
+      >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-display text-text-head mb-4">
@@ -189,17 +207,44 @@ export default function SystemDemo() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 bg-bg-highlight rounded-lg">
+                    <div
+                      className="flex items-center justify-between p-4 bg-section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light rounded-lg"
+                    >
                       <span className="text-text-body">Tasks Completed</span>
                       <span className="font-semibold text-text-head">
                         24/30
                       </span>
                     </div>
-                    <div className="flex items-center justify-between p-4 bg-bg-highlight rounded-lg">
+                    <div
+                      className="flex items-center justify-between p-4 bg-section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light rounded-lg"
+                    >
                       <span className="text-text-body">Team Members</span>
                       <span className="font-semibold text-text-head">8</span>
                     </div>
-                    <div className="flex items-center justify-between p-4 bg-bg-highlight rounded-lg">
+                    <div
+                      className="flex items-center justify-between p-4 bg-section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light rounded-lg"
+                    >
                       <span className="text-text-body">Deadline</span>
                       <span className="font-semibold text-text-head">
                         Dec 15
@@ -225,7 +270,14 @@ export default function SystemDemo() {
                     ].map((activity, index) => (
                       <div
                         key={index}
-                        className="flex items-center gap-3 p-3 bg-bg-highlight rounded-md"
+                        className="flex items-center gap-3 p-3 bg-section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light rounded-md"
                       >
                         <div className="w-2 h-2 bg-accent rounded-full"></div>
                         <span className="text-sm text-text-body">
@@ -356,7 +408,16 @@ export default function SystemDemo() {
       </section>
 
       {/* Component Showcase */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-bg-highlight">
+      <section
+        className="py-16 px-4 sm:px-6 lg:px-8 bg-section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light"
+      >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-display text-text-head mb-4">
@@ -457,7 +518,16 @@ export default function SystemDemo() {
                   <p className="text-sm text-text-body mb-2">
                     Used for headings and important text
                   </p>
-                  <div className="p-4 bg-bg-highlight rounded-lg">
+                  <div
+                    className="p-4 bg-section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light rounded-lg"
+                  >
                     <h4 className="text-xl font-display mb-2">
                       Beautiful Typography
                     </h4>
@@ -474,7 +544,16 @@ export default function SystemDemo() {
                   <p className="text-sm text-text-body mb-2">
                     Used for body text, labels, and UI elements
                   </p>
-                  <div className="p-4 bg-bg-highlight rounded-lg">
+                  <div
+                    className="p-4 bg-section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light rounded-lg"
+                  >
                     <p className="text-sm mb-2">
                       This is body text using Inter font. It's designed for
                       optimal readability at all sizes and provides excellent
@@ -497,7 +576,16 @@ export default function SystemDemo() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="p-4 bg-bg-highlight rounded-lg">
+                <div
+                  className="p-4 bg-section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light rounded-lg"
+                >
                   <h4 className="text-sm font-display mb-3">Example Code:</h4>
                   <pre className="text-sm overflow-x-auto font-mono">
                     {`// Design System Component
@@ -562,7 +650,16 @@ export function MyComponent() {
             Thank you for your interest in our design system. We'll get back to
             you soon!
           </p>
-          <div className="p-4 bg-bg-highlight rounded-lg">
+          <div
+            className="p-4 bg-section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light
+section-light rounded-lg"
+          >
             <h4 className="font-semibold text-text-head mb-2">What's Next?</h4>
             <ul className="text-sm text-text-body space-y-1">
               <li>• Review your message within 24 hours</li>

@@ -74,8 +74,8 @@ const Navbar = React.forwardRef<HTMLElement, NavbarProps>(
                       className={cn(
                         "px-3 py-2 rounded-md text-sm font-medium transition-colors",
                         item.active
-                          ? "bg-bg-highlight text-text-head"
-                          : "text-text-body hover:bg-bg-highlight hover:text-text-head"
+                          ? "bg-section-light text-text-head"
+                          : "text-text-body hover:bg-section-light hover:text-text-head"
                       )}
                     >
                       {item.label}
@@ -92,7 +92,7 @@ const Navbar = React.forwardRef<HTMLElement, NavbarProps>(
             <div className="md:hidden">
               <button
                 type="button"
-                className="inline-flex items-center justify-center rounded-md p-2 text-text-body hover:bg-bg-highlight hover:text-text-head focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                className="inline-flex items-center justify-center rounded-md p-2 text-text-body hover:bg-section-light hover:text-text-head focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-expanded={isMobileMenuOpen}
                 aria-label="Toggle navigation menu"
@@ -142,8 +142,8 @@ const Navbar = React.forwardRef<HTMLElement, NavbarProps>(
                     className={cn(
                       "block px-3 py-2 rounded-md text-base font-medium transition-colors",
                       item.active
-                        ? "bg-bg-highlight text-text-head"
-                        : "text-text-body hover:bg-bg-highlight hover:text-text-head"
+                        ? "bg-section-light text-text-head"
+                        : "text-text-body hover:bg-section-light hover:text-text-head"
                     )}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >

@@ -17,7 +17,7 @@ import {
   ModalFooter,
   Navbar,
   Footer,
-} from "../../../design-system/components/ui";
+} from "../../components/ui";
 
 export default function StyleGuide() {
   const [activeSection, setActiveSection] = useState("colors");
@@ -279,13 +279,11 @@ export default function StyleGuide() {
   ];
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen">
       {/* Header */}
       <header className="bg-surface border-b border-border sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <h1 className="text-2xl font-semibold text-text-head">
-            Design System
-          </h1>
+          <h1 className="text-2xl font-semibold">Design System</h1>
           <p className="text-text-body mt-1">
             Inspired by Claude.ai's clean and minimal aesthetic
           </p>
@@ -305,7 +303,7 @@ export default function StyleGuide() {
                       className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
                         activeSection === item.id
                           ? "bg-primary text-white"
-                          : "text-text-body hover:bg-bg-highlight hover:text-text-head"
+                          : "text-text-body hover:bg-section-light hover:text-text-head"
                       }`}
                     >
                       {item.label}
@@ -321,9 +319,7 @@ export default function StyleGuide() {
             {/* Colors Section */}
             {activeSection === "colors" && (
               <section>
-                <h2 className="text-3xl font-semibold text-text-head mb-6">
-                  Colors
-                </h2>
+                <h2 className="text-3xl font-semibold mb-6">Colors</h2>
                 <p className="text-text-body mb-8 text-lg">
                   Our color palette emphasizes trustworthiness and depth while
                   maintaining accessibility. Colors are designed to work
@@ -340,15 +336,9 @@ export default function StyleGuide() {
                         className="w-full h-20 rounded-lg mb-4 border border-border"
                         style={{ backgroundColor: color.value }}
                       />
-                      <h3 className="font-semibold text-text-head mb-1">
-                        {color.name}
-                      </h3>
-                      <p className="text-sm text-text-body mb-2 font-mono">
-                        {color.value}
-                      </p>
-                      <p className="text-sm text-text-body">
-                        {color.description}
-                      </p>
+                      <h3 className="font-semibold mb-1">{color.name}</h3>
+                      <p className="text-sm mb-2 font-mono">{color.value}</p>
+                      <p className="text-sm">{color.description}</p>
                     </div>
                   ))}
                 </div>
@@ -358,9 +348,7 @@ export default function StyleGuide() {
             {/* Typography Section */}
             {activeSection === "typography" && (
               <section>
-                <h2 className="text-3xl font-semibold text-text-head mb-6">
-                  Typography
-                </h2>
+                <h2 className="text-3xl font-semibold mb-6">Typography</h2>
                 <p className="text-text-body mb-8 text-lg">
                   Our typography system uses Sora for headings, Inter for body
                   text, and JetBrains Mono for code, with careful attention to
@@ -432,7 +420,7 @@ export default function StyleGuide() {
                       <p className="text-text-body mb-4 text-sm">
                         {component.description}
                       </p>
-                      <div className="flex items-center justify-center p-4 bg-bg-highlight rounded-lg">
+                      <div className="flex items-center justify-center p-4 bg-section-light rounded-lg">
                         {component.element}
                       </div>
                     </div>
@@ -462,7 +450,7 @@ export default function StyleGuide() {
                     <p className="text-text-body mb-4 text-sm">
                       Responsive navigation component with mobile menu support
                     </p>
-                    <div className="mb-4 p-4 bg-bg-highlight rounded-lg">
+                    <div className="mb-4 p-4 bg-section-light rounded-lg">
                       <Navbar
                         brand={
                           <span className="text-xl font-bold text-text-head">
@@ -487,7 +475,7 @@ export default function StyleGuide() {
                     <p className="text-text-body mb-4 text-sm">
                       Flexible footer component with multiple layout options
                     </p>
-                    <div className="mb-4 p-4 bg-bg-highlight rounded-lg">
+                    <div className="mb-4 p-4 bg-section-light rounded-lg">
                       <Footer
                         brand={
                           <span className="text-lg font-bold text-text-head">
@@ -590,25 +578,25 @@ export default function StyleGuide() {
                       Breakpoints
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div className="text-center p-4 bg-bg-highlight rounded-lg">
+                      <div className="text-center p-4 bg-section-light rounded-lg">
                         <div className="font-semibold text-text-head">
                           Mobile
                         </div>
                         <div className="text-sm text-text-body">480px</div>
                       </div>
-                      <div className="text-center p-4 bg-bg-highlight rounded-lg">
+                      <div className="text-center p-4 bg-section-light rounded-lg">
                         <div className="font-semibold text-text-head">
                           Tablet
                         </div>
                         <div className="text-sm text-text-body">768px</div>
                       </div>
-                      <div className="text-center p-4 bg-bg-highlight rounded-lg">
+                      <div className="text-center p-4 bg-section-light rounded-lg">
                         <div className="font-semibold text-text-head">
                           Desktop
                         </div>
                         <div className="text-sm text-text-body">1024px</div>
                       </div>
-                      <div className="text-center p-4 bg-bg-highlight rounded-lg">
+                      <div className="text-center p-4 bg-section-light rounded-lg">
                         <div className="font-semibold text-text-head">
                           Large
                         </div>

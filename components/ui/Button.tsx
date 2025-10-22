@@ -36,8 +36,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       accent:
         "bg-accent text-white hover:bg-accent-hover focus:ring-accent shadow-sm",
       outline:
-        "border border-border text-text-head hover:bg-bg-highlight focus:ring-primary",
-      ghost: "text-text-head hover:bg-bg-highlight focus:ring-primary",
+        "border border-border text-text-head hover:bg-section-light focus:ring-primary",
+      ghost: "text-text-head hover:bg-section-light focus:ring-primary",
       link: "text-accent hover:text-accent-hover underline-offset-4 hover:underline focus:ring-accent p-0",
     };
 

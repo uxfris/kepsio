@@ -13,15 +13,15 @@ import {
   Copy,
   Check,
 } from "lucide-react";
-import { Button } from "../../../design-system/components/ui/Button";
-import { Textarea } from "../../../design-system/components/ui/Textarea";
-import { Input } from "../../../design-system/components/ui/Input";
+import { Button } from "../../components/ui/Button";
+import { Textarea } from "../../components/ui/Textarea";
+import { Input } from "../../components/ui/Input";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "../../../design-system/components/ui/Card";
+} from "../../components/ui/Card";
 
 export default function CaptionInputPage() {
   const [contentInput, setContentInput] = useState("");
@@ -94,7 +94,7 @@ export default function CaptionInputPage() {
   const totalCredits = 10;
 
   return (
-    <div className="min-h-screen bg-bg flex flex-col lg:flex-row">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Panel - Input Section */}
       <div className="w-full lg:w-[480px] bg-surface border-r border-border flex flex-col">
         {/* Header */}
@@ -156,7 +156,7 @@ export default function CaptionInputPage() {
               variant="outline"
               size="sm"
               leftIcon={<Link2 className="w-4 h-4" />}
-              className="text-sm bg-border text-text-body shadow-border"
+              className="text-sm bg-border text-text-body shadow-border-text"
             >
               Add product link
             </Button>
@@ -164,7 +164,7 @@ export default function CaptionInputPage() {
               variant="outline"
               size="sm"
               leftIcon={<Image className="w-4 h-4" />}
-              className="text-sm bg-border text-text-body shadow-border"
+              className="text-sm bg-border text-text-body shadow-border-text"
             >
               Upload image
             </Button>
@@ -172,7 +172,7 @@ export default function CaptionInputPage() {
               variant="outline"
               size="sm"
               leftIcon={<Clock className="w-4 h-4" />}
-              className="text-sm bg-border text-text-body shadow-border"
+              className="text-sm bg-border text-text-body shadow-border-text"
             >
               Use previous post
             </Button>
@@ -183,7 +183,7 @@ export default function CaptionInputPage() {
             <Card variant="outlined" className="overflow-hidden" padding="none">
               <button
                 onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
-                className="w-full flex items-center justify-between px-4 py-4 hover:bg-bg-highlight transition-colors rounded-lg"
+                className="w-full flex items-center justify-between px-4 py-4 hover:bg-section-light transition-colors rounded-lg"
               >
                 <span className="text-sm font-medium text-text-head">
                   Advanced Options
@@ -228,7 +228,7 @@ export default function CaptionInputPage() {
                         onChange={(e) =>
                           setHashtagCount(parseInt(e.target.value))
                         }
-                        className="w-full h-2 bg-bg-highlight rounded-full appearance-none cursor-pointer accent-accent"
+                        className="w-full h-2 bg-section-light rounded-full appearance-none cursor-pointer accent-accent"
                       />
                       <div className="flex justify-between text-xs text-hint mt-2">
                         <span>None</span>
@@ -320,7 +320,7 @@ export default function CaptionInputPage() {
       <div className="flex-1 flex flex-col">
         {generatedCaptions.length === 0 ? (
           /* Empty State */
-          <div className="flex-1 flex items-center justify-center p-12 bg-linear-to-br from-bg to-bg-highlight">
+          <div className="flex-1 flex items-center justify-center p-12 bg-linear-to-br from-bg to-section-light">
             <div className="text-center max-w-md">
               {/* Illustration */}
               <div className="mb-8 relative">
@@ -332,7 +332,7 @@ export default function CaptionInputPage() {
               </div>
 
               {/* Empty State Text */}
-              <h2 className="text-2xl font-semibold text-text-head mb-3">
+              <h2 className="text-2xl font-semibold mb-3">
                 Your captions will appear here
               </h2>
               <p className="text-text-body mb-8 leading-relaxed">
@@ -352,7 +352,7 @@ export default function CaptionInputPage() {
           </div>
         ) : (
           /* Results State */
-          <div className="flex-1 p-6 bg-bg">
+          <div className="flex-1 p-6 bg-section">
             <div className="max-w-4xl mx-auto">
               <div className="mb-6">
                 <h2 className="text-xl font-semibold text-primary mb-2">

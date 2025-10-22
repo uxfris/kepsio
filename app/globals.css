@@ -1,7 +1,14 @@
-@theme {
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
   /* Color Tokens */
-  --color-bg: #faf9f5;
-  --color-bg-highlight: #f0eee6;
+  --color-section: #faf9f5;
+  --color-section-light: #f0eee6;
   --color-surface: #ffffff;
 
   --color-primary: #141413;
@@ -30,19 +37,15 @@
   --color-border-focus: #141413;
 
   /* Shadows */
-  --shadow-border: 0px 0px 0px 1px #d1cfc5;
-  /* --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-  --shadow-none: 0 0 #0000; */
+  --shadow-border-text: 0px 0px 0px 1px #d1cfc5;
 
   /* Typography Tokens - Inter as default */
   --font-sans: var(--font-inter);
   --font-display: var(--font-sora);
   --font-mono: var(--font-jetbrains-mono);
+  --font-sora: var(--font-sora);
+  --font-inter: var(--font-inter);
+  --font-jetbrains-mono: var(--font-jetbrains-mono);
 
   /* Z-Index Scale */
   --z-dropdown: 1000;
@@ -62,4 +65,44 @@
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Legacy compatibility */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    color: var(--color-text-body);
+    background-color: var(--color-section);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    color: var(--color-text-head);
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  a {
+    color: var(--color-text-body);
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--color-text-body);
+  }
 }
