@@ -219,7 +219,7 @@ export default function StyleGuide() {
             <CardDescription>Card description goes here</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-[var(--color-text-body)]">
+            <p className="text-sm text-secondary">
               This is the card content area with proper spacing and typography.
             </p>
           </CardContent>
@@ -242,7 +242,7 @@ export default function StyleGuide() {
             description="This is an example modal with proper accessibility"
           >
             <ModalBody>
-              <p className="text-[var(--color-text-body)]">
+              <p className="text-secondary">
                 This modal demonstrates proper focus management, keyboard
                 navigation, and accessibility features.
               </p>
@@ -279,14 +279,14 @@ export default function StyleGuide() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FAF9F5]">
+    <div className="min-h-screen bg-bg">
       {/* Header */}
-      <header className="bg-white border-b border-[#E8E6DC] sticky top-0 z-10">
+      <header className="bg-surface border-b border-border sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <h1 className="text-2xl font-semibold text-[#141413]">
+          <h1 className="text-2xl font-semibold text-text-head">
             Design System
           </h1>
-          <p className="text-[#5E5D59] mt-1">
+          <p className="text-text-body mt-1">
             Inspired by Claude.ai's clean and minimal aesthetic
           </p>
         </div>
@@ -304,8 +304,8 @@ export default function StyleGuide() {
                       onClick={() => setActiveSection(item.id)}
                       className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
                         activeSection === item.id
-                          ? "bg-[#141413] text-white"
-                          : "text-[#5E5D59] hover:bg-[#F0EEE6] hover:text-[#141413]"
+                          ? "bg-primary text-white"
+                          : "text-text-body hover:bg-bg-highlight hover:text-text-head"
                       }`}
                     >
                       {item.label}
@@ -321,10 +321,10 @@ export default function StyleGuide() {
             {/* Colors Section */}
             {activeSection === "colors" && (
               <section>
-                <h2 className="text-3xl font-semibold text-[#141413] mb-6">
+                <h2 className="text-3xl font-semibold text-text-head mb-6">
                   Colors
                 </h2>
-                <p className="text-[#5E5D59] mb-8 text-lg">
+                <p className="text-text-body mb-8 text-lg">
                   Our color palette emphasizes trustworthiness and depth while
                   maintaining accessibility. Colors are designed to work
                   harmoniously across light and dark modes.
@@ -334,19 +334,19 @@ export default function StyleGuide() {
                   {colorPalette.map((color) => (
                     <div
                       key={color.name}
-                      className="bg-white rounded-lg p-6 border border-[#E8E6DC]"
+                      className="bg-surface rounded-lg p-6 border border-border"
                     >
                       <div
-                        className="w-full h-20 rounded-lg mb-4 border border-[#E8E6DC]"
+                        className="w-full h-20 rounded-lg mb-4 border border-border"
                         style={{ backgroundColor: color.value }}
                       />
-                      <h3 className="font-semibold text-[#141413] mb-1">
+                      <h3 className="font-semibold text-text-head mb-1">
                         {color.name}
                       </h3>
-                      <p className="text-sm text-[#5E5D59] mb-2 font-mono">
+                      <p className="text-sm text-text-body mb-2 font-mono">
                         {color.value}
                       </p>
-                      <p className="text-sm text-[#5E5D59]">
+                      <p className="text-sm text-text-body">
                         {color.description}
                       </p>
                     </div>
@@ -358,10 +358,10 @@ export default function StyleGuide() {
             {/* Typography Section */}
             {activeSection === "typography" && (
               <section>
-                <h2 className="text-3xl font-semibold text-[#141413] mb-6">
+                <h2 className="text-3xl font-semibold text-text-head mb-6">
                   Typography
                 </h2>
-                <p className="text-[#5E5D59] mb-8 text-lg">
+                <p className="text-text-body mb-8 text-lg">
                   Our typography system uses Sora for headings, Inter for body
                   text, and JetBrains Mono for code, with careful attention to
                   hierarchy and readability. All text maintains excellent
@@ -372,36 +372,36 @@ export default function StyleGuide() {
                   {typographyScale.map((type) => (
                     <div
                       key={type.name}
-                      className="bg-white rounded-lg p-6 border border-[#E8E6DC]"
+                      className="bg-surface rounded-lg p-6 border border-border"
                     >
                       <div className="flex justify-between items-start mb-4">
-                        <h3 className="font-semibold text-[#141413]">
+                        <h3 className="font-semibold text-text-head">
                           {type.name}
                         </h3>
-                        <div className="text-sm text-[#5E5D59] font-mono">
+                        <div className="text-sm text-text-body font-mono">
                           {type.size} / {type.weight} / {type.lineHeight} /{" "}
                           {type.fontFamily}
                         </div>
                       </div>
                       <div
-                        className="text-[#141413] mb-2"
+                        className="text-text-head mb-2"
                         style={{
                           fontSize: type.size,
                           fontWeight: type.weight,
                           lineHeight: type.lineHeight,
                           fontFamily:
                             type.fontFamily === "Sora"
-                              ? "var(--font-sora)"
+                              ? "font-display"
                               : type.fontFamily === "JetBrains Mono"
-                              ? "var(--font-jetbrains-mono)"
-                              : "var(--font-inter)",
+                              ? "font-mono"
+                              : "font-body",
                         }}
                       >
                         {type.fontFamily === "JetBrains Mono"
                           ? "const example = 'Hello World';"
                           : "The quick brown fox jumps over the lazy dog"}
                       </div>
-                      <p className="text-sm text-[#5E5D59]">{type.usage}</p>
+                      <p className="text-sm text-text-body">{type.usage}</p>
                     </div>
                   ))}
                 </div>
@@ -411,10 +411,10 @@ export default function StyleGuide() {
             {/* Components Section */}
             {activeSection === "components" && (
               <section>
-                <h2 className="text-3xl font-semibold text-[#141413] mb-6">
+                <h2 className="text-3xl font-semibold text-text-head mb-6">
                   Components
                 </h2>
-                <p className="text-[#5E5D59] mb-8 text-lg">
+                <p className="text-text-body mb-8 text-lg">
                   Our component library focuses on simplicity and functionality.
                   Each component is designed to feel conversational rather than
                   mechanical, with purposeful interactions.
@@ -424,15 +424,15 @@ export default function StyleGuide() {
                   {components.map((component) => (
                     <div
                       key={component.name}
-                      className="bg-white rounded-lg p-6 border border-[#E8E6DC]"
+                      className="bg-surface rounded-lg p-6 border border-border"
                     >
-                      <h3 className="font-semibold text-[#141413] mb-2">
+                      <h3 className="font-semibold text-text-head mb-2">
                         {component.name}
                       </h3>
-                      <p className="text-[#5E5D59] mb-4 text-sm">
+                      <p className="text-text-body mb-4 text-sm">
                         {component.description}
                       </p>
-                      <div className="flex items-center justify-center p-4 bg-[#F0EEE6] rounded-lg">
+                      <div className="flex items-center justify-center p-4 bg-bg-highlight rounded-lg">
                         {component.element}
                       </div>
                     </div>
@@ -444,10 +444,10 @@ export default function StyleGuide() {
             {/* Layout Section */}
             {activeSection === "layout" && (
               <section>
-                <h2 className="text-3xl font-semibold text-[#141413] mb-6">
+                <h2 className="text-3xl font-semibold text-text-head mb-6">
                   Layout Components
                 </h2>
-                <p className="text-[#5E5D59] mb-8 text-lg">
+                <p className="text-text-body mb-8 text-lg">
                   Layout components provide structure and navigation for your
                   application. They are designed to be flexible and accessible
                   across all devices.
@@ -455,17 +455,17 @@ export default function StyleGuide() {
 
                 <div className="space-y-8">
                   {/* Navbar Example */}
-                  <div className="bg-white rounded-lg p-6 border border-[#E8E6DC]">
-                    <h3 className="font-semibold text-[#141413] mb-4">
+                  <div className="bg-surface rounded-lg p-6 border border-border">
+                    <h3 className="font-semibold text-text-head mb-4">
                       Navbar Component
                     </h3>
-                    <p className="text-[#5E5D59] mb-4 text-sm">
+                    <p className="text-text-body mb-4 text-sm">
                       Responsive navigation component with mobile menu support
                     </p>
-                    <div className="mb-4 p-4 bg-[#F0EEE6] rounded-lg">
+                    <div className="mb-4 p-4 bg-bg-highlight rounded-lg">
                       <Navbar
                         brand={
-                          <span className="text-xl font-bold text-[#141413]">
+                          <span className="text-xl font-bold text-text-head">
                             Brand
                           </span>
                         }
@@ -480,17 +480,17 @@ export default function StyleGuide() {
                   </div>
 
                   {/* Footer Example */}
-                  <div className="bg-white rounded-lg p-6 border border-[#E8E6DC]">
-                    <h3 className="font-semibold text-[#141413] mb-4">
+                  <div className="bg-surface rounded-lg p-6 border border-border">
+                    <h3 className="font-semibold text-text-head mb-4">
                       Footer Component
                     </h3>
-                    <p className="text-[#5E5D59] mb-4 text-sm">
+                    <p className="text-text-body mb-4 text-sm">
                       Flexible footer component with multiple layout options
                     </p>
-                    <div className="mb-4 p-4 bg-[#F0EEE6] rounded-lg">
+                    <div className="mb-4 p-4 bg-bg-highlight rounded-lg">
                       <Footer
                         brand={
-                          <span className="text-lg font-bold text-[#141413]">
+                          <span className="text-lg font-bold text-text-head">
                             Your Company
                           </span>
                         }
@@ -522,18 +522,18 @@ export default function StyleGuide() {
             {/* Spacing Section */}
             {activeSection === "spacing" && (
               <section>
-                <h2 className="text-3xl font-semibold text-[#141413] mb-6">
+                <h2 className="text-3xl font-semibold text-text-head mb-6">
                   Spacing & Layout
                 </h2>
-                <p className="text-[#5E5D59] mb-8 text-lg">
+                <p className="text-text-body mb-8 text-lg">
                   Consistent spacing creates visual rhythm and hierarchy. We use
                   an 8px base unit system with a 12-column grid for optimal
                   alignment across all screen sizes.
                 </p>
 
                 <div className="space-y-6">
-                  <div className="bg-white rounded-lg p-6 border border-[#E8E6DC]">
-                    <h3 className="font-semibold text-[#141413] mb-4">
+                  <div className="bg-surface rounded-lg p-6 border border-border">
+                    <h3 className="font-semibold text-text-head mb-4">
                       Spacing Scale
                     </h3>
                     <div className="space-y-4">
@@ -542,23 +542,23 @@ export default function StyleGuide() {
                           key={space.name}
                           className="flex items-center gap-4"
                         >
-                          <div className="w-16 text-sm font-mono text-[#5E5D59]">
+                          <div className="w-16 text-sm font-mono text-text-body">
                             {space.name}
                           </div>
-                          <div className="w-20 text-sm font-mono text-[#5E5D59]">
+                          <div className="w-20 text-sm font-mono text-text-body">
                             {space.value}
                           </div>
-                          <div className="w-12 text-sm text-[#5E5D59]">
+                          <div className="w-12 text-sm text-text-body">
                             {space.pixels}
                           </div>
                           <div
-                            className="bg-[#141413] rounded"
+                            className="bg-primary rounded"
                             style={{
                               width: space.value,
                               height: "1rem",
                             }}
                           />
-                          <div className="text-sm text-[#5E5D59]">
+                          <div className="text-sm text-text-body">
                             {space.usage}
                           </div>
                         </div>
@@ -566,53 +566,53 @@ export default function StyleGuide() {
                     </div>
                   </div>
 
-                  <div className="bg-white rounded-lg p-6 border border-[#E8E6DC]">
-                    <h3 className="font-semibold text-[#141413] mb-4">
+                  <div className="bg-surface rounded-lg p-6 border border-border">
+                    <h3 className="font-semibold text-text-head mb-4">
                       Grid System
                     </h3>
                     <div className="grid grid-cols-12 gap-4">
                       {Array.from({ length: 12 }).map((_, i) => (
                         <div
                           key={i}
-                          className="h-8 bg-[#E8E6DC] rounded flex items-center justify-center text-xs text-[#5E5D59]"
+                          className="h-8 bg-border rounded flex items-center justify-center text-xs text-text-body"
                         >
                           {i + 1}
                         </div>
                       ))}
                     </div>
-                    <p className="text-sm text-[#5E5D59] mt-4">
+                    <p className="text-sm text-text-body mt-4">
                       12-column grid with 16px gutters for consistent alignment
                     </p>
                   </div>
 
-                  <div className="bg-white rounded-lg p-6 border border-[#E8E6DC]">
-                    <h3 className="font-semibold text-[#141413] mb-4">
+                  <div className="bg-surface rounded-lg p-6 border border-border">
+                    <h3 className="font-semibold text-text-head mb-4">
                       Breakpoints
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div className="text-center p-4 bg-[#F0EEE6] rounded-lg">
-                        <div className="font-semibold text-[#141413]">
+                      <div className="text-center p-4 bg-bg-highlight rounded-lg">
+                        <div className="font-semibold text-text-head">
                           Mobile
                         </div>
-                        <div className="text-sm text-[#5E5D59]">480px</div>
+                        <div className="text-sm text-text-body">480px</div>
                       </div>
-                      <div className="text-center p-4 bg-[#F0EEE6] rounded-lg">
-                        <div className="font-semibold text-[#141413]">
+                      <div className="text-center p-4 bg-bg-highlight rounded-lg">
+                        <div className="font-semibold text-text-head">
                           Tablet
                         </div>
-                        <div className="text-sm text-[#5E5D59]">768px</div>
+                        <div className="text-sm text-text-body">768px</div>
                       </div>
-                      <div className="text-center p-4 bg-[#F0EEE6] rounded-lg">
-                        <div className="font-semibold text-[#141413]">
+                      <div className="text-center p-4 bg-bg-highlight rounded-lg">
+                        <div className="font-semibold text-text-head">
                           Desktop
                         </div>
-                        <div className="text-sm text-[#5E5D59]">1024px</div>
+                        <div className="text-sm text-text-body">1024px</div>
                       </div>
-                      <div className="text-center p-4 bg-[#F0EEE6] rounded-lg">
-                        <div className="font-semibold text-[#141413]">
+                      <div className="text-center p-4 bg-bg-highlight rounded-lg">
+                        <div className="font-semibold text-text-head">
                           Large
                         </div>
-                        <div className="text-sm text-[#5E5D59]">1280px</div>
+                        <div className="text-sm text-text-body">1280px</div>
                       </div>
                     </div>
                   </div>

@@ -90,7 +90,7 @@ const Modal: React.FC<ModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
       onClick={handleOverlayClick}
     >
       {/* Backdrop */}
@@ -100,7 +100,7 @@ const Modal: React.FC<ModalProps> = ({
       <div
         ref={modalRef}
         className={cn(
-          "relative w-full rounded-[var(--radius-xl)] bg-[var(--color-surface)] shadow-[var(--shadow-2xl)]",
+          "relative w-full rounded-xl bg-surface shadow-2xl",
           sizes[size],
           "max-h-[90vh] overflow-hidden"
         )}
@@ -112,12 +112,12 @@ const Modal: React.FC<ModalProps> = ({
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between p-6 border-b border-[var(--color-border)]">
+          <div className="flex items-center justify-between p-6 border-b border-border">
             <div>
               {title && (
                 <h2
                   id="modal-title"
-                  className="text-lg font-semibold text-[var(--color-text-head)]"
+                  className="text-lg font-semibold text-text-head"
                 >
                   {title}
                 </h2>
@@ -125,7 +125,7 @@ const Modal: React.FC<ModalProps> = ({
               {description && (
                 <p
                   id="modal-description"
-                  className="mt-1 text-sm text-[var(--color-text-body)]"
+                  className="mt-1 text-sm text-text-body"
                 >
                   {description}
                 </p>
@@ -134,7 +134,7 @@ const Modal: React.FC<ModalProps> = ({
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="rounded-[var(--radius-md)] p-2 text-[var(--color-text-body)] hover:bg-[var(--color-bg-highlight)] hover:text-[var(--color-text-head)] transition-colors"
+                className="rounded-md p-2 text-text-body hover:bg-bg-highlight hover:text-text-head transition-colors"
                 aria-label="Close modal"
               >
                 <svg
@@ -171,7 +171,7 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({ className, ...props }) => {
   return (
     <div
       className={cn(
-        "flex items-center justify-between p-6 border-b border-[var(--color-border)]",
+        "flex items-center justify-between p-6 border-b border-border",
         className
       )}
       {...props}
@@ -192,7 +192,7 @@ const ModalFooter: React.FC<ModalFooterProps> = ({ className, ...props }) => {
   return (
     <div
       className={cn(
-        "flex items-center justify-end gap-3 p-6 border-t border-[var(--color-border)]",
+        "flex items-center justify-end gap-3 p-6 border-t border-border",
         className
       )}
       {...props}

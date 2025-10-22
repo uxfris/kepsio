@@ -77,11 +77,11 @@ export default function SystemDemo() {
   ];
 
   return (
-    <div className="min-h-screen bg-color-bg">
+    <div className="min-h-screen bg-bg">
       {/* Navigation */}
       <Navbar
         brand={
-          <span className="text-xl font-bold text-text-head">
+          <span className="text-xl font-bold text-primary">
             Design System Demo
           </span>
         }
@@ -96,10 +96,10 @@ export default function SystemDemo() {
       {/* Hero Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl font-display text-text-head mb-6">
+          <h1 className="text-4xl font-display text-primary mb-6">
             Design System Live Demo
           </h1>
-          <p className="text-lg text-text-body max-w-3xl mx-auto mb-8">
+          <p className="text-lg text-secondary max-w-3xl mx-auto mb-8">
             This page demonstrates the live implementation of our design system.
             Explore real-world examples of our components in action, showcasing
             consistency, accessibility, and the clean aesthetic inspired by
@@ -122,10 +122,10 @@ export default function SystemDemo() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-3xl font-bold text-text-head mb-2">
+                <div className="text-3xl font-bold text-primary mb-2">
                   {stat.value}
                 </div>
-                <div className="text-sm text-text-body">{stat.label}</div>
+                <div className="text-sm text-secondary">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -136,10 +136,10 @@ export default function SystemDemo() {
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-display text-text-head mb-4">
+            <h2 className="text-3xl font-display text-primary mb-4">
               System Features
             </h2>
-            <p className="text-lg text-text-body">
+            <p className="text-lg text-secondary">
               Built with modern web standards and best practices
             </p>
           </div>

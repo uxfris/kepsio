@@ -28,5 +28,5 @@ body {
   background: var(--color-bg);
   color: var(--color-text-head);
   font-family: var(--font-inter);
-  line-height: var(--leading-relaxed);
+  line-height: 1.5;
 }

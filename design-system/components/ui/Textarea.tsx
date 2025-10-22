@@ -30,15 +30,14 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     const hasSuccess = success && !hasError;
 
     const baseStyles =
-      "flex min-h-[80px] w-full rounded-[var(--radius-lg)] border bg-[var(--color-surface)] px-3 py-2 text-sm transition-colors placeholder:text-[var(--color-hint)] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50";
+      "flex min-h-[80px] w-full rounded-lg border bg-surface px-3 py-2 text-sm transition-colors placeholder:text-hint focus:outline-none disabled:cursor-not-allowed disabled:opacity-50";
 
     const stateStyles = {
       default:
-        "border-[var(--color-border)] focus:border-[var(--color-border-focus)] focus:ring-1 focus:ring-[var(--color-border-focus)]",
-      error:
-        "border-[var(--color-error)] focus:border-[var(--color-error)] focus:ring-1 focus:ring-[var(--color-error)]",
+        "border-border focus:border-border-focus focus:ring-1 focus:ring-border-focus",
+      error: "border-error focus:border-error focus:ring-1 focus:ring-error",
       success:
-        "border-[var(--color-success)] focus:border-[var(--color-success)] focus:ring-1 focus:ring-[var(--color-success)]",
+        "border-success focus:border-success focus:ring-1 focus:ring-success",
     };
 
     const resizeStyles = {
@@ -59,7 +58,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         {label && (
           <label
             htmlFor={textareaId}
-            className="block text-sm font-medium text-[var(--color-text-head)] mb-2"
+            className="block text-sm font-medium text-text-head mb-2"
           >
             {label}
           </label>
@@ -81,9 +80,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           <p
             className={cn(
               "mt-2 text-sm",
-              hasError
-                ? "text-[var(--color-error)]"
-                : "text-[var(--color-hint)]"
+              hasError ? "text-error" : "text-hint"
             )}
           >
             {error || helperText}

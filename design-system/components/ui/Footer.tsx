@@ -33,8 +33,7 @@ const Footer = React.forwardRef<HTMLElement, FooterProps>(
     },
     ref
   ) => {
-    const baseStyles =
-      "bg-[var(--color-surface)] border-t border-[var(--color-border)]";
+    const baseStyles = "bg-surface border-t border-border";
 
     const variants = {
       default: "py-12",
@@ -54,16 +53,14 @@ const Footer = React.forwardRef<HTMLElement, FooterProps>(
             <div className="md:col-span-2">
               <div className="mb-4">{brand}</div>
               {description && (
-                <p className="text-[var(--color-text-body)] text-sm max-w-md">
-                  {description}
-                </p>
+                <p className="text-text-body text-sm max-w-md">{description}</p>
               )}
             </div>
 
             {/* Links Section */}
             {links.length > 0 && (
               <div>
-                <h3 className="text-sm font-semibold text-[var(--color-text-head)] mb-4">
+                <h3 className="text-sm font-semibold text-text-head mb-4">
                   Links
                 </h3>
                 <ul className="space-y-3">
@@ -71,7 +68,7 @@ const Footer = React.forwardRef<HTMLElement, FooterProps>(
                     <li key={index}>
                       <a
                         href={link.href}
-                        className="text-sm text-[var(--color-text-body)] hover:text-[var(--color-text-head)] transition-colors"
+                        className="text-sm text-text-body hover:text-text-head transition-colors"
                       >
                         {link.label}
                       </a>
@@ -84,7 +81,7 @@ const Footer = React.forwardRef<HTMLElement, FooterProps>(
             {/* Social Links Section */}
             {socialLinks.length > 0 && (
               <div>
-                <h3 className="text-sm font-semibold text-[var(--color-text-head)] mb-4">
+                <h3 className="text-sm font-semibold text-text-head mb-4">
                   Follow us
                 </h3>
                 <div className="flex space-x-4">
@@ -92,7 +89,7 @@ const Footer = React.forwardRef<HTMLElement, FooterProps>(
                     <a
                       key={index}
                       href={social.href}
-                      className="text-[var(--color-text-body)] hover:text-[var(--color-text-head)] transition-colors"
+                      className="text-text-body hover:text-text-head transition-colors"
                       aria-label={social.label}
                     >
                       {social.icon}
@@ -104,13 +101,13 @@ const Footer = React.forwardRef<HTMLElement, FooterProps>(
           </div>
 
           {/* Bottom Section */}
-          <div className="mt-8 pt-8 border-t border-[var(--color-divider)]">
+          <div className="mt-8 pt-8 border-t border-divider">
             <div className="flex flex-col md:flex-row justify-between items-center">
-              <p className="text-sm text-[var(--color-hint)]">
+              <p className="text-sm text-hint">
                 © {new Date().getFullYear()} Your Company. All rights reserved.
               </p>
               <div className="mt-4 md:mt-0">
-                <p className="text-sm text-[var(--color-hint)]">
+                <p className="text-sm text-hint">
                   Built with our design system
                 </p>
               </div>

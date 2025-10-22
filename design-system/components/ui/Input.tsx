@@ -32,15 +32,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const hasSuccess = success && !hasError;
 
     const baseStyles =
-      "flex h-10 w-full rounded-[var(--radius-lg)] border bg-[var(--color-surface)] px-3 py-2 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[var(--color-hint)] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50";
+      "flex h-10 w-full rounded-lg border bg-surface px-3 py-2 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-hint focus:outline-none disabled:cursor-not-allowed disabled:opacity-50";
 
     const stateStyles = {
       default:
-        "border-[var(--color-border)] focus:border-[var(--color-border-focus)] focus:ring-1 focus:ring-[var(--color-border-focus)]",
-      error:
-        "border-[var(--color-error)] focus:border-[var(--color-error)] focus:ring-1 focus:ring-[var(--color-error)]",
+        "border-border focus:border-border-focus focus:ring-1 focus:ring-border-focus",
+      error: "border-error focus:border-error focus:ring-1 focus:ring-error",
       success:
-        "border-[var(--color-success)] focus:border-[var(--color-success)] focus:ring-1 focus:ring-[var(--color-success)]",
+        "border-success focus:border-success focus:ring-1 focus:ring-success",
     };
 
     const getStateStyle = () => {
@@ -54,7 +53,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-[var(--color-text-head)] mb-2"
+            className="block text-sm font-medium text-text-head mb-2"
           >
             {label}
           </label>
@@ -62,7 +61,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
         <div className="relative">
           {leftIcon && (
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--color-hint)]">
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-hint">
               {leftIcon}
             </div>
           )}
@@ -82,7 +81,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           />
 
           {rightIcon && (
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[var(--color-hint)]">
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-hint">
               {rightIcon}
             </div>
           )}
@@ -92,9 +91,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <p
             className={cn(
               "mt-2 text-sm",
-              hasError
-                ? "text-[var(--color-error)]"
-                : "text-[var(--color-hint)]"
+              hasError ? "text-error" : "text-hint"
             )}
           >
             {error || helperText}
