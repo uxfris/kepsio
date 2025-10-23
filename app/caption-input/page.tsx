@@ -193,114 +193,113 @@ export default function CaptionInputPage() {
                 className="min-h-[120px] text-sm border-none"
                 maxLength={500}
               />
-              {/* Plus Button */}
-              <button
-                ref={plusButtonRef}
-                onClick={() => setShowContextMenu(!showContextMenu)}
-                className={`m-2 p-2 rounded-lg transition-all duration-200 border border-border group ${"bg-surface hover:bg-section-light text-text-body"}`}
-                title="Add context"
-              >
-                <Plus
-                  className={`w-4 h-4 transition-transform duration-200 ${
-                    showContextMenu ? "rotate-45" : "rotate-0"
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Floating Context Menu */}
-            {showContextMenu && (
-              <div
-                ref={contextMenuRef}
-                className="absolute z-9999 mb-3 w-72 bg-white border border-gray-200 rounded-xl shadow-xl py-3"
-                style={{
-                  top: "6%",
-                  left: "20px",
-                }}
-              >
-                {contextOptions.map((option) => {
-                  const IconComponent = option.icon;
-                  const isSelected = selectedContextItems.includes(option.id);
-
-                  return (
-                    <button
-                      key={option.id}
-                      onClick={() => handleContextItemToggle(option.id)}
-                      className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors first:rounded-t-xl last:rounded-b-xl ${
-                        isSelected
-                          ? "bg-blue-50 text-blue-700"
-                          : "text-gray-700 hover:bg-gray-50"
-                      }`}
-                    >
-                      <div
-                        className={`p-2 rounded-lg ${
-                          isSelected ? "bg-blue-100" : "bg-gray-100"
-                        }`}
-                      >
-                        <IconComponent
-                          className={`w-4 h-4 ${
-                            isSelected ? "text-blue-600" : "text-gray-600"
-                          }`}
-                        />
-                      </div>
-                      <span className="flex-1 text-left font-medium">
-                        {option.label}
-                      </span>
-                      {isSelected && (
-                        <div className="p-1 bg-blue-100 rounded-full">
-                          <Check className="w-3 h-3 text-blue-600" />
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
+              <div className="flex items-end justify-between mt-2">
+                {/* Plus Button */}
+                <button
+                  ref={plusButtonRef}
+                  onClick={() => setShowContextMenu(!showContextMenu)}
+                  className={`m-2 p-2 rounded-lg transition-all duration-200 border border-border group ${"bg-surface hover:bg-section-light text-text-body"}`}
+                  title="Add context"
+                >
+                  <Plus
+                    className={`w-4 h-4 transition-transform duration-200 ${
+                      showContextMenu ? "rotate-45" : "rotate-0"
+                    }`}
+                  />
+                </button>
+                <div className="flex items-center justify-between mr-2 mb-2">
+                  <span className="text-xs text-hint">
+                    {contentInput.length}/500
+                  </span>
+                  {contentInput.length > 400 && (
+                    <span className="text-xs text-warning">
+                      Getting close to limit
+                    </span>
+                  )}
+                </div>
               </div>
-            )}
-
-            {/* Selected Context Items */}
-            {selectedContextItems.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-4">
-                {selectedContextItems.map((itemId) => {
-                  const option = contextOptions.find(
-                    (opt) => opt.id === itemId
-                  );
-                  if (!option) return null;
-                  const IconComponent = option.icon;
-
-                  return (
-                    <div
-                      key={itemId}
-                      className="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm"
-                    >
-                      <div className="p-1 bg-blue-100 rounded">
-                        <IconComponent className="w-3 h-3 text-blue-600" />
-                      </div>
-                      <span className="text-blue-700 font-medium">
-                        {option.label}
-                      </span>
-                      <button
-                        onClick={() => handleRemoveContextItem(itemId)}
-                        className="p-1 hover:bg-blue-100 rounded transition-colors"
-                      >
-                        <X className="w-3 h-3 text-blue-500" />
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            <div className="flex items-center justify-between mt-2">
-              <span className="text-xs text-hint">
-                {contentInput.length}/500
-              </span>
-              {contentInput.length > 400 && (
-                <span className="text-xs text-warning">
-                  Getting close to limit
-                </span>
-              )}
             </div>
           </div>
+
+          {/* Floating Context Menu */}
+          {showContextMenu && (
+            <div
+              ref={contextMenuRef}
+              className="absolute z-9999 mb-3 w-72 bg-white border border-gray-200 rounded-xl shadow-xl py-3"
+              style={{
+                top: "6%",
+                left: "20px",
+              }}
+            >
+              {contextOptions.map((option) => {
+                const IconComponent = option.icon;
+                const isSelected = selectedContextItems.includes(option.id);
+
+                return (
+                  <button
+                    key={option.id}
+                    onClick={() => handleContextItemToggle(option.id)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors first:rounded-t-xl last:rounded-b-xl ${
+                      isSelected
+                        ? "bg-blue-50 text-blue-700"
+                        : "text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    <div
+                      className={`p-2 rounded-lg ${
+                        isSelected ? "bg-blue-100" : "bg-gray-100"
+                      }`}
+                    >
+                      <IconComponent
+                        className={`w-4 h-4 ${
+                          isSelected ? "text-blue-600" : "text-gray-600"
+                        }`}
+                      />
+                    </div>
+                    <span className="flex-1 text-left font-medium">
+                      {option.label}
+                    </span>
+                    {isSelected && (
+                      <div className="p-1 bg-blue-100 rounded-full">
+                        <Check className="w-3 h-3 text-blue-600" />
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Selected Context Items */}
+          {selectedContextItems.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-4">
+              {selectedContextItems.map((itemId) => {
+                const option = contextOptions.find((opt) => opt.id === itemId);
+                if (!option) return null;
+                const IconComponent = option.icon;
+
+                return (
+                  <div
+                    key={itemId}
+                    className="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm"
+                  >
+                    <div className="p-1 bg-blue-100 rounded">
+                      <IconComponent className="w-3 h-3 text-blue-600" />
+                    </div>
+                    <span className="text-blue-700 font-medium">
+                      {option.label}
+                    </span>
+                    <button
+                      onClick={() => handleRemoveContextItem(itemId)}
+                      className="p-1 hover:bg-blue-100 rounded transition-colors"
+                    >
+                      <X className="w-3 h-3 text-blue-500" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           {/* Advanced Options Accordion */}
           <div>
