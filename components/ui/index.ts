@@ -37,3 +37,9 @@ export type {
   ModalBodyProps,
   ModalFooterProps,
 } from "./Modal";
+
+export { SegmentedControl } from "./SegmentedControl";
+export type {
+  SegmentedControlProps,
+  SegmentedControlOption,
+} from "./SegmentedControl";

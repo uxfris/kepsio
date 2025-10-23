@@ -16,6 +16,7 @@ import {
 import { Button } from "../../components/ui/Button";
 import { Textarea } from "../../components/ui/Textarea";
 import { Input } from "../../components/ui/Input";
+import { SegmentedControl } from "../../components/ui/SegmentedControl";
 import {
   Card,
   CardContent,
@@ -241,21 +242,16 @@ export default function CaptionInputPage() {
                       <label className="block text-xs font-medium text-primary mb-3">
                         Caption Length
                       </label>
-                      <div className="flex gap-2">
-                        {["short", "medium", "long"].map((length) => (
-                          <Button
-                            key={length}
-                            variant={
-                              captionLength === length ? "primary" : "outline"
-                            }
-                            size="sm"
-                            onClick={() => setCaptionLength(length)}
-                            className="flex-1 text-sm"
-                          >
-                            {length.charAt(0).toUpperCase() + length.slice(1)}
-                          </Button>
-                        ))}
-                      </div>
+                      <SegmentedControl
+                        options={[
+                          { value: "short", label: "Short" },
+                          { value: "medium", label: "Medium" },
+                          { value: "long", label: "Long" },
+                        ]}
+                        value={captionLength}
+                        onChange={setCaptionLength}
+                        className="w-full"
+                      />
                     </div>
 
                     {/* Emoji Style */}
@@ -263,27 +259,16 @@ export default function CaptionInputPage() {
                       <label className="block text-xs font-medium text-primary mb-3">
                         Emoji Style
                       </label>
-                      <div className="flex gap-2">
-                        {[
+                      <SegmentedControl
+                        options={[
                           { value: "none", label: "None" },
                           { value: "minimal", label: "Minimal" },
                           { value: "generous", label: "Generous" },
-                        ].map((option) => (
-                          <Button
-                            key={option.value}
-                            variant={
-                              emojiStyle === option.value
-                                ? "primary"
-                                : "outline"
-                            }
-                            size="sm"
-                            onClick={() => setEmojiStyle(option.value)}
-                            className="flex-1 text-sm"
-                          >
-                            {option.label}
-                          </Button>
-                        ))}
-                      </div>
+                        ]}
+                        value={emojiStyle}
+                        onChange={setEmojiStyle}
+                        className="w-full"
+                      />
                     </div>
                   </div>
                 </div>

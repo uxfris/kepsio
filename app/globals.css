@@ -157,6 +157,10 @@
     margin-bottom: 1rem;
   }
 
+  button {
+    cursor: pointer;
+  }
+
   /* Paragraph Variants */
   .text-lead {
     font-size: 1.25rem;
