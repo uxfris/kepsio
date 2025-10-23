@@ -189,8 +189,8 @@ export default function CaptionInputPage() {
                     ? "Tell us what your content is about first"
                     : undefined
                 }
-                resize="none"
-                className="min-h-[120px] text-sm border-none"
+                autoExpand={true}
+                className="text-sm border-none"
                 maxLength={500}
               />
               <div className="flex items-end justify-between mt-2">
