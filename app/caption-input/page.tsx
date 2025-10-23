@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Sparkles,
   Image,
@@ -12,6 +12,8 @@ import {
   Zap,
   Copy,
   Check,
+  Plus,
+  X,
 } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { Textarea } from "../../components/ui/Textarea";
@@ -35,6 +37,53 @@ export default function CaptionInputPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedCaptions, setGeneratedCaptions] = useState<string[]>([]);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+
+  // Context menu state
+  const [showContextMenu, setShowContextMenu] = useState(false);
+  const [selectedContextItems, setSelectedContextItems] = useState<string[]>(
+    []
+  );
+  const contextMenuRef = useRef<HTMLDivElement>(null);
+  const plusButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Context menu options
+  const contextOptions = [
+    { id: "product-link", label: "Add product link", icon: Link2 },
+    { id: "upload-image", label: "Upload image", icon: Image },
+    { id: "previous-post", label: "Use previous post", icon: Clock },
+  ];
+
+  // Close context menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        contextMenuRef.current &&
+        !contextMenuRef.current.contains(event.target as Node) &&
+        plusButtonRef.current &&
+        !plusButtonRef.current.contains(event.target as Node)
+      ) {
+        setShowContextMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleContextItemToggle = (itemId: string) => {
+    setSelectedContextItems((prev) =>
+      prev.includes(itemId)
+        ? prev.filter((id) => id !== itemId)
+        : [...prev, itemId]
+    );
+    setShowContextMenu(false);
+  };
+
+  const handleRemoveContextItem = (itemId: string) => {
+    setSelectedContextItems((prev) => prev.filter((id) => id !== itemId));
+  };
 
   const handleGenerate = async () => {
     if (contentInput.trim() === "") {
@@ -97,7 +146,7 @@ export default function CaptionInputPage() {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Panel - Input Section */}
-      <div className="w-full lg:w-[480px] bg-surface border-r border-border flex flex-col">
+      <div className="w-full lg:w-[500px] bg-surface border-r border-border flex flex-col">
         {/* Header */}
         <Card
           variant="outlined"
@@ -123,22 +172,129 @@ export default function CaptionInputPage() {
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
-          {/* Primary Input */}
+          {/* Primary Input with Context */}
           <div>
-            <Textarea
-              label="What's your content about?"
-              value={contentInput}
-              onChange={handleInputChange}
-              placeholder="Launching a new product... Sharing a client win... Behind-the-scenes of my process..."
-              error={
-                showError
-                  ? "Tell us what your content is about first"
-                  : undefined
-              }
-              resize="none"
-              className="min-h-[120px] text-base"
-              maxLength={500}
-            />
+            <label className="block text-sm font-medium text-primary mb-2">
+              What's your content about?
+            </label>
+
+            {/* Input Container */}
+            <div className="relative">
+              <Textarea
+                value={contentInput}
+                onChange={handleInputChange}
+                placeholder="Launching a new product... Sharing a client win... Behind-the-scenes of my process..."
+                error={
+                  showError
+                    ? "Tell us what your content is about first"
+                    : undefined
+                }
+                resize="none"
+                className="min-h-[120px] text-base pl-12"
+                maxLength={500}
+              />
+
+              {/* Plus Button */}
+              <button
+                ref={plusButtonRef}
+                onClick={() => setShowContextMenu(!showContextMenu)}
+                className={`absolute bottom-3 left-3 p-2 rounded-lg transition-all duration-200 group ${
+                  showContextMenu
+                    ? "bg-blue-100 text-blue-600"
+                    : "bg-gray-100 hover:bg-gray-200 text-gray-600"
+                }`}
+                title="Add context"
+              >
+                <Plus
+                  className={`w-4 h-4 transition-transform duration-200 ${
+                    showContextMenu ? "rotate-45" : "rotate-0"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Floating Context Menu */}
+            {showContextMenu && (
+              <div
+                ref={contextMenuRef}
+                className="absolute z-9999 mb-3 w-72 bg-white border border-gray-200 rounded-xl shadow-xl py-3"
+                style={{
+                  top: 0,
+                  left: "32px",
+                }}
+              >
+                {contextOptions.map((option) => {
+                  const IconComponent = option.icon;
+                  const isSelected = selectedContextItems.includes(option.id);
+
+                  return (
+                    <button
+                      key={option.id}
+                      onClick={() => handleContextItemToggle(option.id)}
+                      className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors first:rounded-t-xl last:rounded-b-xl ${
+                        isSelected
+                          ? "bg-blue-50 text-blue-700"
+                          : "text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      <div
+                        className={`p-2 rounded-lg ${
+                          isSelected ? "bg-blue-100" : "bg-gray-100"
+                        }`}
+                      >
+                        <IconComponent
+                          className={`w-4 h-4 ${
+                            isSelected ? "text-blue-600" : "text-gray-600"
+                          }`}
+                        />
+                      </div>
+                      <span className="flex-1 text-left font-medium">
+                        {option.label}
+                      </span>
+                      {isSelected && (
+                        <div className="p-1 bg-blue-100 rounded-full">
+                          <Check className="w-3 h-3 text-blue-600" />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Selected Context Items */}
+            {selectedContextItems.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-4">
+                {selectedContextItems.map((itemId) => {
+                  const option = contextOptions.find(
+                    (opt) => opt.id === itemId
+                  );
+                  if (!option) return null;
+                  const IconComponent = option.icon;
+
+                  return (
+                    <div
+                      key={itemId}
+                      className="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm"
+                    >
+                      <div className="p-1 bg-blue-100 rounded">
+                        <IconComponent className="w-3 h-3 text-blue-600" />
+                      </div>
+                      <span className="text-blue-700 font-medium">
+                        {option.label}
+                      </span>
+                      <button
+                        onClick={() => handleRemoveContextItem(itemId)}
+                        className="p-1 hover:bg-blue-100 rounded transition-colors"
+                      >
+                        <X className="w-3 h-3 text-blue-500" />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
             <div className="flex items-center justify-between mt-2">
               <span className="text-xs text-hint">
                 {contentInput.length}/500
@@ -149,34 +305,6 @@ export default function CaptionInputPage() {
                 </span>
               )}
             </div>
-          </div>
-
-          {/* Quick Context Chips */}
-          <div className="flex flex-wrap gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              leftIcon={<Link2 className="w-4 h-4" />}
-              className="text-sm bg-border text-text-body shadow-border-text"
-            >
-              Add product link
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              leftIcon={<Image className="w-4 h-4" />}
-              className="text-sm bg-border text-text-body shadow-border-text"
-            >
-              Upload image
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              leftIcon={<Clock className="w-4 h-4" />}
-              className="text-sm bg-border text-text-body shadow-border-text"
-            >
-              Use previous post
-            </Button>
           </div>
 
           {/* Advanced Options Accordion */}
