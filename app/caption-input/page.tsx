@@ -20,6 +20,13 @@ import { Textarea } from "../../components/ui/Textarea";
 import { Input } from "../../components/ui/Input";
 import { SegmentedControl } from "../../components/ui/SegmentedControl";
 import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "../../components/ui/Select";
+import {
   Card,
   CardContent,
   CardHeader,
@@ -338,20 +345,20 @@ export default function CaptionInputPage() {
                     <label className="block text-xs font-medium text-primary mb-2">
                       Call-to-Action
                     </label>
-                    <div className="relative">
-                      <select
-                        value={ctaType}
-                        onChange={(e) => setCtaType(e.target.value)}
-                        className="w-full px-3 pr-8 py-4 border border-border rounded-xl text-sm bg-surface appearance-none text-text-head font-medium"
-                      >
-                        <option value="link-in-bio">Link in bio</option>
-                        <option value="shop-now">Shop now</option>
-                        <option value="dm-me">DM me</option>
-                        <option value="comment-below">Comment below</option>
-                        <option value="custom">Custom</option>
-                      </select>
-                      <ChevronDown className="w-4 h-4 text-secondary absolute right-3 top-1/2 transform -translate-y-1/2" />
-                    </div>
+                    <Select value={ctaType} onValueChange={setCtaType}>
+                      <SelectTrigger className="w-full border border-border rounded-xl bg-surface text-sm">
+                        <SelectValue placeholder="Choose a CTA" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="link-in-bio">Link in bio</SelectItem>
+                        <SelectItem value="shop-now">Shop now</SelectItem>
+                        <SelectItem value="dm-me">DM me</SelectItem>
+                        <SelectItem value="comment-below">
+                          Comment below
+                        </SelectItem>
+                        <SelectItem value="custom">Custom</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   {/* Hashtag Preference */}

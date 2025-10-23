@@ -43,3 +43,24 @@ export type {
   SegmentedControlProps,
   SegmentedControlOption,
 } from "./SegmentedControl";
+
+export {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+  SelectGroup,
+  SelectLabel,
+  SelectSeparator,
+} from "./Select";
+export type {
+  SelectProps,
+  SelectTriggerProps,
+  SelectValueProps,
+  SelectContentProps,
+  SelectItemProps,
+  SelectGroupProps,
+  SelectLabelProps,
+  SelectSeparatorProps,
+} from "./Select";
