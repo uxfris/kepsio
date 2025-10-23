@@ -7,10 +7,10 @@ interface SelectedContextItemsProps {
   onRemoveItem: (itemId: string) => void;
 }
 
-export const SelectedContextItems: React.FC<SelectedContextItemsProps> = ({
+export const SelectedContextItems = ({
   selectedContextItems,
   onRemoveItem,
-}) => {
+}: SelectedContextItemsProps) => {
   if (selectedContextItems.length === 0) return null;
 
   return (

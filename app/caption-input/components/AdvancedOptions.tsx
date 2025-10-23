@@ -23,12 +23,12 @@ interface AdvancedOptionsProps {
   onOptionsUpdate: (updates: Partial<CaptionGenerationOptions>) => void;
 }
 
-export const AdvancedOptions: React.FC<AdvancedOptionsProps> = ({
+export const AdvancedOptions = ({
   isOpen,
   options,
   onToggle,
   onOptionsUpdate,
-}) => {
+}: AdvancedOptionsProps) => {
   return (
     <Card
       variant="outlined"

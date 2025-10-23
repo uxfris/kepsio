@@ -19,13 +19,13 @@ interface ContextInputsProps {
   onRemoveImage: () => void;
 }
 
-export const ContextInputs: React.FC<ContextInputsProps> = ({
+export const ContextInputs = ({
   selectedContextItems,
   contextData,
   onContextDataUpdate,
   onImageUpload,
   onRemoveImage,
-}) => {
+}: ContextInputsProps) => {
   return (
     <>
       {/* Product Link Input */}

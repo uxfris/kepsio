@@ -1,7 +1,7 @@
 import React from "react";
 import { Sparkles } from "lucide-react";
 
-export const EmptyState: React.FC = () => {
+export const EmptyState = () => {
   return (
     <div className="flex-1 flex items-center justify-center p-12 bg-section">
       <div className="text-center">

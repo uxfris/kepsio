@@ -9,12 +9,12 @@ interface ContextMenuProps {
   menuRef: React.RefObject<HTMLDivElement | null>;
 }
 
-export const ContextMenu: React.FC<ContextMenuProps> = ({
+export const ContextMenu = ({
   isOpen,
   selectedItems,
   onItemToggle,
   menuRef,
-}) => {
+}: ContextMenuProps) => {
   if (!isOpen) return null;
 
   return (

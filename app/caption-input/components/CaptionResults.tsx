@@ -10,12 +10,12 @@ interface CaptionResultsProps {
   onGenerateNew: () => void;
 }
 
-export const CaptionResults: React.FC<CaptionResultsProps> = ({
+export const CaptionResults = ({
   captions,
   copiedIndex,
   onCopyCaption,
   onGenerateNew,
-}) => {
+}: CaptionResultsProps) => {
   return (
     <div className="flex-1 p-6 bg-section">
       <div className="max-w-4xl mx-auto">

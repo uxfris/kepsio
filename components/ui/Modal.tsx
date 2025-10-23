@@ -15,7 +15,7 @@ export interface ModalProps {
   showCloseButton?: boolean;
 }
 
-const Modal: React.FC<ModalProps> = ({
+const Modal = ({
   isOpen,
   onClose,
   title,
@@ -25,7 +25,7 @@ const Modal: React.FC<ModalProps> = ({
   closeOnOverlayClick = true,
   closeOnEscape = true,
   showCloseButton = true,
-}) => {
+}: ModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
 
@@ -164,7 +164,7 @@ const Modal: React.FC<ModalProps> = ({
 export interface ModalHeaderProps
   extends React.HTMLAttributes<HTMLDivElement> {}
 
-const ModalHeader: React.FC<ModalHeaderProps> = ({ className, ...props }) => {
+const ModalHeader = ({ className, ...props }: ModalHeaderProps) => {
   return (
     <div
       className={cn(
@@ -178,14 +178,14 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({ className, ...props }) => {
 
 export interface ModalBodyProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-const ModalBody: React.FC<ModalBodyProps> = ({ className, ...props }) => {
+const ModalBody = ({ className, ...props }: ModalBodyProps) => {
   return <div className={cn("p-6", className)} {...props} />;
 };
 
 export interface ModalFooterProps
   extends React.HTMLAttributes<HTMLDivElement> {}
 
-const ModalFooter: React.FC<ModalFooterProps> = ({ className, ...props }) => {
+const ModalFooter = ({ className, ...props }: ModalFooterProps) => {
   return (
     <div
       className={cn(
