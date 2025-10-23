@@ -146,23 +146,24 @@ export default function CaptionInputPage() {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Panel - Input Section */}
-      <div className="w-full lg:w-[500px] bg-surface border-r border-border flex flex-col">
+      <div className="w-full lg:w-[500px] bg-section border-r border-border flex flex-col">
         {/* Header */}
         <Card
           variant="outlined"
           padding="none"
-          className="border-0 border-b border-border rounded-none"
+          className="border-0 border-b border-border rounded-none bg-section"
         >
           <CardHeader padding="sm">
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-accent/10 rounded-lg">
-                <Wand2 className="w-5 h-5 text-accent" />
-              </div>
+              <Wand2
+                className="w-5 h-5 text-text-head
+              "
+              />
               <div>
                 <CardTitle className="text-lg font-semibold text-primary">
                   New Caption
                 </CardTitle>
-                <p className="text-sm ">
+                <p className="text-sm font-medium">
                   Describe your content and we'll craft the perfect caption
                 </p>
               </div>
@@ -225,9 +226,9 @@ export default function CaptionInputPage() {
           {showContextMenu && (
             <div
               ref={contextMenuRef}
-              className="absolute z-9999 mb-3 w-72 bg-white border border-gray-200 rounded-xl shadow-xl py-3"
+              className="absolute z-9999 mb-3 w-56 bg-white border border-gray-200 rounded-xl shadow-xl p-1"
               style={{
-                top: "8px",
+                top: "9%",
                 left: "32px",
               }}
             >
@@ -239,29 +240,25 @@ export default function CaptionInputPage() {
                   <button
                     key={option.id}
                     onClick={() => handleContextItemToggle(option.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors first:rounded-t-xl last:rounded-b-xl ${
+                    className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl text-sm transition-colors first:rounded-t-xl last:rounded-b-xl ${
                       isSelected
-                        ? "bg-blue-50 text-blue-700"
-                        : "text-gray-700 hover:bg-gray-50"
+                        ? "bg-section text-text-head"
+                        : "text-text-head hover:bg-section"
                     }`}
                   >
-                    <div
-                      className={`p-2 rounded-lg ${
-                        isSelected ? "bg-blue-100" : "bg-gray-100"
-                      }`}
-                    >
+                    <div className="bg-section-light rounded-sm p-1">
                       <IconComponent
-                        className={`w-4 h-4 ${
-                          isSelected ? "text-blue-600" : "text-gray-600"
+                        className={`w-[14px] h-[14px] ${
+                          isSelected ? "text-primary" : "text-text-body"
                         }`}
                       />
                     </div>
-                    <span className="flex-1 text-left font-medium">
+                    <span className="flex-1 text-left font-medium text-sm">
                       {option.label}
                     </span>
                     {isSelected && (
-                      <div className="p-1 bg-blue-100 rounded-full">
-                        <Check className="w-3 h-3 text-blue-600" />
+                      <div className="p-1 bg-section rounded-full">
+                        <Check className="w-3 h-3 text-primary" />
                       </div>
                     )}
                   </button>
@@ -281,19 +278,19 @@ export default function CaptionInputPage() {
                 return (
                   <div
                     key={itemId}
-                    className="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm"
+                    className="inline-flex items-center gap-2 px-3 py-2 bg-surface border border-border rounded-xl text-sm"
                   >
-                    <div className="p-1 bg-blue-100 rounded">
-                      <IconComponent className="w-3 h-3 text-blue-600" />
+                    <div className="p-1 bg-section-light rounded">
+                      <IconComponent className="w-[14px] h-[14px] text-text-body" />
                     </div>
-                    <span className="text-blue-700 font-medium">
+                    <span className="text-text-head font-medium text-sm">
                       {option.label}
                     </span>
                     <button
                       onClick={() => handleRemoveContextItem(itemId)}
-                      className="p-1 hover:bg-blue-100 rounded transition-colors"
+                      className="p-1 hover:bg-section-light rounded transition-colors"
                     >
-                      <X className="w-3 h-3 text-blue-500" />
+                      <X className="w-[14px] h-[14px] text-text-body" />
                     </button>
                   </div>
                 );
@@ -303,7 +300,11 @@ export default function CaptionInputPage() {
 
           {/* Advanced Options Accordion */}
           <div>
-            <Card variant="outlined" className="overflow-hidden" padding="none">
+            <Card
+              variant="outlined"
+              className="overflow-hidden bg-section"
+              padding="none"
+            >
               <button
                 onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
                 className="w-full flex items-center justify-between px-4 py-4 hover:bg-section-light transition-colors rounded-lg"
@@ -333,17 +334,20 @@ export default function CaptionInputPage() {
                     <label className="block text-xs font-medium text-primary mb-2">
                       Call-to-Action
                     </label>
-                    <select
-                      value={ctaType}
-                      onChange={(e) => setCtaType(e.target.value)}
-                      className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-focus focus:border-focus bg-surface"
-                    >
-                      <option value="link-in-bio">Link in bio</option>
-                      <option value="shop-now">Shop now</option>
-                      <option value="dm-me">DM me</option>
-                      <option value="comment-below">Comment below</option>
-                      <option value="custom">Custom</option>
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={ctaType}
+                        onChange={(e) => setCtaType(e.target.value)}
+                        className="w-full px-3 pr-8 py-4 border border-border rounded-xl text-sm bg-surface appearance-none text-text-head font-medium"
+                      >
+                        <option value="link-in-bio">Link in bio</option>
+                        <option value="shop-now">Shop now</option>
+                        <option value="dm-me">DM me</option>
+                        <option value="comment-below">Comment below</option>
+                        <option value="custom">Custom</option>
+                      </select>
+                      <ChevronDown className="w-4 h-4 text-secondary absolute right-3 top-1/2 transform -translate-y-1/2" />
+                    </div>
                   </div>
 
                   {/* Hashtag Preference */}
@@ -408,7 +412,7 @@ export default function CaptionInputPage() {
         </div>
 
         {/* Fixed Bottom - Generate Button */}
-        <div className="px-6 py-4 border-t border-border bg-surface">
+        <div className="px-6 py-4 border-t border-border">
           <Button
             onClick={handleGenerate}
             variant="primary"
@@ -436,7 +440,7 @@ export default function CaptionInputPage() {
         {generatedCaptions.length === 0 ? (
           /* Empty State */
           <div className="flex-1 flex items-center justify-center p-12 bg-section">
-            <div className="text-center max-w-md">
+            <div className="text-center">
               {/* Illustration */}
               <div className="mb-8 relative">
                 <div className="inline-flex items-center justify-center w-32 h-32 bg-accent/10 rounded-2xl shadow-lg mb-6">
@@ -456,7 +460,7 @@ export default function CaptionInputPage() {
               </p>
 
               {/* Tip Callout */}
-              <div className="inline-flex items-start gap-3 px-4 py-3 bg-surface rounded-lg border border-border">
+              <div className="inline-flex items-center gap-3 px-4 py-3 bg-surface rounded-lg border border-border">
                 <span className="text-xl">💡</span>
                 <p className="text-sm text-left">
                   <span className="font-medium text-primary">Pro tip:</span> The
