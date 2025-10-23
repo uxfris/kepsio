@@ -33,11 +33,9 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       "flex min-h-[80px] w-full rounded-lg border bg-surface px-3 py-2 text-sm transition-colors placeholder:text-hint focus:outline-none disabled:cursor-not-allowed disabled:opacity-50";
 
     const stateStyles = {
-      default:
-        "border-border focus:border-border-focus focus:ring-1 focus:ring-border-focus",
-      error: "border-error focus:border-error focus:ring-1 focus:ring-error",
-      success:
-        "border-success focus:border-success focus:ring-1 focus:ring-success",
+      default: "border-border",
+      error: "border-error",
+      success: "border-success",
     };
 
     const resizeStyles = {

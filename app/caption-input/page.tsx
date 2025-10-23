@@ -179,7 +179,7 @@ export default function CaptionInputPage() {
             </label>
 
             {/* Input Container */}
-            <div className="relative">
+            <div className="relative bg-surface rounded-lg border border-border">
               <Textarea
                 value={contentInput}
                 onChange={handleInputChange}
@@ -190,19 +190,14 @@ export default function CaptionInputPage() {
                     : undefined
                 }
                 resize="none"
-                className="min-h-[120px] text-base pl-12"
+                className="min-h-[120px] text-sm border-none"
                 maxLength={500}
               />
-
               {/* Plus Button */}
               <button
                 ref={plusButtonRef}
                 onClick={() => setShowContextMenu(!showContextMenu)}
-                className={`absolute bottom-3 left-3 p-2 rounded-lg transition-all duration-200 group ${
-                  showContextMenu
-                    ? "bg-blue-100 text-blue-600"
-                    : "bg-gray-100 hover:bg-gray-200 text-gray-600"
-                }`}
+                className={`m-2 p-2 rounded-lg transition-all duration-200 border border-border group ${"bg-surface hover:bg-section-light text-text-body"}`}
                 title="Add context"
               >
                 <Plus
@@ -219,8 +214,8 @@ export default function CaptionInputPage() {
                 ref={contextMenuRef}
                 className="absolute z-9999 mb-3 w-72 bg-white border border-gray-200 rounded-xl shadow-xl py-3"
                 style={{
-                  top: 0,
-                  left: "32px",
+                  top: "6%",
+                  left: "20px",
                 }}
               >
                 {contextOptions.map((option) => {

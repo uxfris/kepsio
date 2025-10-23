@@ -410,6 +410,13 @@
     color: var(--color-hint);
   }
 
+  input:focus,
+  textarea:focus {
+    border-color: none;
+    outline: none;
+    box-shadow: none;
+  }
+
   /* Common Layout Utilities */
   .text-center {
     text-align: center;
