@@ -35,7 +35,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       (ref as React.RefObject<HTMLTextAreaElement>) || internalRef;
 
     const baseStyles =
-      "flex min-h-[80px] w-full rounded-lg border bg-surface px-3 py-2 text-sm transition-colors placeholder:text-hint focus:outline-none disabled:cursor-not-allowed disabled:opacity-50";
+      "flex min-h-[40px] w-full rounded-lg border bg-surface px-3 py-2 text-sm transition-colors placeholder:text-hint focus:outline-none disabled:cursor-not-allowed disabled:opacity-50";
 
     const stateStyles = {
       default: "border-border",
@@ -65,18 +65,23 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       const adjustHeight = () => {
         // Reset height to auto to get the correct scrollHeight
         textarea.style.height = "auto";
-        // Set height to scrollHeight to fit content
-        textarea.style.height = `${textarea.scrollHeight}px`;
+        // Get the computed minimum height from CSS
+        const computedStyle = window.getComputedStyle(textarea);
+        const minHeight = parseInt(computedStyle.minHeight) || 40; // fallback to 40px
+        // Set height to the larger of scrollHeight or minHeight
+        const newHeight = Math.max(textarea.scrollHeight, minHeight);
+        textarea.style.height = `${newHeight}px`;
       };
 
-      // Initial adjustment
-      adjustHeight();
+      // Initial adjustment with a small delay to ensure CSS is applied
+      const timeoutId = setTimeout(adjustHeight, 10);
 
       // Add event listener for input changes
       textarea.addEventListener("input", adjustHeight);
 
       // Cleanup
       return () => {
+        clearTimeout(timeoutId);
         textarea.removeEventListener("input", adjustHeight);
       };
     }, [autoExpand, textareaRef, props.value]);
@@ -101,6 +106,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           )}
           ref={textareaRef}
           id={textareaId}
+          style={autoExpand ? { height: "auto" } : undefined}
           {...props}
         />
 

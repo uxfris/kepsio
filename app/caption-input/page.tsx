@@ -190,7 +190,7 @@ export default function CaptionInputPage() {
                     : undefined
                 }
                 autoExpand={true}
-                className="text-sm border-none"
+                className="min-h-10 text-sm border-none"
                 maxLength={500}
               />
               <div className="flex items-end justify-between mt-2">
@@ -227,8 +227,8 @@ export default function CaptionInputPage() {
               ref={contextMenuRef}
               className="absolute z-9999 mb-3 w-72 bg-white border border-gray-200 rounded-xl shadow-xl py-3"
               style={{
-                top: "6%",
-                left: "20px",
+                top: "8px",
+                left: "32px",
               }}
             >
               {contextOptions.map((option) => {
