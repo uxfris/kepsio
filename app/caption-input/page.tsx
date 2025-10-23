@@ -189,90 +189,98 @@ export default function CaptionInputPage() {
                 <span className="text-sm font-medium text-text-head">
                   Advanced Options
                 </span>
-                <div>
+                <div
+                  className={`transition-transform duration-300 ease-in-out ${
+                    isAdvancedOpen ? "rotate-180" : "rotate-0"
+                  }`}
+                >
                   <ChevronDown className="w-4 h-4 text-secondary" />
                 </div>
               </button>
 
-              {isAdvancedOpen && (
-                <div className="overflow-hidden">
-                  <div className="px-4 pb-6 space-y-6 border-t border-divider">
-                    {/* Call-to-Action */}
-                    <div className="pt-4">
-                      <label className="block text-xs font-medium text-primary mb-2">
-                        Call-to-Action
-                      </label>
-                      <select
-                        value={ctaType}
-                        onChange={(e) => setCtaType(e.target.value)}
-                        className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-focus focus:border-focus bg-surface"
-                      >
-                        <option value="link-in-bio">Link in bio</option>
-                        <option value="shop-now">Shop now</option>
-                        <option value="dm-me">DM me</option>
-                        <option value="comment-below">Comment below</option>
-                        <option value="custom">Custom</option>
-                      </select>
-                    </div>
+              <div
+                className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                  isAdvancedOpen
+                    ? "max-h-[600px] opacity-100"
+                    : "max-h-0 opacity-0"
+                }`}
+              >
+                <div className="px-4 pb-6 space-y-6 border-t border-divider">
+                  {/* Call-to-Action */}
+                  <div className="pt-4">
+                    <label className="block text-xs font-medium text-primary mb-2">
+                      Call-to-Action
+                    </label>
+                    <select
+                      value={ctaType}
+                      onChange={(e) => setCtaType(e.target.value)}
+                      className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-focus focus:border-focus bg-surface"
+                    >
+                      <option value="link-in-bio">Link in bio</option>
+                      <option value="shop-now">Shop now</option>
+                      <option value="dm-me">DM me</option>
+                      <option value="comment-below">Comment below</option>
+                      <option value="custom">Custom</option>
+                    </select>
+                  </div>
 
-                    {/* Hashtag Preference */}
-                    <div>
-                      <label className="block text-xs font-medium text-primary mb-3">
-                        Hashtags:{" "}
-                        {hashtagCount === 0 ? "None" : `${hashtagCount}`}
-                      </label>
-                      <input
-                        type="range"
-                        min="0"
-                        max="10"
-                        value={hashtagCount}
-                        onChange={(e) =>
-                          setHashtagCount(parseInt(e.target.value))
-                        }
-                        className="w-full h-2 bg-section-light rounded-full appearance-none cursor-pointer accent-accent"
-                      />
-                      <div className="flex justify-between text-xs text-hint mt-2">
-                        <span>None</span>
-                        <span>Max</span>
-                      </div>
-                    </div>
-
-                    {/* Caption Length */}
-                    <div>
-                      <label className="block text-xs font-medium text-primary mb-3">
-                        Caption Length
-                      </label>
-                      <SegmentedControl
-                        options={[
-                          { value: "short", label: "Short" },
-                          { value: "medium", label: "Medium" },
-                          { value: "long", label: "Long" },
-                        ]}
-                        value={captionLength}
-                        onChange={setCaptionLength}
-                        className="w-full"
-                      />
-                    </div>
-
-                    {/* Emoji Style */}
-                    <div>
-                      <label className="block text-xs font-medium text-primary mb-3">
-                        Emoji Style
-                      </label>
-                      <SegmentedControl
-                        options={[
-                          { value: "none", label: "None" },
-                          { value: "minimal", label: "Minimal" },
-                          { value: "generous", label: "Generous" },
-                        ]}
-                        value={emojiStyle}
-                        onChange={setEmojiStyle}
-                        className="w-full"
-                      />
+                  {/* Hashtag Preference */}
+                  <div>
+                    <label className="block text-xs font-medium text-primary mb-3">
+                      Hashtags:{" "}
+                      {hashtagCount === 0 ? "None" : `${hashtagCount}`}
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="10"
+                      value={hashtagCount}
+                      onChange={(e) =>
+                        setHashtagCount(parseInt(e.target.value))
+                      }
+                      className="w-full h-2 bg-section-light rounded-full appearance-none cursor-pointer accent-accent"
+                    />
+                    <div className="flex justify-between text-xs text-hint mt-2">
+                      <span>None</span>
+                      <span>Max</span>
                     </div>
                   </div>
+
+                  {/* Caption Length */}
+                  <div>
+                    <label className="block text-xs font-medium text-primary mb-3">
+                      Caption Length
+                    </label>
+                    <SegmentedControl
+                      options={[
+                        { value: "short", label: "Short" },
+                        { value: "medium", label: "Medium" },
+                        { value: "long", label: "Long" },
+                      ]}
+                      value={captionLength}
+                      onChange={setCaptionLength}
+                      className="w-full"
+                    />
+                  </div>
+
+                  {/* Emoji Style */}
+                  <div>
+                    <label className="block text-xs font-medium text-primary mb-3">
+                      Emoji Style
+                    </label>
+                    <SegmentedControl
+                      options={[
+                        { value: "none", label: "None" },
+                        { value: "minimal", label: "Minimal" },
+                        { value: "generous", label: "Generous" },
+                      ]}
+                      value={emojiStyle}
+                      onChange={setEmojiStyle}
+                      className="w-full"
+                    />
+                  </div>
                 </div>
-              )}
+              </div>
             </Card>
           </div>
         </div>
