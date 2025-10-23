@@ -53,6 +53,25 @@ export default function CaptionInputPage() {
   const contextMenuRef = useRef<HTMLDivElement>(null);
   const plusButtonRef = useRef<HTMLButtonElement>(null);
 
+  // Context data state
+  const [productLink, setProductLink] = useState("");
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedPreviousPost, setSelectedPreviousPost] = useState("");
+  const [previousPosts] = useState([
+    { id: "1", title: "Launching our new product line", date: "2 days ago" },
+    {
+      id: "2",
+      title: "Behind the scenes of our design process",
+      date: "1 week ago",
+    },
+    {
+      id: "3",
+      title: "Client success story: 300% growth",
+      date: "2 weeks ago",
+    },
+  ]);
+
   // Context menu options
   const contextOptions = [
     { id: "product-link", label: "Add product link", icon: Link2 },
@@ -90,6 +109,33 @@ export default function CaptionInputPage() {
 
   const handleRemoveContextItem = (itemId: string) => {
     setSelectedContextItems((prev) => prev.filter((id) => id !== itemId));
+
+    // Clear associated data when removing context items
+    if (itemId === "product-link") {
+      setProductLink("");
+    } else if (itemId === "upload-image") {
+      setUploadedImage(null);
+      setImagePreview(null);
+    } else if (itemId === "previous-post") {
+      setSelectedPreviousPost("");
+    }
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setUploadedImage(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setUploadedImage(null);
+    setImagePreview(null);
   };
 
   const handleGenerate = async () => {
@@ -104,28 +150,45 @@ export default function CaptionInputPage() {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // Mock generated captions
+    // Build context information
+    const contextInfo = [];
+    if (selectedContextItems.includes("product-link") && productLink) {
+      contextInfo.push(`Product link: ${productLink}`);
+    }
+    if (selectedContextItems.includes("upload-image") && uploadedImage) {
+      contextInfo.push(`Image: ${uploadedImage.name}`);
+    }
+    if (
+      selectedContextItems.includes("previous-post") &&
+      selectedPreviousPost
+    ) {
+      const post = previousPosts.find((p) => p.id === selectedPreviousPost);
+      contextInfo.push(`Related to: ${post?.title}`);
+    }
+
+    // Mock generated captions with context
+    const baseContent = contentInput.slice(0, 50);
+    const contextText =
+      contextInfo.length > 0 ? `\n\nContext: ${contextInfo.join(", ")}` : "";
+
     const mockCaptions = [
-      `🚀 Excited to share this new chapter! ${contentInput.slice(
-        0,
-        50
-      )}... What do you think? #innovation #growth`,
+      `🚀 Excited to share this new chapter! ${baseContent}... What do you think? #innovation #growth${contextText}`,
       `Just launched something I've been working on! ${contentInput.slice(
         0,
         40
-      )}... Can't wait to hear your thoughts! 💫`,
+      )}... Can't wait to hear your thoughts! 💫${contextText}`,
       `Behind the scenes: ${contentInput.slice(
         0,
         60
-      )}... The journey has been incredible! 🌟 #behindthescenes`,
+      )}... The journey has been incredible! 🌟 #behindthescenes${contextText}`,
       `New project alert! ${contentInput.slice(
         0,
         45
-      )}... This is just the beginning! ✨ #newbeginnings`,
+      )}... This is just the beginning! ✨ #newbeginnings${contextText}`,
       `Sharing something special today: ${contentInput.slice(
         0,
         55
-      )}... What's your take? 🤔 #community`,
+      )}... What's your take? 🤔 #community${contextText}`,
     ];
 
     setGeneratedCaptions(mockCaptions);
@@ -259,6 +322,95 @@ export default function CaptionInputPage() {
                       </div>
                     );
                   })}
+                </div>
+              )}
+
+              {/* Context Input Fields */}
+              {selectedContextItems.includes("product-link") && (
+                <div className="border-t border-border p-4 bg-section">
+                  <label className="block text-sm font-medium text-primary mb-2">
+                    Product Link
+                  </label>
+                  <Input
+                    type="url"
+                    value={productLink}
+                    onChange={(e) => setProductLink(e.target.value)}
+                    placeholder="https://example.com/product"
+                    className="w-full"
+                  />
+                </div>
+              )}
+
+              {selectedContextItems.includes("upload-image") && (
+                <div className="border-t border-border p-4 bg-section">
+                  <label className="block text-sm font-medium text-primary mb-2">
+                    Upload Image
+                  </label>
+                  {!imagePreview ? (
+                    <div className="border-2 border-dashed border-border rounded-xl p-6 text-center">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                        id="image-upload"
+                      />
+                      <label
+                        htmlFor="image-upload"
+                        className="cursor-pointer flex flex-col items-center gap-2"
+                      >
+                        <Image className="w-8 h-8 text-text-body" />
+                        <span className="text-sm text-text-body">
+                          Click to upload an image
+                        </span>
+                        <span className="text-xs text-hint">
+                          PNG, JPG, GIF up to 10MB
+                        </span>
+                      </label>
+                    </div>
+                  ) : (
+                    <div className="relative">
+                      <img
+                        src={imagePreview}
+                        alt="Uploaded preview"
+                        className="w-full h-32 object-cover rounded-xl"
+                      />
+                      <button
+                        onClick={removeImage}
+                        className="absolute top-2 right-2 p-1 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {selectedContextItems.includes("previous-post") && (
+                <div className="border-t border-border p-4 bg-section">
+                  <label className="block text-sm font-medium text-primary mb-2">
+                    Select Previous Post
+                  </label>
+                  <Select
+                    value={selectedPreviousPost}
+                    onValueChange={setSelectedPreviousPost}
+                  >
+                    <SelectTrigger className="w-full border border-border rounded-xl bg-surface text-sm">
+                      <SelectValue placeholder="Choose a previous post" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {previousPosts.map((post) => (
+                        <SelectItem key={post.id} value={post.title}>
+                          <div className="flex flex-col">
+                            <span className="font-medium">{post.title}</span>
+                            <span className="text-xs text-hint">
+                              {post.date}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
             </div>
