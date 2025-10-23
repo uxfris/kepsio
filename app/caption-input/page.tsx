@@ -180,7 +180,7 @@ export default function CaptionInputPage() {
             </label>
 
             {/* Input Container */}
-            <div className="relative bg-surface rounded-lg border border-border">
+            <div className="relative bg-surface rounded-xl border border-border">
               <Textarea
                 value={contentInput}
                 onChange={handleInputChange}
@@ -191,7 +191,7 @@ export default function CaptionInputPage() {
                     : undefined
                 }
                 autoExpand={true}
-                className="min-h-10 text-sm border-none"
+                className="min-h-10 text-sm border-none rounded-xl"
                 maxLength={500}
               />
               <div className="flex items-end justify-between mt-2">
@@ -213,12 +213,47 @@ export default function CaptionInputPage() {
                     {contentInput.length}/500
                   </span>
                   {contentInput.length > 400 && (
-                    <span className="text-xs text-warning">
+                    <span className="ml-2 text-xs text-warning">
                       Getting close to limit
                     </span>
                   )}
                 </div>
               </div>
+              {selectedContextItems.length > 0 && (
+                <div className="border-t border-border" />
+              )}
+              {/* Selected Context Items */}
+              {selectedContextItems.length > 0 && (
+                <div className="flex flex-wrap gap-2 py-4 px-2 bg-section rounded-b-xl">
+                  {selectedContextItems.map((itemId) => {
+                    const option = contextOptions.find(
+                      (opt) => opt.id === itemId
+                    );
+                    if (!option) return null;
+                    const IconComponent = option.icon;
+
+                    return (
+                      <div
+                        key={itemId}
+                        className="inline-flex items-center gap-2 px-3 py-2 bg-surface border border-border rounded-xl text-sm"
+                      >
+                        <div className="p-1 bg-section-light rounded">
+                          <IconComponent className="w-[14px] h-[14px] text-text-body" />
+                        </div>
+                        <span className="text-text-head font-medium text-sm">
+                          {option.label}
+                        </span>
+                        <button
+                          onClick={() => handleRemoveContextItem(itemId)}
+                          className="p-1 hover:bg-section-light rounded transition-colors"
+                        >
+                          <X className="w-[14px] h-[14px] text-text-body" />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
 
@@ -262,37 +297,6 @@ export default function CaptionInputPage() {
                       </div>
                     )}
                   </button>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Selected Context Items */}
-          {selectedContextItems.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-4">
-              {selectedContextItems.map((itemId) => {
-                const option = contextOptions.find((opt) => opt.id === itemId);
-                if (!option) return null;
-                const IconComponent = option.icon;
-
-                return (
-                  <div
-                    key={itemId}
-                    className="inline-flex items-center gap-2 px-3 py-2 bg-surface border border-border rounded-xl text-sm"
-                  >
-                    <div className="p-1 bg-section-light rounded">
-                      <IconComponent className="w-[14px] h-[14px] text-text-body" />
-                    </div>
-                    <span className="text-text-head font-medium text-sm">
-                      {option.label}
-                    </span>
-                    <button
-                      onClick={() => handleRemoveContextItem(itemId)}
-                      className="p-1 hover:bg-section-light rounded transition-colors"
-                    >
-                      <X className="w-[14px] h-[14px] text-text-body" />
-                    </button>
-                  </div>
                 );
               })}
             </div>
