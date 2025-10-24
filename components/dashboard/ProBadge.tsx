@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Zap, Crown, TrendingUp, Star } from "lucide-react";
+import { Zap, Crown, Star } from "lucide-react";
 import { useUserUsage } from "@/hooks/use-user-usage";
 import { useSubscription } from "@/hooks/use-subscription";
 import { subscriptionPlans } from "../../config/plans";
@@ -94,7 +94,6 @@ export default function ProBadge({ isCollapsed }: ProBadgeProps) {
               )}
             </div>
           </div>
-          {!isPro && <TrendingUp className="h-4 w-4 text-accent" />}
         </div>
 
         {/* Credit counter - made to stand out */}
