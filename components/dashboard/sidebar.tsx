@@ -12,11 +12,11 @@ import {
   Users,
   Zap,
   Settings,
-  ChevronLeft,
-  ChevronRight,
+  PanelLeft,
+  ArrowLeftToLine,
   Crown,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -31,14 +31,26 @@ const navigation = [
   { name: "Brand Voice", href: "/brand-voice", icon: Mic },
   { name: "Team", href: "/team", icon: Users, isPro: true },
   { name: "Integrations", href: "/integrations", icon: Zap, isPro: true },
-];
-
-const settingsNavigation = [
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Settings", href: "/settings", icon: Settings, isDivider: true },
 ];
 
 export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const pathname = usePathname();
+
+  // Keyboard shortcut for toggling sidebar (Cmd + .)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === ".") {
+        event.preventDefault();
+        onToggle();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onToggle]);
 
   const MenuItem = ({
     item,
@@ -106,12 +118,12 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
           duration: 0.3,
           ease: [0.4, 0, 0.2, 1],
         }}
-        className={`min-h-screen fixed left-0 top-0 h-full bg-section border-r border-border z-50 flex flex-col ${
+        className={`min-h-screen fixed left-0 top-0 h-full bg-section border-r border-border z-50 flex flex-col group ${
           isOpen ? "lg:relative" : "lg:relative"
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border bg-section">
+        <div className="flex items-center py-3 px-5 bg-section">
           <AnimatePresence mode="wait">
             {isOpen ? (
               <motion.div
@@ -120,8 +132,15 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
                 transition={{ duration: 0.2 }}
-                className="flex items-center"
+                className="flex items-center w-full"
               >
+                <button
+                  onClick={onToggle}
+                  className="p-2 rounded-lg hover:bg-section-light transition-colors duration-200 border border-border group/button mr-3"
+                >
+                  <PanelLeft className="h-4 w-4 text-text-body group-hover/button:hidden" />
+                  <ArrowLeftToLine className="h-4 w-4 text-text-body hidden group-hover/button:block" />
+                </button>
                 <h2 className="text-lg font-semibold text-primary tracking-tight">
                   Kepsio
                 </h2>
@@ -135,43 +154,41 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 transition={{ duration: 0.2 }}
                 className="flex items-center justify-center w-full"
               >
-                <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">K</span>
+                <div className="relative group/button">
+                  <button
+                    onClick={onToggle}
+                    className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center transition-all duration-200 border border-border group-hover:bg-section-light"
+                  >
+                    <span className="text-white font-bold text-sm group-hover:hidden">
+                      K
+                    </span>
+                    <PanelLeft className="h-4 w-4 text-text-body hidden group-hover:block" />
+                  </button>
+
+                  {/* Tooltip */}
+                  <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-black text-white text-xs px-2 py-1 rounded shadow-lg opacity-0 group-hover/button:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                    Toggle sidebar{" "}
+                    <span className="text-gray-400 ml-1">⌘.</span>
+                  </div>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
-
-          <button
-            onClick={onToggle}
-            className="p-2 rounded-lg hover:bg-section-light transition-colors duration-200 border border-border group"
-          >
-            {isOpen ? (
-              <ChevronLeft className="h-4 w-4 text-text-body" />
-            ) : (
-              <ChevronRight className="h-4 w-4 text-text-body" />
-            )}
-          </button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-6 py-6 space-y-2">
-          {navigation.map((item) => (
-            <MenuItem key={item.name} item={item} isCollapsed={!isOpen} />
+        <nav className="flex-1 px-3 py-6 space-y-2">
+          {navigation.map((item, index) => (
+            <div key={item.name}>
+              {item.isDivider && index > 0 && (
+                <div className="my-4">
+                  <div className="h-px bg-border" />
+                </div>
+              )}
+              <MenuItem item={item} isCollapsed={!isOpen} />
+            </div>
           ))}
         </nav>
-
-        {/* Divider */}
-        <div className="px-6">
-          <div className="h-px bg-border" />
-        </div>
-
-        {/* Settings */}
-        <div className="px-6 py-4 space-y-2">
-          {settingsNavigation.map((item) => (
-            <MenuItem key={item.name} item={item} isCollapsed={!isOpen} />
-          ))}
-        </div>
 
         {/* Pro Badge */}
         <div className="px-6 py-4 border-t border-border">
