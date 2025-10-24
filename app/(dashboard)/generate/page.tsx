@@ -366,7 +366,6 @@ export default function CaptionInputPage() {
       <PaywallModal
         isOpen={isPaywallOpen}
         onClose={hidePaywall}
-        onUpgrade={handleUpgrade}
         currentUsage={currentUsage}
       />
     </ToastProvider>
