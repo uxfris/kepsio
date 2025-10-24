@@ -69,10 +69,10 @@ export const EmptyState = ({ type = "default", onRetry }: EmptyStateProps) => {
 
         {/* Empty State Text */}
         <div className="space-y-4 mb-10">
-          <h2 className="text-3xl font-bold text-primary tracking-tight">
+          <h2 className="text-2xl font-bold text-primary tracking-tight">
             Your captions will appear here
           </h2>
-          <p className="text-lg text-text-body leading-relaxed">
+          <p className="text-sm text-text-body leading-relaxed">
             Describe your content on the left, and we'll generate 5 variations
             in your voice
           </p>

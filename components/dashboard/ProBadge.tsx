@@ -70,7 +70,7 @@ export default function ProBadge({ isCollapsed }: ProBadgeProps) {
   }
 
   return (
-    <div className="px-6 py-4 border-t border-border">
+    <div className="px-6 py-4">
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
