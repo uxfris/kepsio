@@ -35,7 +35,7 @@ export const ContextMenu = ({
     const viewportHeight = window.innerHeight;
 
     // Menu dimensions (approximate)
-    const menuWidth = 224; // w-56 = 14rem = 224px
+    const menuWidth = 256; // w-64 = 16rem = 256px
     const menuHeight = 200; // Approximate height
 
     let left = buttonRect.left;
@@ -114,7 +114,7 @@ export const ContextMenu = ({
   return (
     <div
       ref={menuRef}
-      className="fixed z-9999 w-56 bg-white border border-gray-200 rounded-xl shadow-xl p-1"
+      className="fixed z-9999 w-64 space-y-1 bg-white border border-gray-200 rounded-xl shadow-xl p-1"
       style={{
         top: `${position.top}px`,
         left: `${position.left}px`,
@@ -141,12 +141,16 @@ export const ContextMenu = ({
                 }`}
               />
             </div>
-            <span className="flex-1 text-left font-medium text-sm">
+            <span
+              className={`flex-1 text-left font-medium text-sm ${
+                isSelected ? "text-text-head" : "text-text-body"
+              }`}
+            >
               {option.label}
             </span>
             {isSelected && (
               <div className="p-1 bg-section rounded-full">
-                <Check className="w-3 h-3 text-primary" />
+                <Check className="w-3 h-3 text-text-head" />
               </div>
             )}
           </button>
