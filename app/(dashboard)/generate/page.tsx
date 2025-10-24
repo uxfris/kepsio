@@ -144,11 +144,7 @@ export default function CaptionInputPage() {
     <ToastProvider>
       <div className="min-h-screen flex flex-col lg:flex-row">
         {/* Left Panel - Input Section */}
-        <div
-          className={`w-full lg:w-1/3 bg-section border-r border-border flex flex-col transition-opacity duration-500 ${
-            state.showImmersiveLoading ? "opacity-30" : "opacity-100"
-          }`}
-        >
+        <div className="w-full lg:w-1/3 bg-section border-r border-border flex flex-col">
           {/* Header */}
           <Card
             variant="outlined"
@@ -285,7 +281,15 @@ export default function CaptionInputPage() {
 
         {/* Right Panel - Results Area */}
         <div className="flex-1 flex flex-col">
-          {state.generatedCaptions.length === 0 ? (
+          {state.showImmersiveLoading ? (
+            <ImmersiveLoading
+              isVisible={state.showImmersiveLoading}
+              onComplete={handleLoadingComplete}
+              onError={() =>
+                updateState({ showImmersiveLoading: false, showError: true })
+              }
+            />
+          ) : state.generatedCaptions.length === 0 ? (
             <EmptyState type={state.showError ? "error" : "default"} />
           ) : (
             <CaptionResults
@@ -297,15 +301,6 @@ export default function CaptionInputPage() {
             />
           )}
         </div>
-
-        {/* Immersive Loading Overlay */}
-        <ImmersiveLoading
-          isVisible={state.showImmersiveLoading}
-          onComplete={handleLoadingComplete}
-          onError={() =>
-            updateState({ showImmersiveLoading: false, showError: true })
-          }
-        />
       </div>
     </ToastProvider>
   );

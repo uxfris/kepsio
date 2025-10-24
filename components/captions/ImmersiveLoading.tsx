@@ -144,8 +144,8 @@ export default function ImmersiveLoading({
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center">
-      <div className="bg-surface border border-border rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+    <div className="flex-1 flex items-center justify-center p-8 bg-section">
+      <div className="bg-surface border border-border rounded-2xl p-8 max-w-lg w-full shadow-lg animate-scale-in">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
@@ -196,7 +196,7 @@ export default function ImmersiveLoading({
                   key={index}
                   className={`h-12 bg-section border border-border rounded-lg transition-all duration-500 ${
                     index <= currentPhase
-                      ? "opacity-100 blur-0"
+                      ? "opacity-100 blur-0 animate-slide-in-up"
                       : "opacity-50 blur-sm"
                   }`}
                   style={{
