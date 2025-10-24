@@ -108,7 +108,6 @@ export default function PostUpgradeSuccessPage() {
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          router.push("/dashboard");
           return 0;
         }
         return prev - 1;
@@ -116,7 +115,24 @@ export default function PostUpgradeSuccessPage() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [router]);
+  }, []);
+
+  // Handle auto-redirect when countdown reaches 0
+  useEffect(() => {
+    if (countdown === 0) {
+      const redirectTimer = setTimeout(() => {
+        try {
+          router.push("/generate");
+        } catch (error) {
+          console.error("Navigation error:", error);
+          // Fallback to window.location if router fails
+          window.location.href = "/dashboard";
+        }
+      }, 100);
+
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [countdown, router]);
 
   // Hide confetti after 3 seconds
   useEffect(() => {
