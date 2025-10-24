@@ -55,6 +55,7 @@ export default function CaptionInputPage() {
     hidePaywall,
     handleUpgrade,
     checkUsageLimit,
+    showPaywall,
   } = usePaywall();
 
   // Event handlers
@@ -70,11 +71,35 @@ export default function CaptionInputPage() {
       return;
     }
 
-    // Check usage limit before generating
-    const hasHitLimit = checkUsageLimit(CREDITS.remaining, CREDITS.total);
-    if (hasHitLimit) {
-      return; // Paywall modal will be shown
-    }
+    /* 
+    ========================================
+    PAYWALL INTEGRATION OPTIONS
+    ========================================
+    
+    Option 1: Trigger paywall when user hits usage limit (recommended for production)
+    Uncomment the lines below:
+    */
+    // const hasHitLimit = checkUsageLimit(CREDITS.remaining, CREDITS.total);
+    // if (hasHitLimit) {
+    //   return; // Paywall modal will be shown
+    // }
+
+    /*
+    Option 2: Always show paywall on button click (for testing)
+    Uncomment the line below:
+    */
+    showPaywall({ used: 10, limit: 10 });
+    return;
+
+    /*
+    Option 3: Show paywall when credits are 0 (alternative logic)
+    Uncomment the lines below:
+    */
+    // if (CREDITS.remaining === 0) {
+    //   showPaywall({ used: CREDITS.total, limit: CREDITS.total });
+    //   return;
+    // }
+    // */
 
     // Start immersive loading
     updateState({

@@ -13,11 +13,11 @@ import {
   Star,
 } from "lucide-react";
 
-import { Button } from "../../ui/Button";
-import { Card, CardHeader, CardTitle, CardContent } from "../../ui/Card";
-import { Modal } from "../../ui/Modal";
-import { useSubscription } from "../../../hooks/use-subscription";
-import { subscriptionPlans } from "../../../config/plans";
+import { Button } from "../ui";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui";
+import { Modal } from "../ui";
+import { useSubscription } from "../../hooks/use-subscription";
+import { subscriptionPlans } from "../../config/plans";
 
 interface PaywallModalProps {
   isOpen: boolean;
@@ -126,10 +126,10 @@ export default function PaywallModal({
         </button>
 
         {/* Header Section */}
-        <div className="relative px-8 pt-8 pb-6 bg-gradient-to-br from-section to-section-light border-b border-border">
+        <div className="relative px-8 pt-8 pb-6 bg-linear-to-br from-section to-section-light border-b border-border">
           <div className="text-center max-w-2xl mx-auto">
             {/* Celebration Icon */}
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-accent to-accent-hover rounded-2xl mb-4 shadow-lg animate-bounce-in">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-accent to-accent-hover rounded-2xl mb-4 shadow-lg animate-bounce-in">
               <Zap className="w-8 h-8 text-surface" />
             </div>
 
@@ -201,7 +201,7 @@ export default function PaywallModal({
               <CardContent padding="sm">
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-start gap-2 text-sm text-hint">
-                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 shrink-0">
                       <X className="w-3 h-3 text-hint" />
                     </div>
                     <span className="line-through">
@@ -210,7 +210,7 @@ export default function PaywallModal({
                     </span>
                   </li>
                   <li className="flex items-start gap-2 text-sm text-hint">
-                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 shrink-0">
                       <X className="w-3 h-3 text-hint" />
                     </div>
                     <span className="line-through">
@@ -218,7 +218,7 @@ export default function PaywallModal({
                     </span>
                   </li>
                   <li className="flex items-start gap-2 text-sm text-hint">
-                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 shrink-0">
                       <X className="w-3 h-3 text-hint" />
                     </div>
                     <span className="line-through">Basic voice training</span>
@@ -230,11 +230,11 @@ export default function PaywallModal({
             {/* Pro Plan (Recommended) */}
             <Card
               variant="outlined"
-              className="relative border-2 border-accent bg-gradient-to-br from-surface to-section transform scale-105 shadow-xl"
+              className="relative border-2 border-accent bg-linear-to-br from-surface to-section transform scale-105 shadow-xl"
             >
               {/* Recommended Badge */}
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <span className="inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-accent to-accent-hover text-surface text-xs font-bold rounded-full shadow-md">
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-linear-to-r from-accent to-accent-hover text-surface text-xs font-bold rounded-full shadow-md">
                   <Crown className="w-3 h-3" />
                   RECOMMENDED
                 </span>
@@ -263,7 +263,7 @@ export default function PaywallModal({
               <CardContent padding="sm">
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-start gap-2 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center mt-0.5 shrink-0">
                       <Check className="w-3 h-3 text-surface" />
                     </div>
                     <span>
@@ -271,7 +271,7 @@ export default function PaywallModal({
                     </span>
                   </li>
                   <li className="flex items-start gap-2 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center mt-0.5 shrink-0">
                       <Check className="w-3 h-3 text-surface" />
                     </div>
                     <span>
@@ -279,7 +279,7 @@ export default function PaywallModal({
                     </span>
                   </li>
                   <li className="flex items-start gap-2 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center mt-0.5 shrink-0">
                       <Check className="w-3 h-3 text-surface" />
                     </div>
                     <span>
@@ -287,19 +287,19 @@ export default function PaywallModal({
                     </span>
                   </li>
                   <li className="flex items-start gap-2 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center mt-0.5 shrink-0">
                       <Check className="w-3 h-3 text-surface" />
                     </div>
                     <span>Team collaboration</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center mt-0.5 shrink-0">
                       <Check className="w-3 h-3 text-surface" />
                     </div>
                     <span>Analytics & insights</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center mt-0.5 shrink-0">
                       <Check className="w-3 h-3 text-surface" />
                     </div>
                     <span>Priority support</span>
@@ -333,25 +333,25 @@ export default function PaywallModal({
               <CardContent padding="sm">
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-start gap-2 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 shrink-0">
                       <Check className="w-3 h-3 text-text-body" />
                     </div>
                     <span>Everything in Pro</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 shrink-0">
                       <Check className="w-3 h-3 text-text-body" />
                     </div>
                     <span>Custom brand guidelines</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 shrink-0">
                       <Check className="w-3 h-3 text-text-body" />
                     </div>
                     <span>API access</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 shrink-0">
                       <Check className="w-3 h-3 text-text-body" />
                     </div>
                     <span>Dedicated account manager</span>
@@ -373,14 +373,14 @@ export default function PaywallModal({
           {/* Social Proof Section */}
           <Card
             variant="outlined"
-            className="bg-gradient-to-r from-section to-section-light mb-6"
+            className="bg-linear-to-r from-section to-section-light mb-6"
           >
             <CardContent padding="md">
               <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                 {/* Testimonial Carousel */}
                 <div className="flex-1">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-accent to-accent-hover flex items-center justify-center text-surface font-bold flex-shrink-0">
+                    <div className="w-12 h-12 rounded-full bg-linear-to-br from-accent to-accent-hover flex items-center justify-center text-surface font-bold shrink-0">
                       {testimonials[currentTestimonial].avatar}
                     </div>
                     <div className="flex-1">
