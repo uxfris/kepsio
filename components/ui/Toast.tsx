@@ -1,10 +1,16 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
 import { cn } from "../../lib/utils/cn";
-import { Check, X, Copy, Bookmark } from "lucide-react";
+import { Check, X, Copy, Bookmark, AlertCircle, Info } from "lucide-react";
 
 interface Toast {
   id: string;
-  type: "success" | "error" | "info";
+  type: "success" | "error" | "info" | "warning";
   title: string;
   description?: string;
   icon?: React.ReactNode;
@@ -66,7 +72,7 @@ const ToastContainer: React.FC<ToastContainerProps> = ({
   onRemove,
 }) => {
   return (
-    <div className="fixed top-4 right-4 z-toast space-y-2">
+    <div className="fixed top-4 right-4 z-toast space-y-3 pointer-events-none">
       {toasts.map((toast) => (
         <ToastItem key={toast.id} toast={toast} onRemove={onRemove} />
       ))}
@@ -80,6 +86,24 @@ interface ToastItemProps {
 }
 
 const ToastItem: React.FC<ToastItemProps> = ({ toast, onRemove }) => {
+  const [progress, setProgress] = useState(100);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const duration = toast.duration || 4000;
+
+  useEffect(() => {
+    if (isHovered) return;
+
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        const newProgress = prev - 100 / (duration / 50);
+        return newProgress <= 0 ? 0 : newProgress;
+      });
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, [duration, isHovered]);
+
   const getIcon = () => {
     if (toast.icon) return toast.icon;
 
@@ -88,6 +112,10 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onRemove }) => {
         return <Check className="w-5 h-5" />;
       case "error":
         return <X className="w-5 h-5" />;
+      case "warning":
+        return <AlertCircle className="w-5 h-5" />;
+      case "info":
+        return <Info className="w-5 h-5" />;
       default:
         return null;
     }
@@ -96,31 +124,95 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onRemove }) => {
   const getStyles = () => {
     switch (toast.type) {
       case "success":
-        return "bg-success text-surface border-success";
+        return {
+          container: "bg-white border-green-200 shadow-green-100/50",
+          icon: "text-green-600 bg-green-50",
+          progress: "bg-green-500",
+          closeButton: "hover:bg-green-50 text-green-600",
+        };
       case "error":
-        return "bg-error text-surface border-error";
+        return {
+          container: "bg-white border-red-200 shadow-red-100/50",
+          icon: "text-red-600 bg-red-50",
+          progress: "bg-red-500",
+          closeButton: "hover:bg-red-50 text-red-600",
+        };
+      case "warning":
+        return {
+          container: "bg-white border-yellow-200 shadow-yellow-100/50",
+          icon: "text-yellow-600 bg-yellow-50",
+          progress: "bg-yellow-500",
+          closeButton: "hover:bg-yellow-50 text-yellow-600",
+        };
+      case "info":
+        return {
+          container: "bg-white border-blue-200 shadow-blue-100/50",
+          icon: "text-blue-600 bg-blue-50",
+          progress: "bg-blue-500",
+          closeButton: "hover:bg-blue-50 text-blue-600",
+        };
       default:
-        return "bg-surface text-text-head border-border";
+        return {
+          container: "bg-white border-gray-200 shadow-gray-100/50",
+          icon: "text-gray-600 bg-gray-50",
+          progress: "bg-gray-500",
+          closeButton: "hover:bg-gray-50 text-gray-600",
+        };
     }
   };
+
+  const styles = getStyles();
 
   return (
     <div
       className={cn(
-        "flex items-start gap-3 p-4 rounded-lg border shadow-lg max-w-sm animate-in slide-in-from-right-full duration-300",
-        getStyles()
+        "relative flex items-start gap-3 p-4 rounded-xl border shadow-lg max-w-sm w-80 pointer-events-auto",
+        "animate-in slide-in-from-right-full fade-in-0 duration-300 ease-out",
+        "backdrop-blur-sm bg-white/95",
+        styles.container
       )}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {getIcon() && <div className="shrink-0 mt-0.5">{getIcon()}</div>}
-      <div className="flex-1 min-w-0">
-        <p className="font-medium text-sm">{toast.title}</p>
+      {/* Progress bar */}
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-100 rounded-b-xl overflow-hidden">
+        <div
+          className={cn(
+            "h-full transition-all duration-75 ease-linear",
+            styles.progress
+          )}
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+
+      {/* Icon */}
+      {getIcon() && (
+        <div className={cn("shrink-0 p-2 rounded-lg", styles.icon)}>
+          {getIcon()}
+        </div>
+      )}
+
+      {/* Content */}
+      <div className="flex-1 min-w-0 pr-2">
+        <p className="font-semibold text-sm text-gray-900 leading-tight">
+          {toast.title}
+        </p>
         {toast.description && (
-          <p className="text-sm opacity-90 mt-1">{toast.description}</p>
+          <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+            {toast.description}
+          </p>
         )}
       </div>
+
+      {/* Close button */}
       <button
         onClick={() => onRemove(toast.id)}
-        className="shrink-0 p-1 hover:bg-black/10 rounded transition-colors"
+        className={cn(
+          "shrink-0 p-1.5 rounded-lg transition-all duration-200",
+          "hover:scale-105 active:scale-95",
+          styles.closeButton
+        )}
+        aria-label="Close notification"
       >
         <X className="w-4 h-4" />
       </button>
@@ -141,6 +233,18 @@ export const toast = {
     title,
     description,
     icon: <X className="w-5 h-5" />,
+  }),
+  warning: (title: string, description?: string) => ({
+    type: "warning" as const,
+    title,
+    description,
+    icon: <AlertCircle className="w-5 h-5" />,
+  }),
+  info: (title: string, description?: string) => ({
+    type: "info" as const,
+    title,
+    description,
+    icon: <Info className="w-5 h-5" />,
   }),
   copied: (title: string = "Copied to clipboard!") => ({
     type: "success" as const,

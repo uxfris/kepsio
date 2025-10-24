@@ -111,16 +111,16 @@ const CaptionCard: React.FC<{
   onSave,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { addToast } = useToast();
+  // const { addToast } = useToast();
 
   const handleCopy = () => {
     onCopy();
-    addToast(toast.copied());
+    // addToast(toast.copied());
   };
 
   const handleSave = () => {
     onSave();
-    addToast(toast.saved());
+    // addToast(toast.saved());
   };
 
   const getEngagementIcon = () => {
@@ -154,15 +154,15 @@ const CaptionCard: React.FC<{
       padding="none"
       variant="elevated"
       className={`group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 relative overflow-hidden ${
-        isTopPick ? "ring-2 ring-accent/30 shadow-accent/10" : ""
+        isTopPick ? "ring-1 ring-primary/10" : ""
       }`}
     >
       {/* Top Pick Badge */}
       {isTopPick && (
-        <div className="absolute top-0 left-0 right-0 bg-linear-to-r from-accent/10 to-accent/5 p-3 border-b border-accent/20">
+        <div className="absolute top-0 left-0 right-0 bg-linear-to-r from-section-light/50 to-section-light/0 p-3 border-b border-border-alt">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-accent" />
-            <span className="text-xs font-semibold text-accent">
+            <Sparkles className="w-4 h-4 text-text-head" />
+            <span className="text-xs font-semibold text-text-head">
               Our top pick for you
             </span>
           </div>
