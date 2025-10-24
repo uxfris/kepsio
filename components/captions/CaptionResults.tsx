@@ -1,20 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Copy,
   Check,
   Zap,
   Edit3,
   Bookmark,
-  BookmarkCheck,
   Star,
-  Filter,
+  ChevronDown,
   Sparkles,
   RefreshCw,
-  AlertCircle,
 } from "lucide-react";
 import { Button } from "../ui/Button";
-import { Card, CardContent } from "../ui/Card";
-import { EnhancedCaption, CaptionMetadata } from "../../types";
+import { Card, CardContent, CardHeader } from "../ui/Card";
+import { Chip } from "../ui/Chip";
+import { useToast, toast } from "../ui/Toast";
 
 interface CaptionResultsProps {
   captions: string[];
@@ -22,8 +21,6 @@ interface CaptionResultsProps {
   onCopyCaption: (caption: string, index: number) => void;
   onGenerateNew: () => void;
   platform?: string;
-  onSaveCaption?: (caption: string, index: number) => void;
-  onEditCaption?: (caption: string, index: number) => void;
 }
 
 type FilterType =
@@ -31,86 +28,234 @@ type FilterType =
   | "short"
   | "medium"
   | "long"
-  | "question-based"
-  | "story-led"
+  | "question"
+  | "story"
   | "direct";
-type SuggestionType = "more-playful" | "add-urgency" | "shorter";
+type CaptionStyle = "hook-first" | "story-driven" | "cta-focused";
 
-// Helper functions
-const analyzeCaption = (caption: string): CaptionMetadata => {
-  const wordCount = caption.split(" ").length;
-  const characterCount = caption.length;
+interface CaptionMetadata {
+  length: "short" | "medium" | "long";
+  style: CaptionStyle;
+  engagementScore: "high" | "medium" | "low";
+  isQuestion: boolean;
+  isStory: boolean;
+  isDirect: boolean;
+}
 
-  let length: "short" | "medium" | "long";
-  if (wordCount <= 10) length = "short";
-  else if (wordCount <= 25) length = "medium";
-  else length = "long";
-
-  let style:
-    | "hook-first"
-    | "story-driven"
-    | "cta-focused"
-    | "question-based"
-    | "direct";
-  if (caption.includes("?")) style = "question-based";
-  else if (
+const getCaptionMetadata = (caption: string): CaptionMetadata => {
+  const length = caption.length;
+  const isQuestion = caption.includes("?");
+  const isStory =
     caption.includes("story") ||
     caption.includes("journey") ||
-    caption.includes("behind")
-  )
-    style = "story-driven";
-  else if (
-    caption.includes("click") ||
-    caption.includes("link") ||
-    caption.includes("buy") ||
-    caption.includes("shop")
-  )
-    style = "cta-focused";
-  else if (
+    caption.includes("experience");
+  const isDirect =
+    caption.includes("!") ||
+    caption.includes("now") ||
+    caption.includes("today");
+
+  let lengthCategory: "short" | "medium" | "long";
+  if (length < 100) lengthCategory = "short";
+  else if (length < 200) lengthCategory = "medium";
+  else lengthCategory = "long";
+
+  let style: CaptionStyle;
+  if (
     caption.startsWith("Did you know") ||
     caption.startsWith("Have you ever") ||
-    caption.startsWith("What if")
-  )
+    isQuestion
+  ) {
     style = "hook-first";
-  else style = "direct";
+  } else if (isStory) {
+    style = "story-driven";
+  } else {
+    style = "cta-focused";
+  }
 
-  const engagementScore: "high" | "medium" | "low" =
-    caption.includes("?") ||
-    caption.includes("!") ||
-    caption.includes("💡") ||
-    caption.includes("✨")
-      ? "high"
-      : caption.length > 50 && caption.length < 150
-      ? "medium"
-      : "low";
+  let engagementScore: "high" | "medium" | "low";
+  if (isQuestion && length > 50 && length < 150) {
+    engagementScore = "high";
+  } else if (isStory || isDirect) {
+    engagementScore = "medium";
+  } else {
+    engagementScore = "low";
+  }
 
-  return { length, style, engagementScore, wordCount, characterCount };
-};
-
-const getPreview = (caption: string): string => {
-  const lines = caption.split("\n");
-  if (lines.length <= 2) return caption;
-  return lines.slice(0, 2).join("\n");
-};
-
-const getStyleLabel = (style: string): string => {
-  const labels = {
-    "hook-first": "Hook-first",
-    "story-driven": "Story-driven",
-    "cta-focused": "CTA-focused",
-    "question-based": "Question-based",
-    direct: "Direct",
+  return {
+    length: lengthCategory,
+    style,
+    engagementScore,
+    isQuestion,
+    isStory,
+    isDirect,
   };
-  return labels[style as keyof typeof labels] || style;
 };
 
-const getLengthLabel = (length: string): string => {
-  const labels = {
-    short: "Short",
-    medium: "Medium",
-    long: "Long",
+const CaptionCard: React.FC<{
+  caption: string;
+  index: number;
+  metadata: CaptionMetadata;
+  isTopPick: boolean;
+  isCopied: boolean;
+  onCopy: () => void;
+  onEdit: () => void;
+  onSave: () => void;
+}> = ({
+  caption,
+  index,
+  metadata,
+  isTopPick,
+  isCopied,
+  onCopy,
+  onEdit,
+  onSave,
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const { addToast } = useToast();
+
+  const handleCopy = () => {
+    onCopy();
+    addToast(toast.copied());
   };
-  return labels[length as keyof typeof labels] || length;
+
+  const handleSave = () => {
+    onSave();
+    addToast(toast.saved());
+  };
+
+  const getEngagementIcon = () => {
+    switch (metadata.engagementScore) {
+      case "high":
+        return <Star className="w-3 h-3 text-warning" />;
+      case "medium":
+        return <Star className="w-3 h-3 text-hint" />;
+      default:
+        return null;
+    }
+  };
+
+  const getEngagementText = () => {
+    switch (metadata.engagementScore) {
+      case "high":
+        return "High Potential";
+      case "medium":
+        return "Good Potential";
+      default:
+        return "Standard";
+    }
+  };
+
+  const previewText = isExpanded
+    ? caption
+    : caption.substring(0, 120) + (caption.length > 120 ? "..." : "");
+
+  return (
+    <Card
+      variant="elevated"
+      className={`group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 relative overflow-hidden ${
+        isTopPick ? "ring-2 ring-accent/30 shadow-accent/10" : ""
+      }`}
+    >
+      {/* Top Pick Badge */}
+      {isTopPick && (
+        <div className="absolute top-0 left-0 right-0 bg-linear-to-r from-accent/10 to-accent/5 p-3 border-b border-accent/20">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-accent" />
+            <span className="text-sm font-semibold text-accent">
+              Our top pick for you
+            </span>
+          </div>
+        </div>
+      )}
+
+      <CardHeader padding="md" className={isTopPick ? "pt-16" : ""}>
+        <div className="space-y-4">
+          {/* Caption Content */}
+          <div className="space-y-3">
+            <p className="text-base leading-relaxed text-text-body font-medium">
+              {previewText}
+            </p>
+            {caption.length > 120 && (
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="text-sm text-accent hover:text-accent-hover font-medium flex items-center gap-2 transition-colors duration-200"
+              >
+                {isExpanded ? "Show less" : "Read more"}
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform duration-200 ${
+                    isExpanded ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+            )}
+          </div>
+
+          {/* Metadata badges */}
+          <div className="flex flex-wrap items-center gap-2">
+            <Chip variant="outline" size="sm" className="bg-surface">
+              {metadata.length === "short"
+                ? "Short"
+                : metadata.length === "medium"
+                ? "Medium"
+                : "Long"}
+            </Chip>
+            <Chip variant="outline" size="sm" className="bg-surface">
+              {metadata.style === "hook-first"
+                ? "Hook-first"
+                : metadata.style === "story-driven"
+                ? "Story-driven"
+                : "CTA-focused"}
+            </Chip>
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-section-light rounded-full">
+              {getEngagementIcon()}
+              <span className="text-xs font-medium text-text-body">
+                {getEngagementText()}
+              </span>
+            </div>
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent padding="md" className="pt-0">
+        {/* Action buttons */}
+        <div className="flex items-center gap-3">
+          <Button
+            variant="primary"
+            size="md"
+            onClick={handleCopy}
+            leftIcon={
+              isCopied ? (
+                <Check className="w-4 h-4" />
+              ) : (
+                <Copy className="w-4 h-4" />
+              )
+            }
+            className="flex-1 font-semibold"
+          >
+            {isCopied ? "Copied!" : "Copy"}
+          </Button>
+          <Button
+            variant="outline"
+            size="md"
+            onClick={onEdit}
+            leftIcon={<Edit3 className="w-4 h-4" />}
+            className="px-4"
+          >
+            Edit
+          </Button>
+          <Button
+            variant="ghost"
+            size="md"
+            onClick={handleSave}
+            leftIcon={<Bookmark className="w-4 h-4" />}
+            className="px-4"
+          >
+            Save
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
 };
 
 export const CaptionResults = ({
@@ -119,349 +264,233 @@ export const CaptionResults = ({
   onCopyCaption,
   onGenerateNew,
   platform = "Instagram",
-  onSaveCaption,
-  onEditCaption,
 }: CaptionResultsProps) => {
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
-  const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
   const [savedCaptions, setSavedCaptions] = useState<Set<number>>(new Set());
-  const [showToast, setShowToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
 
-  // Convert captions to enhanced format
-  const enhancedCaptions: EnhancedCaption[] = captions.map(
-    (caption, index) => ({
-      id: `caption-${index}`,
-      content: caption,
-      preview: getPreview(caption),
-      metadata: analyzeCaption(caption),
-      isTopPick: index === 0,
-      isSaved: savedCaptions.has(index),
-    })
+  const captionsWithMetadata = useMemo(
+    () =>
+      captions.map((caption, index) => ({
+        caption,
+        index,
+        metadata: getCaptionMetadata(caption),
+      })),
+    [captions]
   );
 
-  // Filter captions based on active filter
-  const filteredCaptions = enhancedCaptions.filter((caption) => {
-    if (activeFilter === "all") return true;
-    if (
-      activeFilter === "short" ||
-      activeFilter === "medium" ||
-      activeFilter === "long"
-    ) {
-      return caption.metadata.length === activeFilter;
-    }
-    if (activeFilter === "question-based")
-      return caption.metadata.style === "question-based";
-    if (activeFilter === "story-led")
-      return caption.metadata.style === "story-driven";
-    if (activeFilter === "direct") return caption.metadata.style === "direct";
-    return true;
-  });
+  const filteredCaptions = useMemo(() => {
+    if (activeFilter === "all") return captionsWithMetadata;
 
-  const handleCopy = async (caption: string, index: number) => {
-    const success = await onCopyCaption(caption, index);
-    if (success) {
-      showToastMessage("Caption copied to clipboard!", "success");
-    }
-  };
-
-  const handleSave = (caption: string, index: number) => {
-    setSavedCaptions((prev) => new Set([...prev, index]));
-    onSaveCaption?.(caption, index);
-    showToastMessage("Caption saved to library!", "success");
-  };
-
-  const handleEdit = (caption: string, index: number) => {
-    onEditCaption?.(caption, index);
-  };
-
-  const toggleExpanded = (index: number) => {
-    setExpandedCards((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(index)) {
-        newSet.delete(index);
-      } else {
-        newSet.add(index);
+    return captionsWithMetadata.filter(({ metadata }) => {
+      switch (activeFilter) {
+        case "short":
+          return metadata.length === "short";
+        case "medium":
+          return metadata.length === "medium";
+        case "long":
+          return metadata.length === "long";
+        case "question":
+          return metadata.isQuestion;
+        case "story":
+          return metadata.isStory;
+        case "direct":
+          return metadata.isDirect;
+        default:
+          return true;
       }
-      return newSet;
     });
+  }, [captionsWithMetadata, activeFilter]);
+
+  const handleSaveCaption = (index: number) => {
+    setSavedCaptions((prev) => new Set([...prev, index]));
   };
 
-  const showToastMessage = (message: string, type: "success" | "error") => {
-    setShowToast({ message, type });
-    setTimeout(() => setShowToast(null), 3000);
+  const handleEditCaption = (index: number) => {
+    // TODO: Implement inline editing
+    console.log("Edit caption", index);
   };
 
-  const handleSuggestionClick = (suggestion: SuggestionType) => {
-    // This would trigger a new generation with the suggestion
-    console.log("Suggestion clicked:", suggestion);
-  };
-
-  if (captions.length === 0) {
-    return <EmptyState />;
-  }
+  const filterOptions = [
+    { id: "all", label: "All" },
+    { id: "short", label: "Short" },
+    { id: "medium", label: "Medium" },
+    { id: "long", label: "Long" },
+    { id: "question", label: "Question-based" },
+    { id: "story", label: "Story-led" },
+    { id: "direct", label: "Direct" },
+  ] as const;
 
   return (
-    <div className="flex-1 bg-section">
-      {/* Toast Notification */}
-      {showToast && (
-        <div
-          className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 ${
-            showToast.type === "success"
-              ? "bg-green-500 text-white"
-              : "bg-red-500 text-white"
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            {showToast.type === "success" ? (
-              <Check className="w-4 h-4" />
-            ) : (
-              <AlertCircle className="w-4 h-4" />
-            )}
-            <span className="text-sm font-medium">{showToast.message}</span>
-          </div>
-        </div>
-      )}
-
-      <div className="max-w-6xl mx-auto p-6">
+    <div className="flex-1 bg-section overflow-y-auto">
+      <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header Section */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-2xl font-bold text-primary mb-2">
-                ✨ {captions.length} captions ready for {platform}
-              </h2>
-              <p className="text-text-body">
-                Choose your favorite or customize to match your voice
-              </p>
-            </div>
-            <Button
-              variant="ghost"
-              onClick={onGenerateNew}
-              leftIcon={<RefreshCw className="w-4 h-4" />}
-              className="text-text-body hover:text-primary"
-            >
-              Generate 5 More
-            </Button>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 animate-slide-in-up">
+          <div className="space-y-2">
+            <h2 className="text-3xl font-bold text-primary tracking-tight">
+              ✨ {captions.length} captions ready for {platform}
+            </h2>
+            <p className="text-lg text-text-body">
+              Choose your favorite or copy to use right away
+            </p>
           </div>
-
-          {/* Filter Chips */}
-          <div className="flex flex-wrap gap-2">
-            {[
-              { key: "all", label: "All" },
-              { key: "short", label: "Short" },
-              { key: "medium", label: "Medium" },
-              { key: "long", label: "Long" },
-              { key: "question-based", label: "Question-based" },
-              { key: "story-led", label: "Story-led" },
-              { key: "direct", label: "Direct" },
-            ].map((filter) => (
-              <button
-                key={filter.key}
-                onClick={() => setActiveFilter(filter.key as FilterType)}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
-                  activeFilter === filter.key
-                    ? "bg-primary text-white"
-                    : "bg-surface text-text-body hover:bg-section-light border border-border"
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
-          </div>
+          <Button
+            variant="ghost"
+            size="lg"
+            onClick={onGenerateNew}
+            leftIcon={<RefreshCw className="w-5 h-5" />}
+            className="self-start sm:self-center hover:bg-accent/10 transition-all duration-200"
+          >
+            Generate 5 More
+          </Button>
         </div>
 
-        {/* Caption Cards Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {filteredCaptions.map((caption, index) => (
-            <Card
-              key={caption.id}
-              variant="elevated"
-              className={`group hover:shadow-xl transition-all duration-300 cursor-pointer ${
-                caption.isTopPick ? "lg:col-span-2" : ""
-              } ${caption.isTopPick ? "ring-2 ring-primary/20" : ""}`}
+        {/* Filter Chips */}
+        <div className="flex flex-wrap items-center gap-3 mb-10 animate-slide-in-up animate-delay-100">
+          <span className="text-sm font-medium text-text-head mr-2">
+            Filter by:
+          </span>
+          {filterOptions.map((option, index) => (
+            <Chip
+              key={option.id}
+              variant={activeFilter === option.id ? "selected" : "default"}
+              onClick={() => setActiveFilter(option.id)}
+              className="transition-all duration-200 hover:scale-105 animate-scale-in"
+              style={{ animationDelay: `${index * 0.05}s` }}
             >
-              <CardContent padding="lg">
-                {/* Top Pick Badge */}
-                {caption.isTopPick && (
-                  <div className="flex items-center gap-2 mb-4 text-primary">
-                    <Star className="w-4 h-4 fill-current" />
-                    <span className="text-sm font-semibold">
-                      Our top pick for you
-                    </span>
-                  </div>
-                )}
-
-                {/* Caption Content */}
-                <div className="mb-4">
-                  <p className="text-text-body leading-relaxed mb-2">
-                    {expandedCards.has(index)
-                      ? caption.content
-                      : caption.preview}
-                  </p>
-                  {!expandedCards.has(index) &&
-                    caption.content !== caption.preview && (
-                      <button
-                        onClick={() => toggleExpanded(index)}
-                        className="text-primary hover:text-primary/80 text-sm font-medium"
-                      >
-                        Read more
-                      </button>
-                    )}
-                  {expandedCards.has(index) &&
-                    caption.content !== caption.preview && (
-                      <button
-                        onClick={() => toggleExpanded(index)}
-                        className="text-primary hover:text-primary/80 text-sm font-medium"
-                      >
-                        Show less
-                      </button>
-                    )}
-                </div>
-
-                {/* Metadata Badges */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      caption.metadata.length === "short"
-                        ? "bg-blue-100 text-blue-700"
-                        : caption.metadata.length === "medium"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-purple-100 text-purple-700"
-                    }`}
-                  >
-                    {getLengthLabel(caption.metadata.length)}
-                  </span>
-                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                    {getStyleLabel(caption.metadata.style)}
-                  </span>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${
-                      caption.metadata.engagementScore === "high"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : caption.metadata.engagementScore === "medium"
-                        ? "bg-orange-100 text-orange-700"
-                        : "bg-gray-100 text-gray-700"
-                    }`}
-                  >
-                    <Star className="w-3 h-3" />
-                    {caption.metadata.engagementScore === "high"
-                      ? "High Potential"
-                      : caption.metadata.engagementScore === "medium"
-                      ? "Good Potential"
-                      : "Standard"}
-                  </span>
-                </div>
-
-                {/* Interaction Buttons */}
-                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => handleCopy(caption.content, index)}
-                    leftIcon={
-                      copiedIndex === index ? (
-                        <Check className="w-4 h-4" />
-                      ) : (
-                        <Copy className="w-4 h-4" />
-                      )
-                    }
-                    className="flex-1"
-                  >
-                    {copiedIndex === index ? "Copied!" : "Copy"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(caption.content, index)}
-                    leftIcon={<Edit3 className="w-4 h-4" />}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleSave(caption.content, index)}
-                    leftIcon={
-                      savedCaptions.has(index) ? (
-                        <BookmarkCheck className="w-4 h-4" />
-                      ) : (
-                        <Bookmark className="w-4 h-4" />
-                      )
-                    }
-                    className={
-                      savedCaptions.has(index)
-                        ? "text-green-600 border-green-200"
-                        : ""
-                    }
-                  >
-                    {savedCaptions.has(index) ? "Saved" : "Save"}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+              {option.label}
+            </Chip>
           ))}
         </div>
 
+        {/* Results Count */}
+        {/* <div className="mb-6 animate-slide-in-up animate-delay-200">
+          <p className="text-sm text-hint">
+            Showing {filteredCaptions.length} of {captions.length} captions
+          </p>
+        </div> */}
+
+        {/* Caption Cards Grid */}
+        <div className="space-y-8 mb-12">
+          {filteredCaptions.length > 0 && (
+            <>
+              {/* Top Pick Card - Full Width */}
+              {activeFilter === "all" && (
+                <div className="animate-slide-in-up animate-delay-100">
+                  <CaptionCard
+                    caption={filteredCaptions[0].caption}
+                    index={filteredCaptions[0].index}
+                    metadata={filteredCaptions[0].metadata}
+                    isTopPick={true}
+                    isCopied={copiedIndex === filteredCaptions[0].index}
+                    onCopy={() =>
+                      onCopyCaption(
+                        filteredCaptions[0].caption,
+                        filteredCaptions[0].index
+                      )
+                    }
+                    onEdit={() => handleEditCaption(filteredCaptions[0].index)}
+                    onSave={() => handleSaveCaption(filteredCaptions[0].index)}
+                  />
+                </div>
+              )}
+
+              {/* Regular Cards - 2 Column Grid */}
+              {filteredCaptions.length > 1 && (
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                  {filteredCaptions
+                    .slice(activeFilter === "all" ? 1 : 0)
+                    .map(({ caption, index, metadata }, cardIndex) => (
+                      <div
+                        key={index}
+                        className={`animate-slide-in-up ${
+                          cardIndex === 0
+                            ? "animate-delay-200"
+                            : cardIndex === 1
+                            ? "animate-delay-300"
+                            : cardIndex === 2
+                            ? "animate-delay-400"
+                            : cardIndex === 3
+                            ? "animate-delay-500"
+                            : "animate-delay-600"
+                        }`}
+                      >
+                        <CaptionCard
+                          caption={caption}
+                          index={index}
+                          metadata={metadata}
+                          isTopPick={false}
+                          isCopied={copiedIndex === index}
+                          onCopy={() => onCopyCaption(caption, index)}
+                          onEdit={() => handleEditCaption(index)}
+                          onSave={() => handleSaveCaption(index)}
+                        />
+                      </div>
+                    ))}
+                </div>
+              )}
+
+              {/* Single Card when filtered (not "all") */}
+              {filteredCaptions.length === 1 && activeFilter !== "all" && (
+                <div className="animate-slide-in-up animate-delay-100">
+                  <CaptionCard
+                    caption={filteredCaptions[0].caption}
+                    index={filteredCaptions[0].index}
+                    metadata={filteredCaptions[0].metadata}
+                    isTopPick={false}
+                    isCopied={copiedIndex === filteredCaptions[0].index}
+                    onCopy={() =>
+                      onCopyCaption(
+                        filteredCaptions[0].caption,
+                        filteredCaptions[0].index
+                      )
+                    }
+                    onEdit={() => handleEditCaption(filteredCaptions[0].index)}
+                    onSave={() => handleSaveCaption(filteredCaptions[0].index)}
+                  />
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
         {/* Bottom Action Bar */}
-        <div className="bg-surface rounded-xl p-6 border border-border">
-          <div className="text-center">
-            <p className="text-text-body mb-4">Need different options? Try:</p>
-            <div className="flex flex-wrap justify-center gap-3">
-              {[
-                { key: "more-playful", label: "More playful", icon: "🎭" },
-                { key: "add-urgency", label: "Add urgency", icon: "⚡" },
-                { key: "shorter", label: "Shorter", icon: "✂️" },
-              ].map((suggestion) => (
-                <button
-                  key={suggestion.key}
-                  onClick={() =>
-                    handleSuggestionClick(suggestion.key as SuggestionType)
-                  }
-                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-section hover:bg-section-light border border-border text-text-body hover:text-primary transition-all duration-200"
-                >
-                  <span>{suggestion.icon}</span>
-                  <span className="text-sm font-medium">
-                    {suggestion.label}
-                  </span>
-                </button>
-              ))}
-            </div>
+        <div className="text-center p-8 bg-surface rounded-2xl border border-border shadow-sm animate-slide-in-up animate-delay-300">
+          <h3 className="text-lg font-semibold text-primary mb-2">
+            Need different options?
+          </h3>
+          <p className="text-text-body mb-6">Try these variations:</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Chip
+              variant="outline"
+              size="md"
+              className="hover:bg-accent/10 hover:border-accent/30 transition-all duration-200 hover:scale-105"
+            >
+              More playful
+            </Chip>
+            <Chip
+              variant="outline"
+              size="md"
+              className="hover:bg-accent/10 hover:border-accent/30 transition-all duration-200 hover:scale-105"
+            >
+              Add urgency
+            </Chip>
+            <Chip
+              variant="outline"
+              size="md"
+              className="hover:bg-accent/10 hover:border-accent/30 transition-all duration-200 hover:scale-105"
+            >
+              Shorter
+            </Chip>
+            <Chip
+              variant="outline"
+              size="md"
+              className="hover:bg-accent/10 hover:border-accent/30 transition-all duration-200 hover:scale-105"
+            >
+              More professional
+            </Chip>
           </div>
         </div>
       </div>
     </div>
   );
 };
-
-// Empty State Component
-const EmptyState = () => (
-  <div className="flex-1 flex items-center justify-center bg-section">
-    <div className="text-center max-w-md mx-auto p-8">
-      <div className="w-16 h-16 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
-        <AlertCircle className="w-8 h-8 text-gray-400" />
-      </div>
-      <h3 className="text-xl font-semibold text-primary mb-2">
-        Hmm, we hit a snag
-      </h3>
-      <p className="text-text-body mb-6">
-        Couldn't generate captions this time. This helps:
-      </p>
-      <ul className="text-left text-text-body space-y-2 mb-6">
-        <li className="flex items-start gap-2">
-          <span className="text-primary mt-1">•</span>
-          <span>Add more context about your content</span>
-        </li>
-        <li className="flex items-start gap-2">
-          <span className="text-primary mt-1">•</span>
-          <span>Try a different description</span>
-        </li>
-      </ul>
-      <Button variant="primary" leftIcon={<RefreshCw className="w-4 h-4" />}>
-        Try Again
-      </Button>
-    </div>
-  </div>
-);

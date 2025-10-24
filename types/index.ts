@@ -49,28 +49,6 @@ export interface ContextOption {
   icon: any; // Lucide icon component
 }
 
-export interface CaptionMetadata {
-  length: "short" | "medium" | "long";
-  style:
-    | "hook-first"
-    | "story-driven"
-    | "cta-focused"
-    | "question-based"
-    | "direct";
-  engagementScore: "high" | "medium" | "low";
-  wordCount: number;
-  characterCount: number;
-}
-
-export interface EnhancedCaption {
-  id: string;
-  content: string;
-  preview: string;
-  metadata: CaptionMetadata;
-  isTopPick?: boolean;
-  isSaved?: boolean;
-}
-
 export interface PreviousPost {
   id: string;
   title: string;
@@ -104,4 +82,21 @@ export interface CaptionState {
   showImmersiveLoading: boolean;
   loadingPhase: "analyzing" | "hooking" | "matching" | "complete";
   isLongGeneration: boolean;
+}
+
+// Enhanced caption types
+export interface CaptionMetadata {
+  length: "short" | "medium" | "long";
+  style: "hook-first" | "story-driven" | "cta-focused";
+  engagementScore: "high" | "medium" | "low";
+  isQuestion: boolean;
+  isStory: boolean;
+  isDirect: boolean;
+}
+
+export interface EnhancedCaption {
+  content: string;
+  metadata: CaptionMetadata;
+  isSaved?: boolean;
+  isEdited?: boolean;
 }

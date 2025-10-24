@@ -58,3 +58,8 @@ export type {
   SelectLabelProps,
   SelectSeparatorProps,
 } from "./Select";
+
+export { Chip } from "./Chip";
+export type { ChipProps } from "./Chip";
+
+export { ToastProvider, useToast, toast } from "./Toast";

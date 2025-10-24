@@ -5,6 +5,7 @@ import { Sparkles, Plus } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
 import { Textarea } from "../../../components/ui/Textarea";
 import { Card, CardHeader, CardTitle } from "../../../components/ui/Card";
+import { ToastProvider } from "../../../components/ui/Toast";
 
 // Custom hooks
 import { useCaptionInput, useCaptionGeneration } from "../../../hooks";
@@ -140,180 +141,174 @@ export default function CaptionInputPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
-      {/* Left Panel - Input Section */}
-      <div
-        className={`w-full lg:w-[500px] bg-section border-r border-border flex flex-col transition-opacity duration-500 ${
-          state.showImmersiveLoading ? "opacity-30" : "opacity-100"
-        }`}
-      >
-        {/* Header */}
-        <Card
-          variant="outlined"
-          padding="none"
-          className="border-0 border-b border-border rounded-none bg-section"
+    <ToastProvider>
+      <div className="min-h-screen flex flex-col lg:flex-row">
+        {/* Left Panel - Input Section */}
+        <div
+          className={`w-full lg:w-1/3 bg-section border-r border-border flex flex-col transition-opacity duration-500 ${
+            state.showImmersiveLoading ? "opacity-30" : "opacity-100"
+          }`}
         >
-          <CardHeader padding="sm">
-            <div className="flex items-center gap-3 mb-2">
-              <Sparkles className="w-5 h-5 text-text-head" />
-              <div>
-                <CardTitle className="text-lg font-semibold text-primary">
-                  New Caption
-                </CardTitle>
-                <p className="text-sm font-medium">
-                  Describe your content and we'll craft the perfect caption
-                </p>
-              </div>
-            </div>
-          </CardHeader>
-        </Card>
-
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
-          {/* Primary Input with Context */}
-          <div>
-            <label className="block text-sm font-medium text-primary mb-2">
-              What's your content about?
-            </label>
-
-            {/* Input Container */}
-            <div className="relative bg-surface rounded-xl overflow-clip border border-border">
-              <Textarea
-                value={state.contentInput}
-                onChange={handleInputChange}
-                placeholder="Launching a new product... Sharing a client win... Behind-the-scenes of my process..."
-                error={
-                  state.showError
-                    ? "Tell us what your content is about first"
-                    : undefined
-                }
-                autoExpand={true}
-                className="min-h-10 text-sm border-none rounded-xl"
-                maxLength={500}
-              />
-              <div className="flex items-end justify-between mt-2">
-                {/* Plus Button */}
-                <button
-                  ref={plusButtonRef}
-                  onClick={() =>
-                    updateState({ showContextMenu: !state.showContextMenu })
-                  }
-                  className="m-2 p-2 rounded-lg transition-all duration-200 border border-border group bg-surface hover:bg-section-light text-text-body"
-                  title="Add context"
-                >
-                  <Plus
-                    className={`w-4 h-4 transition-transform duration-200 ${
-                      state.showContextMenu ? "rotate-45" : "rotate-0"
-                    }`}
-                  />
-                </button>
-                <div className="flex items-center justify-between mr-2 mb-2">
-                  <span className="text-xs text-hint">
-                    {state.contentInput.length}/500
-                  </span>
-                  {state.contentInput.length > 400 && (
-                    <span className="ml-2 text-xs text-warning">
-                      Getting close to limit
-                    </span>
-                  )}
+          {/* Header */}
+          <Card
+            variant="outlined"
+            padding="none"
+            className="border-0 border-b border-border rounded-none bg-section"
+          >
+            <CardHeader padding="sm">
+              <div className="flex items-center gap-3 mb-2">
+                <Sparkles className="w-5 h-5 text-text-head" />
+                <div>
+                  <CardTitle className="text-lg font-semibold text-primary">
+                    New Caption
+                  </CardTitle>
+                  <p className="text-sm font-medium">
+                    Describe your content and we'll craft the perfect caption
+                  </p>
                 </div>
               </div>
+            </CardHeader>
+          </Card>
 
-              {state.selectedContextItems.length > 0 && (
-                <div className="border-t border-border" />
-              )}
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+            {/* Primary Input with Context */}
+            <div>
+              <label className="block text-sm font-medium text-primary mb-2">
+                What's your content about?
+              </label>
 
-              {/* Selected Context Items */}
-              <SelectedContextItems
-                selectedContextItems={state.selectedContextItems}
-                onRemoveItem={handleRemoveContextItemEvent}
-              />
+              {/* Input Container */}
+              <div className="relative bg-surface rounded-xl overflow-clip border border-border">
+                <Textarea
+                  value={state.contentInput}
+                  onChange={handleInputChange}
+                  placeholder="Launching a new product... Sharing a client win... Behind-the-scenes of my process..."
+                  error={
+                    state.showError
+                      ? "Tell us what your content is about first"
+                      : undefined
+                  }
+                  autoExpand={true}
+                  className="min-h-10 text-sm border-none rounded-xl"
+                  maxLength={500}
+                />
+                <div className="flex items-end justify-between mt-2">
+                  {/* Plus Button */}
+                  <button
+                    ref={plusButtonRef}
+                    onClick={() =>
+                      updateState({ showContextMenu: !state.showContextMenu })
+                    }
+                    className="m-2 p-2 rounded-lg transition-all duration-200 border border-border group bg-surface hover:bg-section-light text-text-body"
+                    title="Add context"
+                  >
+                    <Plus
+                      className={`w-4 h-4 transition-transform duration-200 ${
+                        state.showContextMenu ? "rotate-45" : "rotate-0"
+                      }`}
+                    />
+                  </button>
+                  <div className="flex items-center justify-between mr-2 mb-2">
+                    <span className="text-xs text-hint">
+                      {state.contentInput.length}/500
+                    </span>
+                    {state.contentInput.length > 400 && (
+                      <span className="ml-2 text-xs text-warning">
+                        Getting close to limit
+                      </span>
+                    )}
+                  </div>
+                </div>
 
-              {/* Context Input Fields */}
-              <ContextInputs
-                selectedContextItems={state.selectedContextItems}
-                contextData={contextData}
-                onContextDataUpdate={updateContextData}
-                onImageUpload={handleImageUploadEvent}
-                onRemoveImage={handleRemoveImage}
-              />
+                {state.selectedContextItems.length > 0 && (
+                  <div className="border-t border-border" />
+                )}
+
+                {/* Selected Context Items */}
+                <SelectedContextItems
+                  selectedContextItems={state.selectedContextItems}
+                  onRemoveItem={handleRemoveContextItemEvent}
+                />
+
+                {/* Context Input Fields */}
+                <ContextInputs
+                  selectedContextItems={state.selectedContextItems}
+                  contextData={contextData}
+                  onContextDataUpdate={updateContextData}
+                  onImageUpload={handleImageUploadEvent}
+                  onRemoveImage={handleRemoveImage}
+                />
+              </div>
+            </div>
+
+            {/* Floating Context Menu */}
+            <ContextMenu
+              isOpen={state.showContextMenu}
+              selectedItems={state.selectedContextItems}
+              onItemToggle={handleContextItemToggleEvent}
+              menuRef={contextMenuRef}
+            />
+
+            {/* Advanced Options Accordion */}
+            <AdvancedOptions
+              isOpen={state.isAdvancedOpen}
+              options={options}
+              onToggle={() =>
+                updateState({ isAdvancedOpen: !state.isAdvancedOpen })
+              }
+              onOptionsUpdate={updateOptions}
+            />
+          </div>
+
+          {/* Fixed Bottom - Generate Button */}
+          <div className="px-6 py-4 border-t border-border">
+            <Button
+              onClick={handleGenerate}
+              variant="primary"
+              size="lg"
+              loading={state.isGenerating}
+              leftIcon={<Sparkles className="w-5 h-5" />}
+              className="w-full text-base font-semibold"
+              disabled={!state.contentInput.trim()}
+            >
+              {state.isGenerating ? "Generating..." : "Generate Captions"}
+            </Button>
+            <div className="mt-3 text-center">
+              <span className="text-sm text-secondary">
+                <span className="font-semibold text-accent">
+                  {CREDITS.remaining}/{CREDITS.total}
+                </span>{" "}
+                free captions left
+              </span>
             </div>
           </div>
-
-          {/* Floating Context Menu */}
-          <ContextMenu
-            isOpen={state.showContextMenu}
-            selectedItems={state.selectedContextItems}
-            onItemToggle={handleContextItemToggleEvent}
-            menuRef={contextMenuRef}
-          />
-
-          {/* Advanced Options Accordion */}
-          <AdvancedOptions
-            isOpen={state.isAdvancedOpen}
-            options={options}
-            onToggle={() =>
-              updateState({ isAdvancedOpen: !state.isAdvancedOpen })
-            }
-            onOptionsUpdate={updateOptions}
-          />
         </div>
 
-        {/* Fixed Bottom - Generate Button */}
-        <div className="px-6 py-4 border-t border-border">
-          <Button
-            onClick={handleGenerate}
-            variant="primary"
-            size="lg"
-            loading={state.isGenerating}
-            leftIcon={<Sparkles className="w-5 h-5" />}
-            className="w-full text-base font-semibold"
-            disabled={!state.contentInput.trim()}
-          >
-            {state.isGenerating ? "Generating..." : "Generate Captions"}
-          </Button>
-          <div className="mt-3 text-center">
-            <span className="text-sm text-secondary">
-              <span className="font-semibold text-accent">
-                {CREDITS.remaining}/{CREDITS.total}
-              </span>{" "}
-              free captions left
-            </span>
-          </div>
+        {/* Right Panel - Results Area */}
+        <div className="flex-1 flex flex-col">
+          {state.generatedCaptions.length === 0 ? (
+            <EmptyState type={state.showError ? "error" : "default"} />
+          ) : (
+            <CaptionResults
+              captions={state.generatedCaptions}
+              copiedIndex={state.copiedIndex}
+              onCopyCaption={handleCopyCaption}
+              onGenerateNew={() => updateState({ generatedCaptions: [] })}
+              platform="Instagram"
+            />
+          )}
         </div>
-      </div>
 
-      {/* Right Panel - Results Area */}
-      <div className="flex-1 flex flex-col">
-        {state.generatedCaptions.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <CaptionResults
-            captions={state.generatedCaptions}
-            copiedIndex={state.copiedIndex}
-            onCopyCaption={handleCopyCaption}
-            onGenerateNew={() => updateState({ generatedCaptions: [] })}
-            platform="Instagram"
-            onSaveCaption={(caption, index) => {
-              // TODO: Implement save to library functionality
-              console.log("Save caption:", caption, index);
-            }}
-            onEditCaption={(caption, index) => {
-              // TODO: Implement inline editing functionality
-              console.log("Edit caption:", caption, index);
-            }}
-          />
-        )}
+        {/* Immersive Loading Overlay */}
+        <ImmersiveLoading
+          isVisible={state.showImmersiveLoading}
+          onComplete={handleLoadingComplete}
+          onError={() =>
+            updateState({ showImmersiveLoading: false, showError: true })
+          }
+        />
       </div>
-
-      {/* Immersive Loading Overlay */}
-      <ImmersiveLoading
-        isVisible={state.showImmersiveLoading}
-        onComplete={handleLoadingComplete}
-        onError={() =>
-          updateState({ showImmersiveLoading: false, showError: true })
-        }
-      />
-    </div>
+    </ToastProvider>
   );
 }
