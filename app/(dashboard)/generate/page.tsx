@@ -152,7 +152,7 @@ export default function CaptionInputPage() {
             className="border-0 border-b border-border rounded-none bg-section"
           >
             <CardHeader padding="sm">
-              <div className="space-y-2">
+              <div className="space-y-1 mb-2">
                 <h2 className="text-lg font-semibold text-primary tracking-tight flex items-center gap-2">
                   <Wand2 className="w-5 h-5 text-accent" />
                   New Caption

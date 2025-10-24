@@ -347,7 +347,7 @@ export const CaptionResults = ({
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 animate-slide-in-up">
-          <div className="space-y-2">
+          <div className="space-y-1">
             <h2 className="text-lg font-semibold text-primary tracking-tight flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-accent" />
               {captions.length} captions ready for {platform}
