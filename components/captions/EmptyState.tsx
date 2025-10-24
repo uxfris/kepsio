@@ -56,7 +56,7 @@ export const EmptyState = ({ type = "default", onRetry }: EmptyStateProps) => {
 
   return (
     <div className="flex-1 flex items-center justify-center p-8 bg-section">
-      <div className="max-w-md mx-auto text-center">
+      <div className="max-w-lg mx-auto text-center">
         {/* Illustration */}
         <div className="mb-10 relative">
           <div className="inline-flex items-center justify-center w-40 h-40 bg-linear-to-br from-accent/10 to-accent/5 rounded-3xl shadow-xl mb-8">
@@ -79,14 +79,14 @@ export const EmptyState = ({ type = "default", onRetry }: EmptyStateProps) => {
         </div>
 
         {/* Tip Callout */}
-        <div className="inline-flex items-start gap-4 px-6 py-5 bg-surface rounded-2xl border border-border shadow-sm">
-          <span className="text-2xl">💡</span>
-          <div className="text-left">
-            <p className="text-sm font-medium text-primary mb-1">Pro tip</p>
-            <p className="text-sm text-text-body">
+        <div className="inline-flex items-center gap-2 px-5 py-3 bg-surface rounded-2xl border border-border shadow-sm">
+          <span className="text-2xl">💡 </span>
+          <p className="text-sm font-medium text-primary inline-flex items-center gap-1">
+            Pro tip:
+            <span className="text-sm text-text-body">
               The more context you add, the better your captions
-            </p>
-          </div>
+            </span>
+          </p>
         </div>
       </div>
     </div>
