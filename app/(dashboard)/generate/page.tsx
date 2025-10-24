@@ -241,7 +241,9 @@ export default function CaptionInputPage() {
               isOpen={state.showContextMenu}
               selectedItems={state.selectedContextItems}
               onItemToggle={handleContextItemToggleEvent}
+              onClose={() => updateState({ showContextMenu: false })}
               menuRef={contextMenuRef}
+              plusButtonRef={plusButtonRef}
             />
 
             {/* Advanced Options Accordion */}
