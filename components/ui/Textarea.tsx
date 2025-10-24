@@ -1,4 +1,4 @@
-import React, { useId, useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { cn } from "../../lib/utils/cn";
 
 export interface TextareaProps
@@ -26,8 +26,16 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     },
     ref
   ) => {
-    const generatedId = useId();
-    const textareaId = id || `textarea-${generatedId}`;
+    const [textareaId, setTextareaId] = useState<string>("");
+
+    // Generate ID only on client side to avoid hydration mismatch
+    useEffect(() => {
+      if (!id) {
+        setTextareaId(`textarea-${Math.random().toString(36).substr(2, 9)}`);
+      }
+    }, [id]);
+
+    const finalTextareaId = id || textareaId;
     const hasError = !!error;
     const hasSuccess = success && !hasError;
     const internalRef = useRef<HTMLTextAreaElement>(null);
@@ -90,7 +98,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       <div className="w-full">
         {label && (
           <label
-            htmlFor={textareaId}
+            htmlFor={finalTextareaId}
             className="block text-sm font-medium text-text-head mb-2"
           >
             {label}
@@ -105,7 +113,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             className
           )}
           ref={textareaRef}
-          id={textareaId}
+          id={finalTextareaId}
           style={autoExpand ? { height: "auto" } : undefined}
           {...props}
         />
