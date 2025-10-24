@@ -190,7 +190,7 @@ export default function CaptionInputPage() {
                       : undefined
                   }
                   autoExpand={true}
-                  className="min-h-10 text-sm border-none rounded-xl"
+                  className="min-h-10 text-sm border-none rounded-xl text-text-head"
                   maxLength={500}
                 />
                 <div className="flex items-end justify-between mt-2">
