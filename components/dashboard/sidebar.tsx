@@ -17,6 +17,7 @@ import {
   Crown,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import ProBadge from "./ProBadge";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -191,45 +192,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         </nav>
 
         {/* Pro Badge */}
-        <div className="px-6 py-4 border-t border-border">
-          <AnimatePresence>
-            {isOpen ? (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.2 }}
-                className="bg-surface rounded-xl border border-border p-4"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-                    <Crown className="h-4 w-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-primary">
-                      Upgrade to Pro
-                    </p>
-                    <p className="text-xs text-text-body">
-                      Unlock all features
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.2 }}
-                className="flex justify-center"
-              >
-                <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center border border-border">
-                  <Crown className="h-5 w-5 text-white" />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+        <ProBadge isCollapsed={!isOpen} />
       </motion.aside>
     </>
   );
