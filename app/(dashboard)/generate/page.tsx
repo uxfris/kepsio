@@ -17,6 +17,7 @@ import {
   AdvancedOptions,
   EmptyState,
   CaptionResults,
+  ImmersiveLoading,
 } from "../../../components/captions";
 
 // Utils
@@ -56,14 +57,39 @@ export default function CaptionInputPage() {
       return;
     }
 
-    updateState({ isGenerating: true });
-    const captions = await generateCaptions(
-      state.contentInput,
-      contextData,
-      state.selectedContextItems,
-      options
-    );
-    updateState({ generatedCaptions: captions, isGenerating: false });
+    // Start immersive loading
+    updateState({
+      isGenerating: true,
+      showImmersiveLoading: true,
+      loadingPhase: "analyzing",
+      isLongGeneration: false,
+    });
+
+    try {
+      const captions = await generateCaptions(
+        state.contentInput,
+        contextData,
+        state.selectedContextItems,
+        options,
+        (phase) => updateState({ loadingPhase: phase })
+      );
+
+      // Complete loading
+      updateState({
+        generatedCaptions: captions,
+        isGenerating: false,
+        showImmersiveLoading: false,
+        loadingPhase: "complete",
+      });
+    } catch (error) {
+      // Handle error
+      updateState({
+        isGenerating: false,
+        showImmersiveLoading: false,
+        showError: true,
+      });
+      setTimeout(() => updateState({ showError: false }), 2000);
+    }
   };
 
   const handleCopyCaption = async (caption: string, index: number) => {
@@ -109,10 +135,18 @@ export default function CaptionInputPage() {
     );
   };
 
+  const handleLoadingComplete = () => {
+    updateState({ showImmersiveLoading: false });
+  };
+
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Panel - Input Section */}
-      <div className="w-full lg:w-[500px] bg-section border-r border-border flex flex-col">
+      <div
+        className={`w-full lg:w-[500px] bg-section border-r border-border flex flex-col transition-opacity duration-500 ${
+          state.showImmersiveLoading ? "opacity-30" : "opacity-100"
+        }`}
+      >
         {/* Header */}
         <Card
           variant="outlined"
@@ -259,9 +293,27 @@ export default function CaptionInputPage() {
             copiedIndex={state.copiedIndex}
             onCopyCaption={handleCopyCaption}
             onGenerateNew={() => updateState({ generatedCaptions: [] })}
+            platform="Instagram"
+            onSaveCaption={(caption, index) => {
+              // TODO: Implement save to library functionality
+              console.log("Save caption:", caption, index);
+            }}
+            onEditCaption={(caption, index) => {
+              // TODO: Implement inline editing functionality
+              console.log("Edit caption:", caption, index);
+            }}
           />
         )}
       </div>
+
+      {/* Immersive Loading Overlay */}
+      <ImmersiveLoading
+        isVisible={state.showImmersiveLoading}
+        onComplete={handleLoadingComplete}
+        onError={() =>
+          updateState({ showImmersiveLoading: false, showError: true })
+        }
+      />
     </div>
   );
 }

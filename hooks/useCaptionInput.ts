@@ -11,6 +11,9 @@ export const useCaptionInput = () => {
     copiedIndex: null,
     showContextMenu: false,
     selectedContextItems: [],
+    showImmersiveLoading: false,
+    loadingPhase: "analyzing",
+    isLongGeneration: false,
   });
 
   const [contextData, setContextData] = useState<ContextData>({

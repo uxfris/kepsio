@@ -49,6 +49,28 @@ export interface ContextOption {
   icon: any; // Lucide icon component
 }
 
+export interface CaptionMetadata {
+  length: "short" | "medium" | "long";
+  style:
+    | "hook-first"
+    | "story-driven"
+    | "cta-focused"
+    | "question-based"
+    | "direct";
+  engagementScore: "high" | "medium" | "low";
+  wordCount: number;
+  characterCount: number;
+}
+
+export interface EnhancedCaption {
+  id: string;
+  content: string;
+  preview: string;
+  metadata: CaptionMetadata;
+  isTopPick?: boolean;
+  isSaved?: boolean;
+}
+
 export interface PreviousPost {
   id: string;
   title: string;
@@ -79,4 +101,7 @@ export interface CaptionState {
   showContextMenu: boolean;
   selectedContextItems: string[];
   isAdvancedOpen: boolean;
+  showImmersiveLoading: boolean;
+  loadingPhase: "analyzing" | "hooking" | "matching" | "complete";
+  isLongGeneration: boolean;
 }

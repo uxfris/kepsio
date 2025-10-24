@@ -5,10 +5,25 @@ export const useCaptionGeneration = () => {
     contentInput: string,
     contextData: ContextData,
     selectedContextItems: string[],
-    options: CaptionOptions
+    options: CaptionOptions,
+    onPhaseUpdate?: (
+      phase: "analyzing" | "hooking" | "matching" | "complete"
+    ) => void
   ): Promise<string[]> => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Phase 1: Analyzing content (1-2s)
+    onPhaseUpdate?.("analyzing");
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Phase 2: Finding hooks (2-3s)
+    onPhaseUpdate?.("hooking");
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Phase 3: Matching brand voice (3-4s)
+    onPhaseUpdate?.("matching");
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Complete
+    onPhaseUpdate?.("complete");
 
     // Build context information
     const contextInfo = [];
