@@ -21,11 +21,13 @@ import {
 import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { Navbar } from "../../components/shared/Navbar";
+import SignupModal from "../../components/shared/SignupModal";
 
 export default function Home() {
   const [showVideo, setShowVideo] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState("instagram");
   const [testimonialIndex, setTestimonialIndex] = useState(0);
+  const [showSignupModal, setShowSignupModal] = useState(false);
 
   const testimonials = [
     {
@@ -95,7 +97,11 @@ export default function Home() {
       <Button variant="ghost" size="sm">
         Sign In
       </Button>
-      <Button variant="accent" size="sm">
+      <Button
+        variant="accent"
+        size="sm"
+        onClick={() => setShowSignupModal(true)}
+      >
         Start Free
       </Button>
     </div>
@@ -150,6 +156,7 @@ export default function Home() {
               size="lg"
               rightIcon={<ArrowRight className="w-5 h-5" />}
               className="text-lg px-8 py-4"
+              onClick={() => setShowSignupModal(true)}
             >
               Generate Your First Caption
             </Button>
@@ -483,7 +490,11 @@ export default function Home() {
                   <span className="text-text-body">All platforms</span>
                 </li>
               </ul>
-              <Button variant="outline" className="w-full">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => setShowSignupModal(true)}
+              >
                 Start Free
               </Button>
             </Card>
@@ -544,6 +555,7 @@ export default function Home() {
               <Button
                 variant="primary"
                 className="w-full bg-surface text-accent hover:bg-section-light"
+                onClick={() => setShowSignupModal(true)}
               >
                 Start Pro Trial
               </Button>
@@ -610,6 +622,7 @@ export default function Home() {
             size="lg"
             rightIcon={<ArrowRight className="w-5 h-5" />}
             className="bg-surface text-accent hover:bg-section-light text-lg px-10 py-5"
+            onClick={() => setShowSignupModal(true)}
           >
             Generate Your First Caption Free
           </Button>
@@ -847,6 +860,16 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Signup Modal */}
+      <SignupModal
+        isOpen={showSignupModal}
+        onClose={() => setShowSignupModal(false)}
+        onSuccess={(email) => {
+          console.log("Signup successful for:", email);
+          // Here you would typically redirect to the dashboard or show a success message
+        }}
+      />
     </div>
   );
 }
