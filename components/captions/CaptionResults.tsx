@@ -171,13 +171,6 @@ const CaptionCard: React.FC<{
 
       <CardHeader padding="md" className={isTopPick ? "pt-16" : ""}>
         <div className="space-y-4">
-          {/* Engagement Badge */}
-          <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-section-light rounded-full">
-            {getEngagementIcon()}
-            <span className="text-xs font-medium text-text-body">
-              {getEngagementText()}
-            </span>
-          </div>
           {/* Caption Content */}
           <div className="space-y-3">
             <p className="text-sm leading-relaxed text-text-head font-medium">
@@ -221,6 +214,14 @@ const CaptionCard: React.FC<{
                 : metadata.style === "story-driven"
                 ? "Story-driven"
                 : "CTA-focused"}
+            </Chip>
+            {/* Engagement Badge */}
+            <Chip
+              variant="outline"
+              size="sm"
+              className="bg-surface text-text-body"
+            >
+              {getEngagementText()}
             </Chip>
           </div>
         </div>
@@ -367,13 +368,11 @@ export const CaptionResults = ({
         </div>
 
         {/* Filter Chips */}
-        <div className="flex flex-wrap items-center gap-3 mb-10 animate-slide-in-up animate-delay-100">
-          <span className="text-sm font-medium text-text-head mr-2">
-            Filter by:
-          </span>
+        <div className="flex flex-wrap items-center gap-2 mb-7 animate-slide-in-up animate-delay-100">
           {filterOptions.map((option, index) => (
             <Chip
               key={option.id}
+              size="md"
               variant={activeFilter === option.id ? "selected" : "default"}
               onClick={() => setActiveFilter(option.id)}
               className="transition-all duration-200 hover:scale-105 animate-scale-in"
