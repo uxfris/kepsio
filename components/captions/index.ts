@@ -6,3 +6,4 @@ export { EmptyState } from "./EmptyState";
 export { CaptionResults } from "./CaptionResults";
 export { default as ImmersiveLoading } from "./ImmersiveLoading";
 export { default as EditCaptionModal } from "./EditCaptionModal";
+export { default as PaywallModal } from "./PaywallModal";
