@@ -116,8 +116,11 @@ export const ContextInputs = ({
               onContextDataUpdate({ selectedPreviousPost: value })
             }
           >
-            <SelectTrigger className="w-full border border-border rounded-xl bg-surface text-sm">
-              <SelectValue placeholder="Choose a previous post" />
+            <SelectTrigger
+              className="w-full border border-border rounded-xl bg-surface text-sm"
+              placeholder="Choose a previous post"
+            >
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {PREVIOUS_POSTS.map((post) => (
