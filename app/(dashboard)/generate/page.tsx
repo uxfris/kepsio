@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Sparkles, Plus } from "lucide-react";
+import { Sparkles, Plus, Wand, Wand2 } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
 import { Textarea } from "../../../components/ui/Textarea";
 import { Card, CardHeader, CardTitle } from "../../../components/ui/Card";
@@ -156,16 +156,14 @@ export default function CaptionInputPage() {
             className="border-0 border-b border-border rounded-none bg-section"
           >
             <CardHeader padding="sm">
-              <div className="flex items-center gap-3 mb-2">
-                <Sparkles className="w-5 h-5 text-text-head" />
-                <div>
-                  <CardTitle className="text-lg font-semibold text-primary">
-                    New Caption
-                  </CardTitle>
-                  <p className="text-sm font-medium">
-                    Describe your content and we'll craft the perfect caption
-                  </p>
-                </div>
+              <div className="space-y-2">
+                <h2 className="text-lg font-semibold text-primary tracking-tight flex items-center gap-2">
+                  <Wand2 className="w-5 h-5 text-accent" />
+                  New Caption
+                </h2>
+                <p className="text-sm font-medium text-text-body">
+                  Describe your content and we'll craft the perfect caption
+                </p>
               </div>
             </CardHeader>
           </Card>

@@ -151,6 +151,7 @@ const CaptionCard: React.FC<{
 
   return (
     <Card
+      padding="none"
       variant="elevated"
       className={`group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 relative overflow-hidden ${
         isTopPick ? "ring-2 ring-accent/30 shadow-accent/10" : ""
@@ -161,7 +162,7 @@ const CaptionCard: React.FC<{
         <div className="absolute top-0 left-0 right-0 bg-linear-to-r from-accent/10 to-accent/5 p-3 border-b border-accent/20">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-accent" />
-            <span className="text-sm font-semibold text-accent">
+            <span className="text-xs font-semibold text-accent">
               Our top pick for you
             </span>
           </div>
@@ -170,9 +171,16 @@ const CaptionCard: React.FC<{
 
       <CardHeader padding="md" className={isTopPick ? "pt-16" : ""}>
         <div className="space-y-4">
+          {/* Engagement Badge */}
+          <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-section-light rounded-full">
+            {getEngagementIcon()}
+            <span className="text-xs font-medium text-text-body">
+              {getEngagementText()}
+            </span>
+          </div>
           {/* Caption Content */}
           <div className="space-y-3">
-            <p className="text-base leading-relaxed text-text-body font-medium">
+            <p className="text-sm leading-relaxed text-text-head font-medium">
               {previewText}
             </p>
             {caption.length > 120 && (
@@ -191,34 +199,37 @@ const CaptionCard: React.FC<{
           </div>
 
           {/* Metadata badges */}
-          <div className="flex flex-wrap items-center gap-2">
-            <Chip variant="outline" size="sm" className="bg-surface">
+          <div className="flex flex-wrap items-center gap-1">
+            <Chip
+              variant="outline"
+              size="sm"
+              className="bg-surface text-text-body"
+            >
               {metadata.length === "short"
                 ? "Short"
                 : metadata.length === "medium"
                 ? "Medium"
                 : "Long"}
             </Chip>
-            <Chip variant="outline" size="sm" className="bg-surface">
+            <Chip
+              variant="outline"
+              size="sm"
+              className="bg-surface text-text-body"
+            >
               {metadata.style === "hook-first"
                 ? "Hook-first"
                 : metadata.style === "story-driven"
                 ? "Story-driven"
                 : "CTA-focused"}
             </Chip>
-            <div className="flex items-center gap-1.5 px-2 py-1 bg-section-light rounded-full">
-              {getEngagementIcon()}
-              <span className="text-xs font-medium text-text-body">
-                {getEngagementText()}
-              </span>
-            </div>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent padding="md" className="pt-0">
+      <CardContent padding="md" className="pt-3">
         {/* Action buttons */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {/* Primary Action - Copy */}
           <Button
             variant="primary"
             size="md"
@@ -230,28 +241,38 @@ const CaptionCard: React.FC<{
                 <Copy className="w-4 h-4" />
               )
             }
-            className="flex-1 font-semibold"
+            className="flex-1 text-sm font-semibold h-10"
           >
             {isCopied ? "Copied!" : "Copy"}
           </Button>
-          <Button
-            variant="outline"
-            size="md"
-            onClick={onEdit}
-            leftIcon={<Edit3 className="w-4 h-4" />}
-            className="px-4"
-          >
-            Edit
-          </Button>
-          <Button
-            variant="ghost"
-            size="md"
-            onClick={handleSave}
-            leftIcon={<Bookmark className="w-4 h-4" />}
-            className="px-4"
-          >
-            Save
-          </Button>
+
+          {/* Secondary Actions */}
+          <div className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onEdit}
+              className="h-10 w-10 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.edit-label]:block"
+              title="Edit caption"
+            >
+              <Edit3 className="w-4 h-4 shrink-0" />
+              <span className="edit-label ml-2 text-sm font-medium hidden whitespace-nowrap">
+                Edit
+              </span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleSave}
+              className="h-10 w-10 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.save-label]:block"
+              title="Save to library"
+            >
+              <Bookmark className="w-4 h-4 shrink-0 " />
+              <span className="save-label ml-2 text-sm font-medium hidden whitespace-nowrap">
+                Save
+              </span>
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -326,10 +347,11 @@ export const CaptionResults = ({
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 animate-slide-in-up">
           <div className="space-y-2">
-            <h2 className="text-3xl font-bold text-primary tracking-tight">
-              ✨ {captions.length} captions ready for {platform}
+            <h2 className="text-lg font-semibold text-primary tracking-tight flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-accent" />
+              {captions.length} captions ready for {platform}
             </h2>
-            <p className="text-lg text-text-body">
+            <p className="text-sm font-medium text-text-body">
               Choose your favorite or copy to use right away
             </p>
           </div>
@@ -455,36 +477,36 @@ export const CaptionResults = ({
 
         {/* Bottom Action Bar */}
         <div className="text-center p-8 bg-surface rounded-2xl border border-border shadow-sm animate-slide-in-up animate-delay-300">
-          <h3 className="text-lg font-semibold text-primary mb-2">
+          <h3 className="text-sm font-semibold text-primary mb-2">
             Need different options?
           </h3>
-          <p className="text-text-body mb-6">Try these variations:</p>
+          <p className="text-sm text-text-body mb-6">Try these variations:</p>
           <div className="flex flex-wrap justify-center gap-3">
             <Chip
-              variant="outline"
+              variant="default"
               size="md"
-              className="hover:bg-accent/10 hover:border-accent/30 transition-all duration-200 hover:scale-105"
+              className="border border-border transition-all duration-200 hover:scale-105 rounded-xl text-text-head"
             >
               More playful
             </Chip>
             <Chip
-              variant="outline"
+              variant="default"
               size="md"
-              className="hover:bg-accent/10 hover:border-accent/30 transition-all duration-200 hover:scale-105"
+              className="border border-border transition-all duration-200 hover:scale-105 rounded-xl text-text-head"
             >
               Add urgency
             </Chip>
             <Chip
-              variant="outline"
+              variant="default"
               size="md"
-              className="hover:bg-accent/10 hover:border-accent/30 transition-all duration-200 hover:scale-105"
+              className="border border-border transition-all duration-200 hover:scale-105 rounded-xl text-text-head"
             >
               Shorter
             </Chip>
             <Chip
-              variant="outline"
+              variant="default"
               size="md"
-              className="hover:bg-accent/10 hover:border-accent/30 transition-all duration-200 hover:scale-105"
+              className="border border-border transition-all duration-200 hover:scale-105 rounded-xl text-text-head"
             >
               More professional
             </Chip>
