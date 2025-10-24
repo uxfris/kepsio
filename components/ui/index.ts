@@ -63,3 +63,15 @@ export { Chip } from "./Chip";
 export type { ChipProps } from "./Chip";
 
 export { ToastProvider, useToast, toast } from "./Toast";
+
+export { SegmentedControl } from "./SegmentedControl";
+export type { SegmentedControlProps } from "./SegmentedControl";
+
+export { Slider } from "./Slider";
+export type { SliderProps } from "./Slider";
+
+export { Switch } from "./Switch";
+export type { SwitchProps } from "./Switch";
+
+export { Progress } from "./Progress";
+export type { ProgressProps } from "./Progress";
