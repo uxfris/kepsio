@@ -356,6 +356,16 @@ function DashboardContent() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Test Success Page Link - Remove in production */}
+        <div className="mt-4 text-center">
+          <Link
+            href="/success"
+            className="text-xs text-hint hover:text-accent transition-colors"
+          >
+            🧪 Test Success Page
+          </Link>
+        </div>
       </div>
     </div>
   );

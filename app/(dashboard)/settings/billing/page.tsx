@@ -1,15 +1,24 @@
 "use client";
 
 import React from "react";
-import { Zap, Check } from "lucide-react";
+import { Zap, Check, ExternalLink } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { Button } from "../../../../components/ui/Button";
 import { Card, CardContent } from "../../../../components/ui/Card";
 
 const BillingSettingsContent = () => {
+  const router = useRouter();
+
   // Billing Info
   const planType = "Free";
   const captionsRemaining = 6;
+
+  const handleUpgrade = () => {
+    // TODO: Implement actual upgrade logic with Stripe
+    // For now, redirect to success page for testing
+    router.push("/success");
+  };
 
   return (
     <div>
@@ -57,6 +66,7 @@ const BillingSettingsContent = () => {
           </div>
 
           <Button
+            onClick={handleUpgrade}
             className="w-full"
             size="lg"
             leftIcon={<Zap className="w-5 h-5" />}
@@ -89,6 +99,28 @@ const BillingSettingsContent = () => {
                 <span className="text-sm text-text-body">{feature}</span>
               </div>
             ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Test Success Page Link */}
+      <Card variant="outlined" className="mt-6 border-dashed border-border">
+        <CardContent padding="lg">
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-primary mb-2">
+              🧪 Test Success Page
+            </h3>
+            <p className="text-sm text-text-body mb-4">
+              Click below to preview the Post-Upgrade Success page
+            </p>
+            <Button
+              onClick={() => router.push("/success")}
+              variant="outline"
+              size="md"
+              rightIcon={<ExternalLink className="w-4 h-4" />}
+            >
+              View Success Page
+            </Button>
           </div>
         </CardContent>
       </Card>
