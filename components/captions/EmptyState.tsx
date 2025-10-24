@@ -11,7 +11,7 @@ interface EmptyStateProps {
 export const EmptyState = ({ type = "default", onRetry }: EmptyStateProps) => {
   if (type === "error") {
     return (
-      <div className="flex-1 flex items-center justify-center p-6 bg-section">
+      <div className="flex-1 flex items-center justify-center p-6 bg-section h-full">
         <div className="max-w-md mx-auto text-center">
           <Card variant="elevated" className="p-8">
             <CardContent padding="none">
@@ -55,7 +55,7 @@ export const EmptyState = ({ type = "default", onRetry }: EmptyStateProps) => {
   }
 
   return (
-    <div className="flex-1 flex items-center justify-center p-8 bg-section">
+    <div className="flex-1 flex items-center justify-center p-8 bg-section h-full">
       <div className="max-w-lg mx-auto text-center">
         {/* Illustration */}
         <div className="mb-10 relative">

@@ -142,7 +142,7 @@ export default function CaptionInputPage() {
 
   return (
     <ToastProvider>
-      <div className="min-h-screen flex flex-col lg:flex-row">
+      <div className="h-screen flex flex-col lg:flex-row">
         {/* Left Panel - Input Section */}
         <div className="w-full lg:w-1/3 bg-section border-r border-border flex flex-col">
           {/* Header */}
@@ -280,7 +280,7 @@ export default function CaptionInputPage() {
         </div>
 
         {/* Right Panel - Results Area */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-h-screen">
           {state.showImmersiveLoading ? (
             <ImmersiveLoading
               isVisible={state.showImmersiveLoading}
