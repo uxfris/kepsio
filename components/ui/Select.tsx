@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { ChevronDown, Check } from "lucide-react";
-import { cn } from "../../utils/cn";
+import { cn } from "../../lib/utils/cn";
 
 // Select Context
 interface SelectContextValue {

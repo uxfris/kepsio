@@ -24,12 +24,6 @@ export type {
   CardFooterProps,
 } from "./Card";
 
-export { Navbar } from "./Navbar";
-export type { NavbarProps, NavItem } from "./Navbar";
-
-export { Footer } from "./Footer";
-export type { FooterProps, FooterLink, SocialLink } from "./Footer";
-
 export { Modal, ModalHeader, ModalBody, ModalFooter } from "./Modal";
 export type {
   ModalProps,

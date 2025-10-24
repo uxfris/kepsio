@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "../../lib/utils/cn";
 
 export interface ModalProps {
   isOpen: boolean;

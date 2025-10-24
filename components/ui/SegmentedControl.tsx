@@ -1,12 +1,12 @@
 import React from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "../../lib/utils/cn";
 
-interface SegmentedControlOption {
+export interface SegmentedControlOption {
   value: string;
   label: string;
 }
 
-interface SegmentedControlProps {
+export interface SegmentedControlProps {
   options: SegmentedControlOption[];
   value: string;
   onChange: (value: string) => void;

@@ -1,5 +1,5 @@
 import React, { useId, useRef, useEffect } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "../../lib/utils/cn";
 
 export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {

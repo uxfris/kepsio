@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Caption Input Page - Refactored Structure
 
-## Getting Started
+This page has been refactored to follow React best practices with improved code organization, maintainability, and reusability.
 
-First, run the development server:
+## File Structure
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+app/caption-input/
+├── page.tsx                    # Main page component
+├── types.ts                    # TypeScript type definitions
+├── README.md                   # This documentation
+├── components/                 # Reusable UI components
+│   ├── index.ts               # Component exports
+│   ├── ContextMenu.tsx        # Context selection menu
+│   ├── ContextInputs.tsx      # Context input fields
+│   ├── SelectedContextItems.tsx # Selected context display
+│   ├── AdvancedOptions.tsx    # Advanced settings accordion
+│   ├── EmptyState.tsx         # Empty state display
+│   └── CaptionResults.tsx     # Generated captions display
+├── hooks/                      # Custom React hooks
+│   ├── index.ts               # Hook exports
+│   ├── useCaptionInput.ts     # Main state management hook
+│   └── useCaptionGeneration.ts # Caption generation logic
+└── utils/                      # Utility functions and constants
+    ├── index.ts               # Utility exports
+    ├── constants.ts           # Application constants
+    └── helpers.ts             # Helper functions
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Key Improvements
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. **Separation of Concerns**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Components**: Pure UI components with clear props interfaces
+- **Hooks**: Business logic and state management
+- **Utils**: Reusable functions and constants
+- **Types**: Centralized type definitions
 
-## Learn More
+### 2. **Custom Hooks**
 
-To learn more about Next.js, take a look at the following resources:
+- `useCaptionInput`: Manages all form state and context data
+- `useCaptionGeneration`: Handles caption generation and clipboard operations
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. **Reusable Components**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Each major UI section is now a separate, reusable component
+- Clear prop interfaces with TypeScript
+- Consistent styling and behavior
 
-## Deploy on Vercel
+### 4. **Better State Management**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Centralized state updates through custom hooks
+- Immutable state updates
+- Clear separation between UI state and business logic
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 5. **Improved Maintainability**
+
+- Smaller, focused files that are easier to understand and modify
+- Clear naming conventions
+- Consistent code organization
+
+### 6. **Type Safety**
+
+- Comprehensive TypeScript interfaces
+- Proper type checking throughout the application
+- Better IDE support and error catching
+
+## Usage
+
+The main page component now focuses solely on:
+
+- Orchestrating the different components
+- Handling high-level user interactions
+- Managing the overall page layout
+
+All complex logic has been extracted into custom hooks and utility functions, making the code more testable and maintainable.
+
+## Benefits
+
+1. **Easier Testing**: Each component and hook can be tested in isolation
+2. **Better Reusability**: Components can be reused in other parts of the application
+3. **Improved Performance**: Better separation allows for more targeted optimizations
+4. **Enhanced Developer Experience**: Clearer code structure and better TypeScript support
+5. **Easier Maintenance**: Changes to specific functionality are isolated to relevant files
