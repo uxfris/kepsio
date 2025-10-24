@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { ChevronDown, Check } from "lucide-react";
 import { cn } from "../../lib/utils/cn";
 
@@ -10,6 +11,7 @@ interface SelectContextValue {
   onValueChange: (value: string) => void;
   open: boolean;
   setOpen: (open: boolean) => void;
+  triggerRef: React.RefObject<HTMLElement>;
 }
 
 const SelectContext = React.createContext<SelectContextValue | null>(null);
@@ -33,12 +35,14 @@ interface SelectProps {
 const Select = React.forwardRef<HTMLDivElement, SelectProps>(
   ({ value, onValueChange, children, disabled = false }, ref) => {
     const [open, setOpen] = React.useState(false);
+    const triggerRef = React.useRef<HTMLElement>(null);
 
     const contextValue: SelectContextValue = {
       value,
       onValueChange,
       open,
       setOpen: disabled ? () => {} : setOpen,
+      triggerRef,
     };
 
     return (
@@ -62,11 +66,18 @@ interface SelectTriggerProps
 
 const SelectTrigger = React.forwardRef<HTMLButtonElement, SelectTriggerProps>(
   ({ className, children, placeholder, ...props }, ref) => {
-    const { open, setOpen, value } = useSelectContext();
+    const { open, setOpen, value, triggerRef } = useSelectContext();
 
     return (
       <button
-        ref={ref}
+        ref={(node) => {
+          if (typeof ref === "function") {
+            ref(node);
+          } else if (ref) {
+            ref.current = node;
+          }
+          triggerRef.current = node;
+        }}
         type="button"
         className={cn(
           "flex h-12 w-full items-center justify-between rounded-xl border border-border bg-surface px-3 py-4 text-sm font-medium text-text-head transition-colors",
@@ -122,15 +133,34 @@ interface SelectContentProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const SelectContent = React.forwardRef<HTMLDivElement, SelectContentProps>(
   ({ className, children, position = "popper", ...props }, ref) => {
-    const { open, setOpen } = useSelectContext();
+    const { open, setOpen, triggerRef } = useSelectContext();
     const contentRef = React.useRef<HTMLDivElement>(null);
+    const [positionStyle, setPositionStyle] =
+      React.useState<React.CSSProperties>({});
+
+    // Calculate position for portal
+    React.useEffect(() => {
+      if (open && triggerRef.current && contentRef.current) {
+        const triggerRect = triggerRef.current.getBoundingClientRect();
+
+        setPositionStyle({
+          position: "fixed",
+          top: triggerRect.bottom + window.scrollY + 4,
+          left: triggerRect.left + window.scrollX,
+          width: triggerRect.width,
+          zIndex: 50,
+        });
+      }
+    }, [open, triggerRef]);
 
     // Close on outside click
     React.useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
         if (
           contentRef.current &&
-          !contentRef.current.contains(event.target as Node)
+          !contentRef.current.contains(event.target as Node) &&
+          triggerRef.current &&
+          !triggerRef.current.contains(event.target as Node)
         ) {
           setOpen(false);
         }
@@ -162,14 +192,13 @@ const SelectContent = React.forwardRef<HTMLDivElement, SelectContentProps>(
 
     if (!open) return null;
 
-    return (
+    const content = (
       <div
         ref={contentRef}
+        style={positionStyle}
         className={cn(
-          "absolute z-50 min-w-32 overflow-hidden rounded-xl border border-border bg-surface shadow-lg",
+          "min-w-32 overflow-hidden rounded-xl border border-border bg-surface shadow-lg",
           "animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
-          position === "popper" && "top-full mt-1 w-full",
-          position === "item-aligned" && "top-0",
           className
         )}
         data-state={open ? "open" : "closed"}
@@ -178,6 +207,11 @@ const SelectContent = React.forwardRef<HTMLDivElement, SelectContentProps>(
         <div className="p-1">{children}</div>
       </div>
     );
+
+    // Use portal to render outside of clipped containers
+    return typeof window !== "undefined"
+      ? createPortal(content, document.body)
+      : null;
   }
 );
 
