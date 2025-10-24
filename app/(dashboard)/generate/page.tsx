@@ -101,6 +101,12 @@ export default function CaptionInputPage() {
     }
   };
 
+  const handleCaptionUpdate = (index: number, newCaption: string) => {
+    const updatedCaptions = [...state.generatedCaptions];
+    updatedCaptions[index] = newCaption;
+    updateState({ generatedCaptions: updatedCaptions });
+  };
+
   const handleImageUploadEvent = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -299,6 +305,7 @@ export default function CaptionInputPage() {
               copiedIndex={state.copiedIndex}
               onCopyCaption={handleCopyCaption}
               onGenerateNew={() => updateState({ generatedCaptions: [] })}
+              onCaptionUpdate={handleCaptionUpdate}
               platform="Instagram"
             />
           )}

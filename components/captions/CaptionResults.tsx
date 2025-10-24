@@ -14,12 +14,14 @@ import { Button } from "../ui/Button";
 import { Card, CardContent, CardHeader } from "../ui/Card";
 import { Chip } from "../ui/Chip";
 import { useToast, toast } from "../ui/Toast";
+import EditCaptionModal from "./EditCaptionModal";
 
 interface CaptionResultsProps {
   captions: string[];
   copiedIndex: number | null;
   onCopyCaption: (caption: string, index: number) => void;
   onGenerateNew: () => void;
+  onCaptionUpdate?: (index: number, newCaption: string) => void;
   platform?: string;
 }
 
@@ -285,19 +287,29 @@ export const CaptionResults = ({
   copiedIndex,
   onCopyCaption,
   onGenerateNew,
+  onCaptionUpdate,
   platform = "Instagram",
 }: CaptionResultsProps) => {
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [savedCaptions, setSavedCaptions] = useState<Set<number>>(new Set());
+  const [editingCaptionIndex, setEditingCaptionIndex] = useState<number | null>(
+    null
+  );
+  const [editedCaptions, setEditedCaptions] = useState<string[]>(captions);
+
+  // Update edited captions when captions prop changes
+  React.useEffect(() => {
+    setEditedCaptions(captions);
+  }, [captions]);
 
   const captionsWithMetadata = useMemo(
     () =>
-      captions.map((caption, index) => ({
+      editedCaptions.map((caption, index) => ({
         caption,
         index,
         metadata: getCaptionMetadata(caption),
       })),
-    [captions]
+    [editedCaptions]
   );
 
   const filteredCaptions = useMemo(() => {
@@ -328,8 +340,21 @@ export const CaptionResults = ({
   };
 
   const handleEditCaption = (index: number) => {
-    // TODO: Implement inline editing
-    console.log("Edit caption", index);
+    setEditingCaptionIndex(index);
+  };
+
+  const handleSaveEditedCaption = (newCaption: string) => {
+    if (editingCaptionIndex !== null) {
+      const updatedCaptions = [...editedCaptions];
+      updatedCaptions[editingCaptionIndex] = newCaption;
+      setEditedCaptions(updatedCaptions);
+      onCaptionUpdate?.(editingCaptionIndex, newCaption);
+      setEditingCaptionIndex(null);
+    }
+  };
+
+  const handleCloseEditModal = () => {
+    setEditingCaptionIndex(null);
   };
 
   const filterOptions = [
@@ -512,6 +537,17 @@ export const CaptionResults = ({
           </div>
         </div>
       </div>
+
+      {/* Edit Caption Modal */}
+      {editingCaptionIndex !== null && (
+        <EditCaptionModal
+          isOpen={editingCaptionIndex !== null}
+          originalCaption={captions[editingCaptionIndex]}
+          onClose={handleCloseEditModal}
+          onSave={handleSaveEditedCaption}
+          onCopy={(caption) => onCopyCaption(caption, editingCaptionIndex)}
+        />
+      )}
     </div>
   );
 };
