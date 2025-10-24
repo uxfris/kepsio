@@ -85,10 +85,10 @@ export default function SignupModal({
       setSuccess(true);
       onSuccess?.(email);
 
-      // Auto close after success
-      setTimeout(() => {
-        onClose();
-      }, 2000);
+      // // Auto close after success
+      // setTimeout(() => {
+      //   onClose();
+      // }, 5000);
     } catch (err) {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -123,16 +123,16 @@ export default function SignupModal({
       >
         {/* Modal Container */}
         <Card
-          className="max-w-md w-full animate-scale-in shadow-2xl border-border-alt"
+          className="max-w-md w-full animate-scale-in shadow-2xl border-border-alt relative"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 hover:bg-section-light rounded-lg transition-colors group z-10"
+            className="absolute top-4 right-4 p-2 hover:bg-section-light rounded-lg transition-colors group z-10 bg-surface/80 backdrop-blur-sm border border-border/50"
             aria-label="Close modal"
           >
-            <X className="w-5 h-5 text-hint group-hover:text-text-body" />
+            <X className="w-5 h-5 text-text-body group-hover:text-text-head" />
           </button>
 
           {/* Modal Content */}
