@@ -8,7 +8,11 @@ import { Card, CardHeader, CardTitle } from "../../../components/ui/Card";
 import { ToastProvider } from "../../../components/ui/Toast";
 
 // Custom hooks
-import { useCaptionInput, useCaptionGeneration } from "../../../hooks";
+import {
+  useCaptionInput,
+  useCaptionGeneration,
+  usePaywall,
+} from "../../../hooks";
 
 // Components
 import {
@@ -19,6 +23,7 @@ import {
   EmptyState,
   CaptionResults,
   ImmersiveLoading,
+  PaywallModal,
 } from "../../../components/captions";
 
 // Utils
@@ -44,6 +49,13 @@ export default function CaptionInputPage() {
   } = useCaptionInput();
 
   const { generateCaptions, copyToClipboard } = useCaptionGeneration();
+  const {
+    isPaywallOpen,
+    currentUsage,
+    hidePaywall,
+    handleUpgrade,
+    checkUsageLimit,
+  } = usePaywall();
 
   // Event handlers
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -56,6 +68,12 @@ export default function CaptionInputPage() {
       updateState({ showError: true });
       setTimeout(() => updateState({ showError: false }), 2000);
       return;
+    }
+
+    // Check usage limit before generating
+    const hasHitLimit = checkUsageLimit(CREDITS.remaining, CREDITS.total);
+    if (hasHitLimit) {
+      return; // Paywall modal will be shown
     }
 
     // Start immersive loading
@@ -283,6 +301,13 @@ export default function CaptionInputPage() {
                 </span>{" "}
                 free captions left
               </span>
+              {CREDITS.remaining === 0 && (
+                <div className="mt-2">
+                  <span className="text-xs text-warning">
+                    You've reached your free limit
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -311,6 +336,14 @@ export default function CaptionInputPage() {
           )}
         </div>
       </div>
+
+      {/* Paywall Modal */}
+      <PaywallModal
+        isOpen={isPaywallOpen}
+        onClose={hidePaywall}
+        onUpgrade={handleUpgrade}
+        currentUsage={currentUsage}
+      />
     </ToastProvider>
   );
 }
