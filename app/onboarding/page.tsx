@@ -53,8 +53,8 @@ export default function OnboardingPage() {
       description: "Professional networking",
     },
     {
-      id: "twitter",
-      name: "Twitter/X",
+      id: "x",
+      name: "X",
       network: "x",
       description: "Real-time conversations",
     },

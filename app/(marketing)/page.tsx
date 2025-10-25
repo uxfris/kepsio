@@ -59,7 +59,7 @@ export default function Home() {
         "Excited to share our latest achievement. Great team effort. #business #success",
       ours: "3 years ago, we pitched this idea to 47 investors.\n\n46 said no.\n\nToday, we're announcing $5M in revenue. Here's what we learned about resilience:\n\n→ Rejection isn't failure—it's data\n→ Your timeline isn't their timeline\n→ One yes can change everything\n\nTo everyone building in the shadows: keep going.",
     },
-    twitter: {
+    x: {
       generic: "New blog post is live! Check it out. #content #blog",
       ours: "spent 40 hours writing about why most AI tools feel soulless\n\ntl;dr: they optimize for clicks, not connection\n\nfull breakdown (actually worth reading): [link]",
     },
@@ -203,7 +203,7 @@ export default function Home() {
             {[
               { id: "instagram", network: "instagram", label: "Instagram" },
               { id: "linkedin", network: "linkedin", label: "LinkedIn" },
-              { id: "twitter", network: "twitter", label: "Twitter/X" },
+              { id: "x", network: "x", label: "X" },
             ].map((platform) => (
               <Button
                 key={platform.id}
@@ -655,10 +655,7 @@ export default function Home() {
                   href="#"
                   className="w-9 h-9 bg-primary/50 hover:bg-primary/70 rounded-lg flex items-center justify-center transition-colors"
                 >
-                  <SocialIcon
-                    network="twitter"
-                    style={{ width: 16, height: 16 }}
-                  />
+                  <SocialIcon network="x" style={{ width: 16, height: 16 }} />
                 </a>
                 <a
                   href="#"

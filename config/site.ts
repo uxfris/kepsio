@@ -4,7 +4,7 @@ export const siteConfig = {
   url: "https://kepsio.com",
   ogImage: "https://kepsio.com/og.jpg",
   links: {
-    twitter: "https://twitter.com/kepsio",
+    x: "https://x.com/kepsio",
     github: "https://github.com/kepsio",
   },
 };

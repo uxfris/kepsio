@@ -206,7 +206,7 @@ export default function SignupModal({
                     variant="outline"
                     size="lg"
                     className="w-full justify-center gap-3"
-                    onClick={() => handleSSOSignup("Twitter")}
+                    onClick={() => handleSSOSignup("X")}
                     disabled={isLoading}
                     leftIcon={
                       <svg

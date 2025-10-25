@@ -68,7 +68,7 @@ const savedCaptions = [
     id: "4",
     content:
       "Quick tip: Your audience doesn't want perfection, they want authenticity. Show up as you are, share your process, and watch engagement soar. 📈",
-    platform: "twitter",
+    platform: "x",
     style: "Educational",
     savedDate: "2024-01-17",
     performance: "medium",
@@ -104,7 +104,7 @@ const savedCaptions = [
     id: "7",
     content:
       "Hot take: Your content doesn't need to go viral. It needs to resonate with the RIGHT people. Quality audience > vanity metrics every time. 💯",
-    platform: "twitter",
+    platform: "x",
     style: "Hot Take",
     savedDate: "2024-01-12",
     performance: "high",
@@ -208,9 +208,7 @@ export default function LibraryPage() {
       linkedin: (
         <SocialIcon network="linkedin" style={{ width: 16, height: 16 }} />
       ),
-      twitter: (
-        <SocialIcon network="twitter" style={{ width: 16, height: 16 }} />
-      ),
+      x: <SocialIcon network="x" style={{ width: 16, height: 16 }} />,
     };
     return icons[platform as keyof typeof icons];
   };
@@ -432,25 +430,23 @@ export default function LibraryPage() {
                           Platform
                         </label>
                         <div className="flex flex-wrap gap-2">
-                          {["instagram", "linkedin", "twitter"].map(
-                            (platform) => (
-                              <button
-                                key={platform}
-                                onClick={() => togglePlatformFilter(platform)}
-                                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
-                                  selectedPlatforms.includes(platform)
-                                    ? `${getPlatformColor(platform)} border-2`
-                                    : "bg-chip-bg text-text-body hover:bg-section-light border-border"
-                                }`}
-                              >
-                                {getPlatformIcon(platform)}
-                                <span className="capitalize">{platform}</span>
-                                {selectedPlatforms.includes(platform) && (
-                                  <Check className="w-3 h-3" />
-                                )}
-                              </button>
-                            )
-                          )}
+                          {["instagram", "linkedin", "x"].map((platform) => (
+                            <button
+                              key={platform}
+                              onClick={() => togglePlatformFilter(platform)}
+                              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
+                                selectedPlatforms.includes(platform)
+                                  ? `${getPlatformColor(platform)} border-2`
+                                  : "bg-chip-bg text-text-body hover:bg-section-light border-border"
+                              }`}
+                            >
+                              {getPlatformIcon(platform)}
+                              <span className="capitalize">{platform}</span>
+                              {selectedPlatforms.includes(platform) && (
+                                <Check className="w-3 h-3" />
+                              )}
+                            </button>
+                          ))}
                         </div>
                       </div>
 
