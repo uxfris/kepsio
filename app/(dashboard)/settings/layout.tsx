@@ -3,26 +3,13 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  User,
-  Bell,
-  CreditCard,
-  Shield,
-  Palette,
-  ChevronRight,
-} from "lucide-react";
+import { User, Bell, CreditCard, Shield, ChevronRight } from "lucide-react";
 
 const SettingsLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
 
   const settingsTabs = [
     { id: "account", label: "Account", icon: User, href: "/settings/account" },
-    {
-      id: "voice",
-      label: "Brand Voice",
-      icon: Palette,
-      href: "/settings/voice",
-    },
     {
       id: "notification",
       label: "Notifications",
@@ -102,4 +89,3 @@ const SettingsLayout = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default SettingsLayout;
-
