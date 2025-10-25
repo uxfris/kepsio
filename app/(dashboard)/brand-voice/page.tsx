@@ -344,7 +344,7 @@ const BrandVoiceContent = () => {
             {/* Training Overview */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Progress Card */}
-              <Card className="lg:col-span-2">
+              <Card className="lg:col-span-2" padding="none">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
@@ -424,7 +424,7 @@ const BrandVoiceContent = () => {
               </Card>
 
               {/* Quick Actions Card */}
-              <Card>
+              <Card padding="none">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -463,7 +463,7 @@ const BrandVoiceContent = () => {
             </div>
 
             {/* Upload Section */}
-            <Card>
+            <Card padding="none">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center">
@@ -558,7 +558,7 @@ const BrandVoiceContent = () => {
             </Card>
 
             {/* Uploaded Samples List */}
-            <Card>
+            <Card padding="none">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
@@ -692,7 +692,7 @@ const BrandVoiceContent = () => {
         {activeTab === "tone" && (
           <div className="max-w-5xl space-y-8">
             {/* Tone Selector */}
-            <Card>
+            <Card padding="none">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center">
@@ -752,7 +752,7 @@ const BrandVoiceContent = () => {
             {/* Voice Settings Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Voice Strength Slider */}
-              <Card>
+              <Card padding="none">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -803,7 +803,7 @@ const BrandVoiceContent = () => {
               </Card>
 
               {/* Style Preferences */}
-              <Card>
+              <Card padding="none">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center">
@@ -897,7 +897,7 @@ const BrandVoiceContent = () => {
             </div>
 
             {/* Voice Preview */}
-            <Card>
+            <Card padding="none">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-info/10 rounded-lg flex items-center justify-center">
@@ -977,7 +977,7 @@ const BrandVoiceContent = () => {
             {/* Voice Analysis Overview */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Main Analysis Card */}
-              <Card className="lg:col-span-2">
+              <Card className="lg:col-span-2" padding="none">
                 <CardHeader>
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center">
@@ -1099,7 +1099,7 @@ const BrandVoiceContent = () => {
               </Card>
 
               {/* Voice Strength Indicator */}
-              <Card>
+              <Card padding="none">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -1145,7 +1145,7 @@ const BrandVoiceContent = () => {
             </div>
 
             {/* Voice Recommendations */}
-            <Card>
+            <Card padding="none">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-info/10 rounded-lg flex items-center justify-center">

@@ -119,7 +119,7 @@ export default function ProBadge({ isCollapsed }: ProBadgeProps) {
 
         {/* CTA Button */}
         {!isPro ? (
-          <Link href="/settings/billing">
+          <Link href="/pricing">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
