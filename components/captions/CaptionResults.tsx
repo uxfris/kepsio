@@ -229,9 +229,12 @@ const CaptionCard: React.FC<{
         </div>
       </CardHeader>
 
-      <CardContent padding="md" className="pt-3">
+      <CardContent
+        padding="md"
+        className="pt-0 group-hover:pt-3 h-0 group-hover:h-auto overflow-hidden transition-all duration-200"
+      >
         {/* Action buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           {/* Primary Action - Copy */}
           <Button
             variant="primary"

@@ -180,7 +180,7 @@ function DashboardContent() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card
             variant="outlined"
-            className="hover:shadow-sm transition-all duration-200 hover:border-accent/30"
+            className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
           >
             <CardContent padding="none">
               <div className="space-y-3">
@@ -209,7 +209,7 @@ function DashboardContent() {
 
           <Card
             variant="outlined"
-            className="hover:shadow-sm transition-all duration-200 hover:border-accent/30"
+            className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
           >
             <CardContent padding="none">
               <div className="space-y-3">
@@ -238,7 +238,7 @@ function DashboardContent() {
 
           <Card
             variant="outlined"
-            className="hover:shadow-sm transition-all duration-200 hover:border-accent/30"
+            className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
           >
             <CardContent padding="none">
               <div className="space-y-3">
@@ -293,7 +293,7 @@ function DashboardContent() {
               <Card
                 key={caption.id}
                 variant="outlined"
-                className="cursor-pointer group overflow-hidden"
+                className="cursor-pointer group overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
                 onMouseEnter={() => setHoveredCard(caption.id)}
                 onMouseLeave={() => setHoveredCard(null)}
               >
