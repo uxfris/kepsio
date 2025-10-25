@@ -13,9 +13,6 @@ import {
   Copy,
   Edit2,
   Trash2,
-  Instagram,
-  Linkedin,
-  Twitter,
   MoreVertical,
   Download,
   Tag,
@@ -26,6 +23,7 @@ import {
   Zap,
   ChevronDown,
 } from "lucide-react";
+import { SocialIcon } from "react-social-icons";
 
 export default function SavedLibrary() {
   const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'list'
@@ -123,9 +121,15 @@ export default function SavedLibrary() {
 
   const getPlatformIcon = (platform) => {
     const icons = {
-      instagram: <Instagram className="w-4 h-4" />,
-      linkedin: <Linkedin className="w-4 h-4" />,
-      twitter: <Twitter className="w-4 h-4" />,
+      instagram: (
+        <SocialIcon network="instagram" style={{ width: 16, height: 16 }} />
+      ),
+      linkedin: (
+        <SocialIcon network="linkedin" style={{ width: 16, height: 16 }} />
+      ),
+      twitter: (
+        <SocialIcon network="twitter" style={{ width: 16, height: 16 }} />
+      ),
     };
     return icons[platform];
   };
@@ -491,7 +495,10 @@ export default function SavedLibrary() {
             <div className="bg-white rounded-lg border border-gray-200 p-4">
               <div className="text-sm text-gray-600 mb-1">Top Platform</div>
               <div className="flex items-center gap-2 mt-1">
-                <Instagram className="w-5 h-5 text-pink-600" />
+                <SocialIcon
+                  network="instagram"
+                  style={{ width: 20, height: 20 }}
+                />
                 <span className="text-lg font-bold text-gray-900">
                   Instagram
                 </span>

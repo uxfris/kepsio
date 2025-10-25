@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
   Sparkles,
@@ -10,12 +10,11 @@ import {
   Bookmark,
   TrendingUp,
   Clock,
-  Instagram,
-  Linkedin,
-  Twitter,
   Zap,
   Crown,
+  History,
 } from "lucide-react";
+import { SocialIcon } from "react-social-icons";
 import { Button } from "../../../components/ui/Button";
 import {
   Card,
@@ -70,7 +69,7 @@ const recentCaptions = [
     fullText:
       "Quick tip: Your audience doesn't want perfection, they want authenticity. Show up as you are, share your process, and watch engagement soar. 📈",
     date: "3 days ago",
-    platform: "twitter",
+    platform: "x",
     style: "Educational",
   },
   {
@@ -100,27 +99,24 @@ function DashboardContent() {
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
       case "instagram":
-        return <Instagram className="w-4 h-4" />;
+        return (
+          <SocialIcon network="instagram" style={{ width: 16, height: 16 }} />
+        );
       case "linkedin":
-        return <Linkedin className="w-4 h-4" />;
-      case "twitter":
-        return <Twitter className="w-4 h-4" />;
+        return (
+          <SocialIcon network="linkedin" style={{ width: 16, height: 16 }} />
+        );
+      case "x":
+        return <SocialIcon network="x" style={{ width: 16, height: 16 }} />;
       default:
-        return <Instagram className="w-4 h-4" />;
+        return (
+          <SocialIcon network="instagram" style={{ width: 16, height: 16 }} />
+        );
     }
   };
 
   const getPlatformColor = (platform: string) => {
-    switch (platform) {
-      case "instagram":
-        return "bg-pink-100 text-pink-600 border-pink-200";
-      case "linkedin":
-        return "bg-blue-100 text-blue-600 border-blue-200";
-      case "twitter":
-        return "bg-sky-100 text-sky-600 border-sky-200";
-      default:
-        return "bg-gray-100 text-gray-600 border-gray-200";
-    }
+    return "bg-gray-100 text-gray-600 border-gray-200";
   };
 
   const handleCopyCaption = async (captionText: string) => {
@@ -146,14 +142,19 @@ function DashboardContent() {
   return (
     <div className="min-h-screen bg-section">
       {/* Header */}
-      <div className="bg-surface border-b border-border">
-        <div className="px-6 py-6">
+      <Card
+        variant="outlined"
+        padding="none"
+        className="border-0 border-b border-border rounded-none bg-section"
+      >
+        <CardHeader padding="lg">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-display font-semibold text-primary mb-1">
+            <div className="space-y-1">
+              <h1 className="text-2xl font-semibold text-primary tracking-tight flex items-center gap-2">
+                <Sparkles className="w-6 h-6 text-accent" />
                 Hey {mockUser.name}, ready to create? 👋
               </h1>
-              <p className="text-text-body">
+              <p className="text-sm font-medium text-text-body">
                 Generate engaging captions that match your unique voice
               </p>
             </div>
@@ -168,77 +169,94 @@ function DashboardContent() {
               </Button>
             </Link>
           </div>
-        </div>
-      </div>
+        </CardHeader>
+      </Card>
 
       {/* Dashboard Content */}
-      <div className="px-6 py-8">
+      <div className="px-6 py-6">
         {/* Quick Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card
             variant="outlined"
-            className="hover:shadow-sm transition-shadow"
+            className="hover:shadow-sm transition-all duration-200 hover:border-accent/30"
           >
-            <CardContent padding="lg">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-accent" />
+            <CardContent padding="none">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-accent" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-primary">
+                      Captions Created
+                    </h3>
+                    <p className="text-xs text-hint">This month</p>
+                  </div>
                 </div>
-                <span className="text-sm font-medium text-text-body">
-                  Captions Created
-                </span>
-              </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-display font-bold text-primary">
-                  {mockUser.captionsCreated}
-                </span>
-                <span className="text-sm text-hint">this month</span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold text-primary">
+                    {mockUser.captionsCreated}
+                  </span>
+                  <span className="text-sm text-hint">
+                    of {mockUser.totalCredits}
+                  </span>
+                </div>
               </div>
             </CardContent>
           </Card>
 
           <Card
             variant="outlined"
-            className="hover:shadow-sm transition-shadow"
+            className="hover:shadow-sm transition-all duration-200 hover:border-accent/30"
           >
-            <CardContent padding="lg">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-green-600" />
+            <CardContent padding="none">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <TrendingUp className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-primary">
+                      Avg. Engagement
+                    </h3>
+                    <p className="text-xs text-hint">Performance</p>
+                  </div>
                 </div>
-                <span className="text-sm font-medium text-text-body">
-                  Avg. Engagement
-                </span>
-              </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-display font-bold text-primary">
-                  {mockUser.avgEngagement}%
-                </span>
-                <span className="text-sm text-green-600 font-medium">
-                  +{mockUser.engagementChange}%
-                </span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold text-primary">
+                    {mockUser.avgEngagement}%
+                  </span>
+                  <span className="text-sm text-green-600 font-semibold">
+                    +{mockUser.engagementChange}%
+                  </span>
+                </div>
               </div>
             </CardContent>
           </Card>
 
           <Card
             variant="outlined"
-            className="hover:shadow-sm transition-shadow"
+            className="hover:shadow-sm transition-all duration-200 hover:border-accent/30"
           >
-            <CardContent padding="lg">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-blue-600" />
+            <CardContent padding="none">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <Clock className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-primary">
+                      Time Saved
+                    </h3>
+                    <p className="text-xs text-hint">This month</p>
+                  </div>
                 </div>
-                <span className="text-sm font-medium text-text-body">
-                  Time Saved
-                </span>
-              </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-display font-bold text-primary">
-                  {mockUser.timeSaved}
-                </span>
-                <span className="text-sm text-hint">hours</span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold text-primary">
+                    {mockUser.timeSaved}
+                  </span>
+                  <span className="text-sm text-hint">hours</span>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -247,9 +265,15 @@ function DashboardContent() {
         {/* Recent Captions Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-display font-semibold text-primary">
-              Recent Captions
-            </h2>
+            <div className="space-y-1">
+              <h2 className="text-lg font-semibold text-primary tracking-tight flex items-center gap-2">
+                <History className="w-5 h-5 text-accent" />
+                Recent Captions
+              </h2>
+              <p className="text-sm text-text-body">
+                Your latest caption creations
+              </p>
+            </div>
             <Link href="/library">
               <Button
                 variant="ghost"
@@ -262,62 +286,91 @@ function DashboardContent() {
           </div>
 
           {/* Caption Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {recentCaptions.map((caption) => (
               <Card
                 key={caption.id}
                 variant="outlined"
-                className="hover:border-accent/30 hover:shadow-sm transition-all cursor-pointer group"
+                className="hover:border-accent/30 hover:shadow-sm transition-all duration-200 cursor-pointer group overflow-hidden"
                 onMouseEnter={() => setHoveredCard(caption.id)}
                 onMouseLeave={() => setHoveredCard(null)}
               >
-                <CardContent padding="md">
-                  {/* Platform Badge */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div
-                      className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium border ${getPlatformColor(
-                        caption.platform
-                      )}`}
-                    >
-                      {getPlatformIcon(caption.platform)}
-                      <span className="capitalize">{caption.platform}</span>
+                <CardContent
+                  padding="none"
+                  className={`transition-all duration-200`}
+                >
+                  <div className="space-y-4">
+                    {/* Platform Badge and Date */}
+                    <div className="flex items-center justify-between">
+                      <div
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border ${getPlatformColor(
+                          caption.platform
+                        )}`}
+                      >
+                        {getPlatformIcon(caption.platform)}
+                        <span className="capitalize">{caption.platform}</span>
+                      </div>
+                      <span className="text-xs text-hint font-medium">
+                        {caption.date}
+                      </span>
                     </div>
-                    <span className="text-xs text-hint">{caption.date}</span>
-                  </div>
 
-                  {/* Caption Preview */}
-                  <p className="text-sm text-text-body mb-3 line-clamp-3 leading-relaxed">
-                    {caption.snippet}
-                  </p>
+                    {/* Caption Preview */}
+                    <div className="space-y-3">
+                      <p className="text-sm text-text-body line-clamp-3 leading-relaxed">
+                        {caption.snippet}
+                      </p>
 
-                  {/* Style Tag */}
-                  <div className="mb-4">
-                    <span className="inline-block px-2 py-1 bg-chip-bg text-text-body text-xs rounded-md border border-border">
-                      {caption.style}
-                    </span>
-                  </div>
+                      {/* Style Tag */}
+                      <div>
+                        <span className="inline-block px-3 py-1.5 bg-surface text-text-body text-xs font-medium rounded-lg border border-border">
+                          {caption.style}
+                        </span>
+                      </div>
+                    </div>
 
-                  {/* Action Buttons - Show on Hover */}
-                  <div
-                    className={`flex items-center gap-2 transition-opacity duration-200 ${
-                      hoveredCard === caption.id ? "opacity-100" : "opacity-0"
-                    }`}
-                  >
-                    <Button
-                      onClick={() => handleCopyCaption(caption.fullText)}
-                      variant="primary"
-                      size="sm"
-                      leftIcon={<Copy className="w-3.5 h-3.5" />}
-                      className="flex-1 text-xs"
+                    {/* Action Buttons - Show on Hover with Height Animation */}
+                    <div
+                      className={`transition-all duration-200 overflow-hidden ${
+                        hoveredCard === caption.id
+                          ? "opacity-100 max-h-12 translate-y-0"
+                          : "opacity-0 max-h-0 -translate-y-2"
+                      }`}
                     >
-                      Copy
-                    </Button>
-                    <Button variant="ghost" size="icon" className="w-9 h-9">
-                      <RotateCcw className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="w-9 h-9">
-                      <Bookmark className="w-4 h-4" />
-                    </Button>
+                      <div className="flex items-center gap-2 pt-2">
+                        <Button
+                          onClick={() => handleCopyCaption(caption.fullText)}
+                          variant="primary"
+                          size="sm"
+                          leftIcon={<Copy className="w-3.5 h-3.5" />}
+                          className="flex-1 text-xs font-semibold"
+                        >
+                          Copy
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-9 w-9 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.rotate-label]:block"
+                          title="Regenerate caption"
+                        >
+                          <RotateCcw className="w-4 h-4 shrink-0" />
+                          <span className="rotate-label ml-2 text-sm font-medium hidden whitespace-nowrap">
+                            Regenerate
+                          </span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-9 w-9 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.bookmark-label]:block"
+                          title="Save to library"
+                        >
+                          <Bookmark className="w-4 h-4 shrink-0" />
+                          <span className="bookmark-label ml-2 text-sm font-medium hidden whitespace-nowrap">
+                            Save
+                          </span>
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -326,28 +379,27 @@ function DashboardContent() {
         </div>
 
         {/* Upgrade Prompt */}
-        <Card className="bg-linear-to-r from-accent to-accent/80 border-accent/20">
+        <Card className="bg-linear-to-r from-accent to-accent/80 border-accent/20 overflow-hidden">
           <CardContent padding="lg">
             <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-display font-semibold text-white mb-1">
-                  Ready to unlock unlimited captions?
-                </h3>
-                <p className="text-white/90 text-sm">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Crown className="w-5 h-5 text-white" />
+                  <h3 className="text-lg font-semibold text-white tracking-tight">
+                    Ready to unlock unlimited captions?
+                  </h3>
+                </div>
+                <p className="text-white/90 text-sm font-medium">
                   Get 10 variations per generation, advanced voice cloning, and
-                  analytics
+                  detailed analytics
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1 text-white/90 text-sm">
-                  <Crown className="w-4 h-4" />
-                  <span>Pro features</span>
-                </div>
                 <Link href="/settings/billing">
                   <Button
                     variant="outline"
                     size="lg"
-                    className="bg-white hover:bg-gray-50 text-accent border-white font-semibold shadow-lg"
+                    className="bg-white hover:bg-gray-50 text-accent border-white font-semibold shadow-lg transition-all duration-200 hover:shadow-xl"
                   >
                     Upgrade to Pro
                   </Button>
@@ -358,10 +410,10 @@ function DashboardContent() {
         </Card>
 
         {/* Test Success Page Link - Remove in production */}
-        <div className="mt-4 text-center">
+        <div className="mt-6 text-center">
           <Link
             href="/success"
-            className="text-xs text-hint hover:text-accent transition-colors"
+            className="text-xs text-hint hover:text-accent transition-colors font-medium"
           >
             🧪 Test Success Page
           </Link>

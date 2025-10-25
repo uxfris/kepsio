@@ -13,7 +13,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     const variants = {
       default: "border border-border-alt",
       elevated: "border border-border-alt",
-      outlined: "border-2 border-border-alt",
+      outlined: "border border-border-alt",
     };
 
     const paddings = {

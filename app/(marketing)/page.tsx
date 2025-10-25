@@ -9,15 +9,13 @@ import {
   Zap,
   MessageSquare,
   TrendingUp,
-  Instagram,
-  Twitter,
-  Linkedin,
   Star,
   ChevronLeft,
   ChevronRight,
   Menu,
   X,
 } from "lucide-react";
+import { SocialIcon } from "react-social-icons";
 import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { Navbar } from "../../components/shared/Navbar";
@@ -203,9 +201,9 @@ export default function Home() {
           {/* Platform Selector */}
           <div className="flex justify-center gap-3 mb-6">
             {[
-              { id: "instagram", icon: Instagram, label: "Instagram" },
-              { id: "linkedin", icon: Linkedin, label: "LinkedIn" },
-              { id: "twitter", icon: Twitter, label: "Twitter/X" },
+              { id: "instagram", network: "instagram", label: "Instagram" },
+              { id: "linkedin", network: "linkedin", label: "LinkedIn" },
+              { id: "twitter", network: "twitter", label: "Twitter/X" },
             ].map((platform) => (
               <Button
                 key={platform.id}
@@ -214,7 +212,12 @@ export default function Home() {
                 }
                 size="sm"
                 onClick={() => setSelectedPlatform(platform.id)}
-                leftIcon={<platform.icon className="w-4 h-4" />}
+                leftIcon={
+                  <SocialIcon
+                    network={platform.network}
+                    style={{ width: 16, height: 16 }}
+                  />
+                }
               >
                 {platform.label}
               </Button>
@@ -652,19 +655,28 @@ export default function Home() {
                   href="#"
                   className="w-9 h-9 bg-primary/50 hover:bg-primary/70 rounded-lg flex items-center justify-center transition-colors"
                 >
-                  <Twitter className="w-4 h-4" />
+                  <SocialIcon
+                    network="twitter"
+                    style={{ width: 16, height: 16 }}
+                  />
                 </a>
                 <a
                   href="#"
                   className="w-9 h-9 bg-primary/50 hover:bg-primary/70 rounded-lg flex items-center justify-center transition-colors"
                 >
-                  <Instagram className="w-4 h-4" />
+                  <SocialIcon
+                    network="instagram"
+                    style={{ width: 16, height: 16 }}
+                  />
                 </a>
                 <a
                   href="#"
                   className="w-9 h-9 bg-primary/50 hover:bg-primary/70 rounded-lg flex items-center justify-center transition-colors"
                 >
-                  <Linkedin className="w-4 h-4" />
+                  <SocialIcon
+                    network="linkedin"
+                    style={{ width: 16, height: 16 }}
+                  />
                 </a>
               </div>
             </div>

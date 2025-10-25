@@ -9,9 +9,6 @@ import {
   Copy,
   Edit2,
   Trash2,
-  Instagram,
-  Linkedin,
-  Twitter,
   MoreVertical,
   Download,
   Tag,
@@ -22,6 +19,7 @@ import {
   BookMarked,
   ChevronDown,
 } from "lucide-react";
+import { SocialIcon } from "react-social-icons";
 import { Button } from "../../../components/ui/Button";
 import { Card, CardHeader, CardTitle } from "../../../components/ui/Card";
 import { ToastProvider } from "../../../components/ui/Toast";
@@ -194,9 +192,15 @@ export default function LibraryPage() {
   // Helper functions
   const getPlatformIcon = (platform: string) => {
     const icons = {
-      instagram: <Instagram className="w-4 h-4" />,
-      linkedin: <Linkedin className="w-4 h-4" />,
-      twitter: <Twitter className="w-4 h-4" />,
+      instagram: (
+        <SocialIcon network="instagram" style={{ width: 16, height: 16 }} />
+      ),
+      linkedin: (
+        <SocialIcon network="linkedin" style={{ width: 16, height: 16 }} />
+      ),
+      twitter: (
+        <SocialIcon network="twitter" style={{ width: 16, height: 16 }} />
+      ),
     };
     return icons[platform as keyof typeof icons];
   };
