@@ -1,13 +1,4 @@
 // Caption components exports
-// New refactored components for recent captions
-export { CaptionHeader } from "./CaptionHeader";
-export { CaptionFilters } from "./CaptionFilters";
-export { SearchPanel } from "./SearchPanel";
-export { FilterPanel } from "./FilterPanel";
-export { BulkActions } from "./BulkActions";
-export { CaptionCard } from "./CaptionCard";
-export { CaptionListItem } from "./CaptionListItem";
-export { CaptionPagination } from "./CaptionPagination";
 export { PlatformIcon } from "./PlatformIcon";
 
 // Existing components for caption generation

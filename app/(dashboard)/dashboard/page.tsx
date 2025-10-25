@@ -276,15 +276,6 @@ function DashboardContent() {
                 Your latest caption creations
               </p>
             </div>
-            <Link href="/recent-captions">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-accent hover:text-accent-hover"
-              >
-                View all →
-              </Button>
-            </Link>
           </div>
 
           {/* Caption Cards Grid */}
