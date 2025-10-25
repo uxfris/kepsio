@@ -15,6 +15,8 @@ import {
   Zap,
   Crown,
   History,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { SocialIcon } from "react-social-icons";
 import { Button } from "../../../components/ui/Button";
@@ -97,6 +99,9 @@ function DashboardContent() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [savedCaptions, setSavedCaptions] = useState<Set<number>>(new Set());
+  const [expandedCaptions, setExpandedCaptions] = useState<Set<number>>(
+    new Set()
+  );
 
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
@@ -148,6 +153,24 @@ function DashboardContent() {
       }
       return newSet;
     });
+  };
+
+  const toggleCaptionExpansion = (index: number) => {
+    setExpandedCaptions((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(index)) {
+        newSet.delete(index);
+      } else {
+        newSet.add(index);
+      }
+      return newSet;
+    });
+  };
+
+  // Helper function to determine if content needs truncation
+  // Using the same logic as CaptionResults.tsx for consistency
+  const needsTruncation = (content: string) => {
+    return content.length > 120;
   };
 
   const progressPercentage =
@@ -328,9 +351,32 @@ function DashboardContent() {
 
                     {/* Caption Preview */}
                     <div className="space-y-3">
-                      <p className="text-sm text-text-body line-clamp-3 leading-relaxed">
-                        {caption.snippet}
-                      </p>
+                      <div>
+                        <p className="text-sm text-text-body leading-relaxed">
+                          {expandedCaptions.has(index)
+                            ? caption.fullText
+                            : caption.fullText.substring(0, 120) +
+                              (caption.fullText.length > 120 ? "..." : "")}
+                        </p>
+                        {needsTruncation(caption.fullText) && (
+                          <button
+                            onClick={() => toggleCaptionExpansion(index)}
+                            className="text-xs text-accent hover:text-accent-hover font-medium mt-1 flex items-center gap-1"
+                          >
+                            {expandedCaptions.has(index) ? (
+                              <>
+                                <ChevronUp className="w-3 h-3" />
+                                Show less
+                              </>
+                            ) : (
+                              <>
+                                <ChevronDown className="w-3 h-3" />
+                                Read more
+                              </>
+                            )}
+                          </button>
+                        )}
+                      </div>
 
                       {/* Style Tag */}
                       <div>
