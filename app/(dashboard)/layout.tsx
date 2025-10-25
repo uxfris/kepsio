@@ -37,8 +37,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <Sidebar isOpen={sidebarOpen} onToggle={toggleSidebar} />
 
       <main
-        className={`flex-1 transition-all duration-300 bg-surface lg:ml-0 ${
-          sidebarOpen ? "lg:ml-0" : "lg:ml-0"
+        className={`flex-1 transition-all duration-300 bg-surface ${
+          sidebarOpen ? "lg:ml-[280px]" : "lg:ml-[80px]"
         }`}
       >
         {/* Mobile hamburger menu - only show when sidebar is closed */}

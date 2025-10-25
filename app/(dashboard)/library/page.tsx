@@ -18,6 +18,7 @@ import {
   TrendingUp,
   BookMarked,
   ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { SocialIcon } from "react-social-icons";
 import { Button } from "../../../components/ui/Button";
@@ -135,6 +136,9 @@ export default function LibraryPage() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [expandedCaptions, setExpandedCaptions] = useState<Set<string>>(
+    new Set()
+  );
 
   // Filter and sort captions
   const filteredCaptions = useMemo(() => {
@@ -280,6 +284,24 @@ export default function LibraryPage() {
     setSelectedPlatforms([]);
     setSelectedStyles([]);
     setSearchQuery("");
+  };
+
+  const toggleCaptionExpansion = (captionId: string) => {
+    setExpandedCaptions((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(captionId)) {
+        newSet.delete(captionId);
+      } else {
+        newSet.add(captionId);
+      }
+      return newSet;
+    });
+  };
+
+  // Helper function to determine if content needs truncation
+  // Using the same logic as CaptionResults.tsx for consistency
+  const needsTruncation = (content: string) => {
+    return content.length > 120;
   };
 
   // Calculate stats
@@ -645,9 +667,32 @@ export default function LibraryPage() {
                         </div>
 
                         {/* Caption Text */}
-                        <p className="text-sm text-text-body mb-4 leading-relaxed line-clamp-3">
-                          {caption.content}
-                        </p>
+                        <div className="mb-4">
+                          <p className="text-sm text-text-body leading-relaxed">
+                            {expandedCaptions.has(caption.id)
+                              ? caption.content
+                              : caption.content.substring(0, 120) +
+                                (caption.content.length > 120 ? "..." : "")}
+                          </p>
+                          {needsTruncation(caption.content) && (
+                            <button
+                              onClick={() => toggleCaptionExpansion(caption.id)}
+                              className="text-xs text-accent hover:text-accent-hover font-medium mt-1 flex items-center gap-1"
+                            >
+                              {expandedCaptions.has(caption.id) ? (
+                                <>
+                                  <ChevronUp className="w-3 h-3" />
+                                  Show less
+                                </>
+                              ) : (
+                                <>
+                                  <ChevronDown className="w-3 h-3" />
+                                  Read more
+                                </>
+                              )}
+                            </button>
+                          )}
+                        </div>
 
                         {/* Tags */}
                         <div className="flex flex-wrap gap-1.5 mb-4">
@@ -724,10 +769,35 @@ export default function LibraryPage() {
                           <Check className="pointer-events-none absolute left-[2px] top-[2px] h-3 w-3 text-white opacity-0 peer-checked:opacity-100 transition" />
                         </label>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm text-text-body truncate mb-2">
-                            {caption.content}
-                          </p>
-                          <div className="flex items-center gap-3 text-xs text-hint">
+                          <div className="mb-2">
+                            <p className="text-sm text-text-body">
+                              {expandedCaptions.has(caption.id)
+                                ? caption.content
+                                : caption.content.substring(0, 120) +
+                                  (caption.content.length > 120 ? "..." : "")}
+                            </p>
+                            {needsTruncation(caption.content) && (
+                              <button
+                                onClick={() =>
+                                  toggleCaptionExpansion(caption.id)
+                                }
+                                className="text-xs text-accent hover:text-accent-hover font-medium mt-1 flex items-center gap-1"
+                              >
+                                {expandedCaptions.has(caption.id) ? (
+                                  <>
+                                    <ChevronUp className="w-3 h-3" />
+                                    Show less
+                                  </>
+                                ) : (
+                                  <>
+                                    <ChevronDown className="w-3 h-3" />
+                                    Read more
+                                  </>
+                                )}
+                              </button>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-3 text-xs text-hint flex-wrap">
                             <div
                               className={`inline-flex items-center gap-1 ${getPlatformColor(
                                 caption.platform
@@ -757,7 +827,7 @@ export default function LibraryPage() {
                             </span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 shrink-0">
                           <button
                             onClick={() => handleCopy(caption.content, index)}
                             className={`p-2 rounded transition-colors ${
