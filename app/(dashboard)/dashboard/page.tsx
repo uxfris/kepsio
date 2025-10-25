@@ -387,11 +387,11 @@ function DashboardContent() {
         {/* Upgrade Prompt */}
         <Card className="bg-linear-to-r from-accent to-accent/80 border-accent/20 overflow-hidden">
           <CardContent padding="lg">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Crown className="w-5 h-5 text-white" />
-                  <h3 className="text-lg font-semibold text-white tracking-tight">
+                  <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">
                     Ready to unlock unlimited captions?
                   </h3>
                 </div>
@@ -400,12 +400,12 @@ function DashboardContent() {
                   detailed analytics
                 </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 shrink-0">
                 <Link href="/settings/billing">
                   <Button
                     variant="outline"
                     size="lg"
-                    className="bg-white hover:bg-gray-50 text-accent border-white font-semibold shadow-lg transition-all duration-200 hover:shadow-xl"
+                    className="bg-white hover:bg-gray-50 text-accent border-white font-semibold shadow-lg transition-all duration-200 hover:shadow-xl w-full sm:w-auto"
                   >
                     Upgrade to Pro
                   </Button>
@@ -414,16 +414,6 @@ function DashboardContent() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Test Success Page Link - Remove in production */}
-        <div className="mt-6 text-center">
-          <Link
-            href="/success"
-            className="text-xs text-hint hover:text-accent transition-colors font-medium"
-          >
-            🧪 Test Success Page
-          </Link>
-        </div>
       </div>
     </div>
   );
