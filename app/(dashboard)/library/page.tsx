@@ -310,7 +310,7 @@ export default function LibraryPage() {
                   <BookMarked className="w-6 h-6 text-accent" />
                   Caption Library
                 </h1>
-                <p className="text-text-body">
+                <p className="text-text-body text-sm">
                   Your collection of high-performing captions
                 </p>
               </div>
@@ -333,7 +333,7 @@ export default function LibraryPage() {
                   placeholder="Search captions, tags, or platforms..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-border rounded-lg bg-surface text-text-head placeholder:text-hint focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 text-sm border border-border rounded-xl bg-surface text-text-head placeholder:text-hint focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
                 />
               </div>
 
@@ -519,7 +519,7 @@ export default function LibraryPage() {
         <div className="px-6 py-6">
           {/* Summary Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card>
+            <Card padding="none">
               <div className="p-4">
                 <div className="text-sm text-hint mb-1">Total Saved</div>
                 <div className="text-2xl font-display font-semibold text-text-head">
@@ -527,7 +527,7 @@ export default function LibraryPage() {
                 </div>
               </div>
             </Card>
-            <Card>
+            <Card padding="none">
               <div className="p-4">
                 <div className="text-sm text-hint mb-1">Avg. Engagement</div>
                 <div className="text-2xl font-display font-semibold text-text-head">
@@ -535,7 +535,7 @@ export default function LibraryPage() {
                 </div>
               </div>
             </Card>
-            <Card>
+            <Card padding="none">
               <div className="p-4">
                 <div className="text-sm text-hint mb-1">Top Platform</div>
                 <div className="flex items-center gap-2 mt-1">
@@ -546,7 +546,7 @@ export default function LibraryPage() {
                 </div>
               </div>
             </Card>
-            <Card>
+            <Card padding="none">
               <div className="p-4">
                 <div className="text-sm text-hint mb-1">Best Style</div>
                 <div className="text-lg font-display font-semibold text-text-head">
@@ -558,7 +558,7 @@ export default function LibraryPage() {
 
           {/* Caption Grid/List */}
           {filteredCaptions.length === 0 ? (
-            <Card className="p-12 text-center">
+            <Card padding="lg" className="text-center">
               <div className="max-w-md mx-auto">
                 <BookMarked className="w-12 h-12 text-hint mx-auto mb-4" />
                 <h3 className="text-lg font-display font-semibold text-text-head mb-2">
@@ -584,16 +584,17 @@ export default function LibraryPage() {
             <>
               {/* Select All */}
               <div className="mb-4">
-                <label className="flex items-center gap-2 text-sm text-text-body">
+                <label className="flex items-center gap-2 text-sm text-text-body cursor-pointer relative">
                   <input
                     type="checkbox"
                     checked={
                       selectedCaptions.length === filteredCaptions.length
                     }
                     onChange={handleSelectAll}
-                    className="w-4 h-4 rounded border-border text-accent focus:ring-accent/20"
+                    className="peer h-4 w-4 appearance-none rounded border border-border checked:bg-accent cursor-pointer transition"
                   />
-                  Select all ({filteredCaptions.length} captions)
+                  <Check className="pointer-events-none absolute left-[2px] h-3 w-3 text-white opacity-0 peer-checked:opacity-100 transition" />
+                  <span>Select all ({filteredCaptions.length} captions)</span>
                 </label>
               </div>
 
@@ -602,6 +603,7 @@ export default function LibraryPage() {
                   {filteredCaptions.map((caption, index) => (
                     <Card
                       key={caption.id}
+                      padding="none"
                       className={`transition-all ${
                         selectedCaptions.includes(caption.id)
                           ? "border-accent ring-2 ring-accent/20"
@@ -612,12 +614,6 @@ export default function LibraryPage() {
                         {/* Header */}
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex items-center gap-2">
-                            <input
-                              type="checkbox"
-                              checked={selectedCaptions.includes(caption.id)}
-                              onChange={() => handleSelectCaption(caption.id)}
-                              className="w-4 h-4 rounded border-border text-accent focus:ring-accent/20"
-                            />
                             <div
                               className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium border ${getPlatformColor(
                                 caption.platform
@@ -637,9 +633,15 @@ export default function LibraryPage() {
                               {caption.engagementRate}
                             </span>
                           </div>
-                          <button className="p-1 hover:bg-section-light rounded transition-colors">
-                            <MoreVertical className="w-4 h-4 text-hint" />
-                          </button>
+                          <label className="relative flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={selectedCaptions.includes(caption.id)}
+                              onChange={() => handleSelectCaption(caption.id)}
+                              className="peer h-4 w-4 appearance-none rounded border border-border checked:bg-accent cursor-pointer transition"
+                            />
+                            <Check className="pointer-events-none absolute left-[2px] top-[2px] h-3 w-3 text-white opacity-0 peer-checked:opacity-100 transition" />
+                          </label>
                         </div>
 
                         {/* Caption Text */}
@@ -704,6 +706,7 @@ export default function LibraryPage() {
                   {filteredCaptions.map((caption, index) => (
                     <Card
                       key={caption.id}
+                      padding="none"
                       className={`transition-all ${
                         selectedCaptions.includes(caption.id)
                           ? "border-accent ring-2 ring-accent/20"
@@ -711,12 +714,15 @@ export default function LibraryPage() {
                       }`}
                     >
                       <div className="p-4 flex items-center gap-4">
-                        <input
-                          type="checkbox"
-                          checked={selectedCaptions.includes(caption.id)}
-                          onChange={() => handleSelectCaption(caption.id)}
-                          className="w-4 h-4 rounded border-border text-accent focus:ring-accent/20"
-                        />
+                        <label className="relative flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={selectedCaptions.includes(caption.id)}
+                            onChange={() => handleSelectCaption(caption.id)}
+                            className="peer h-4 w-4 appearance-none rounded border border-border checked:bg-accent cursor-pointer transition"
+                          />
+                          <Check className="pointer-events-none absolute left-[2px] top-[2px] h-3 w-3 text-white opacity-0 peer-checked:opacity-100 transition" />
+                        </label>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm text-text-body truncate mb-2">
                             {caption.content}
