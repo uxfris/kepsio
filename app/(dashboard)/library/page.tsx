@@ -24,6 +24,7 @@ import { SocialIcon } from "react-social-icons";
 import { Button } from "../../../components/ui/Button";
 import { Card, CardHeader, CardTitle } from "../../../components/ui/Card";
 import { ToastProvider } from "../../../components/ui/Toast";
+import EditCaptionModal from "../../../components/captions/EditCaptionModal";
 
 // Mock data - replace with actual API calls
 const savedCaptions = [
@@ -139,10 +140,14 @@ export default function LibraryPage() {
   const [expandedCaptions, setExpandedCaptions] = useState<Set<string>>(
     new Set()
   );
+  const [editingCaptionIndex, setEditingCaptionIndex] = useState<number | null>(
+    null
+  );
+  const [editedCaptions, setEditedCaptions] = useState(savedCaptions);
 
   // Filter and sort captions
   const filteredCaptions = useMemo(() => {
-    let filtered = savedCaptions;
+    let filtered = editedCaptions;
 
     // Search filter
     if (searchQuery) {
@@ -191,7 +196,7 @@ export default function LibraryPage() {
     }
 
     return filtered;
-  }, [searchQuery, selectedPlatforms, selectedStyles, sortBy]);
+  }, [editedCaptions, searchQuery, selectedPlatforms, selectedStyles, sortBy]);
 
   // Helper functions
   const getPlatformIcon = (platform: string) => {
@@ -213,7 +218,8 @@ export default function LibraryPage() {
     const colors = {
       instagram: "bg-pink-50 text-pink-600 border-pink-200",
       linkedin: "bg-blue-50 text-blue-600 border-blue-200",
-      twitter: "bg-sky-50 text-sky-600 border-sky-200",
+      x: "bg-gray-100 text-gray-600 border-gray-200",
+      default: "bg-gray-100 text-gray-600 border-gray-200",
     };
     return colors[platform as keyof typeof colors];
   };
@@ -296,6 +302,30 @@ export default function LibraryPage() {
       }
       return newSet;
     });
+  };
+
+  // Edit caption handlers
+  const handleEditCaption = (index: number) => {
+    setEditingCaptionIndex(index);
+  };
+
+  const handleSaveEditedCaption = (newCaption: string) => {
+    if (editingCaptionIndex !== null) {
+      const updatedCaptions = [...editedCaptions];
+      updatedCaptions[editingCaptionIndex] = {
+        ...updatedCaptions[editingCaptionIndex],
+        content: newCaption,
+      };
+      setEditedCaptions(updatedCaptions);
+      setEditingCaptionIndex(null);
+      setToastMessage("Caption updated successfully! ✏️");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
+    }
+  };
+
+  const handleCloseEditModal = () => {
+    setEditingCaptionIndex(null);
   };
 
   // Helper function to determine if content needs truncation
@@ -541,7 +571,10 @@ export default function LibraryPage() {
         <div className="px-6 py-6">
           {/* Summary Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card padding="none">
+            <Card
+              padding="none"
+              className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
+            >
               <div className="p-4">
                 <div className="text-sm text-hint mb-1">Total Saved</div>
                 <div className="text-2xl font-display font-semibold text-text-head">
@@ -549,7 +582,10 @@ export default function LibraryPage() {
                 </div>
               </div>
             </Card>
-            <Card padding="none">
+            <Card
+              padding="none"
+              className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
+            >
               <div className="p-4">
                 <div className="text-sm text-hint mb-1">Avg. Engagement</div>
                 <div className="text-2xl font-display font-semibold text-text-head">
@@ -557,7 +593,10 @@ export default function LibraryPage() {
                 </div>
               </div>
             </Card>
-            <Card padding="none">
+            <Card
+              padding="none"
+              className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
+            >
               <div className="p-4">
                 <div className="text-sm text-hint mb-1">Top Platform</div>
                 <div className="flex items-center gap-2 mt-1">
@@ -568,7 +607,10 @@ export default function LibraryPage() {
                 </div>
               </div>
             </Card>
-            <Card padding="none">
+            <Card
+              padding="none"
+              className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
+            >
               <div className="p-4">
                 <div className="text-sm text-hint mb-1">Best Style</div>
                 <div className="text-lg font-display font-semibold text-text-head">
@@ -580,7 +622,10 @@ export default function LibraryPage() {
 
           {/* Caption Grid/List */}
           {filteredCaptions.length === 0 ? (
-            <Card padding="lg" className="text-center">
+            <Card
+              padding="lg"
+              className="text-center hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+            >
               <div className="max-w-md mx-auto">
                 <BookMarked className="w-12 h-12 text-hint mx-auto mb-4" />
                 <h3 className="text-lg font-display font-semibold text-text-head mb-2">
@@ -626,11 +671,7 @@ export default function LibraryPage() {
                     <Card
                       key={caption.id}
                       padding="none"
-                      className={`transition-all ${
-                        selectedCaptions.includes(caption.id)
-                          ? "border-accent ring-2 ring-accent/20"
-                          : "hover:border-accent/50 hover:shadow-sm"
-                      }`}
+                      className={`transition-all hover:shadow-2xl duration-300 hover:-translate-y-2`}
                     >
                       <div className="p-5">
                         {/* Header */}
@@ -729,6 +770,7 @@ export default function LibraryPage() {
                               <Copy className="w-4 h-4" />
                             </button>
                             <button
+                              onClick={() => handleEditCaption(index)}
                               className="p-2 hover:bg-accent/5 text-hint hover:text-accent rounded transition-colors"
                               title="Edit"
                             >
@@ -752,11 +794,7 @@ export default function LibraryPage() {
                     <Card
                       key={caption.id}
                       padding="none"
-                      className={`transition-all ${
-                        selectedCaptions.includes(caption.id)
-                          ? "border-accent ring-2 ring-accent/20"
-                          : "hover:border-accent/50"
-                      }`}
+                      className={`transition-all hover:shadow-2xl duration-300 hover:-translate-y-2 `}
                     >
                       <div className="p-4 flex items-center gap-4">
                         <label className="relative flex items-center cursor-pointer">
@@ -838,7 +876,10 @@ export default function LibraryPage() {
                           >
                             <Copy className="w-4 h-4" />
                           </button>
-                          <button className="p-2 hover:bg-accent/5 text-hint hover:text-accent rounded transition-colors">
+                          <button
+                            onClick={() => handleEditCaption(index)}
+                            className="p-2 hover:bg-accent/5 text-hint hover:text-accent rounded transition-colors"
+                          >
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button className="p-2 hover:bg-error/10 text-hint hover:text-error rounded transition-colors">
@@ -860,6 +901,17 @@ export default function LibraryPage() {
             <Check className="w-4 h-4" />
             <span className="text-sm font-medium">{toastMessage}</span>
           </div>
+        )}
+
+        {/* Edit Caption Modal */}
+        {editingCaptionIndex !== null && (
+          <EditCaptionModal
+            isOpen={editingCaptionIndex !== null}
+            originalCaption={editedCaptions[editingCaptionIndex].content}
+            onClose={handleCloseEditModal}
+            onSave={handleSaveEditedCaption}
+            onCopy={(caption) => handleCopy(caption, editingCaptionIndex)}
+          />
         )}
       </div>
     </ToastProvider>

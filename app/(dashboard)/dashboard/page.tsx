@@ -118,7 +118,13 @@ function DashboardContent() {
   };
 
   const getPlatformColor = (platform: string) => {
-    return "bg-gray-100 text-gray-600 border-gray-200";
+    const colors = {
+      instagram: "bg-pink-50 text-pink-600 border-pink-200",
+      linkedin: "bg-blue-50 text-blue-600 border-blue-200",
+      x: "bg-gray-100 text-gray-600 border-gray-200",
+      default: "bg-gray-100 text-gray-600 border-gray-200",
+    };
+    return colors[platform as keyof typeof colors];
   };
 
   const handleCopyCaption = async (captionText: string, index: number) => {
