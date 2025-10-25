@@ -6,8 +6,10 @@ import {
   Sparkles,
   Plus,
   Copy,
+  Check,
   RotateCcw,
   Bookmark,
+  BookmarkCheck,
   TrendingUp,
   Clock,
   Zap,
@@ -22,7 +24,6 @@ import {
   CardTitle,
   CardContent,
 } from "../../../components/ui/Card";
-import { ToastProvider, useToast } from "../../../components/ui/Toast";
 
 // Mock data - in real app this would come from API/hooks
 const mockUser = {
@@ -94,7 +95,8 @@ const recentCaptions = [
 
 function DashboardContent() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
-  const { addToast } = useToast();
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [savedCaptions, setSavedCaptions] = useState<Set<number>>(new Set());
 
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
@@ -119,21 +121,27 @@ function DashboardContent() {
     return "bg-gray-100 text-gray-600 border-gray-200";
   };
 
-  const handleCopyCaption = async (captionText: string) => {
+  const handleCopyCaption = async (captionText: string, index: number) => {
     try {
       await navigator.clipboard.writeText(captionText);
-      addToast({
-        type: "success",
-        title: "Caption copied! 📋",
-        description: "Ready to paste and share",
-      });
+      setCopiedIndex(index);
+      // Reset the copied state after 2 seconds
+      setTimeout(() => setCopiedIndex(null), 2000);
     } catch (error) {
-      addToast({
-        type: "error",
-        title: "Copy failed",
-        description: "Please try again",
-      });
+      console.error("Failed to copy caption:", error);
     }
+  };
+
+  const handleSaveCaption = (index: number) => {
+    setSavedCaptions((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(index)) {
+        newSet.delete(index);
+      } else {
+        newSet.add(index);
+      }
+      return newSet;
+    });
   };
 
   const progressPercentage =
@@ -280,7 +288,7 @@ function DashboardContent() {
 
           {/* Caption Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recentCaptions.map((caption) => (
+            {recentCaptions.map((caption, index) => (
               <Card
                 key={caption.id}
                 variant="outlined"
@@ -336,13 +344,21 @@ function DashboardContent() {
                     >
                       <div className="flex items-center gap-2 pt-2">
                         <Button
-                          onClick={() => handleCopyCaption(caption.fullText)}
+                          onClick={() =>
+                            handleCopyCaption(caption.fullText, index)
+                          }
                           variant="primary"
                           size="sm"
-                          leftIcon={<Copy className="w-3.5 h-3.5" />}
+                          leftIcon={
+                            copiedIndex === index ? (
+                              <Check className="w-3.5 h-3.5" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5" />
+                            )
+                          }
                           className="flex-1 text-xs font-semibold"
                         >
-                          Copy
+                          {copiedIndex === index ? "Copied!" : "Copy"}
                         </Button>
                         <Button
                           variant="ghost"
@@ -356,14 +372,23 @@ function DashboardContent() {
                           </span>
                         </Button>
                         <Button
+                          onClick={() => handleSaveCaption(index)}
                           variant="ghost"
                           size="sm"
                           className="h-9 w-9 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.bookmark-label]:block"
-                          title="Save to library"
+                          title={
+                            savedCaptions.has(index)
+                              ? "Remove from library"
+                              : "Save to library"
+                          }
                         >
-                          <Bookmark className="w-4 h-4 shrink-0" />
+                          {savedCaptions.has(index) ? (
+                            <BookmarkCheck className="w-4 h-4 shrink-0" />
+                          ) : (
+                            <Bookmark className="w-4 h-4 shrink-0" />
+                          )}
                           <span className="bookmark-label ml-2 text-sm font-medium hidden whitespace-nowrap">
-                            Save
+                            {savedCaptions.has(index) ? "Unsave" : "Save"}
                           </span>
                         </Button>
                       </div>
@@ -411,9 +436,5 @@ function DashboardContent() {
 }
 
 export default function DashboardPage() {
-  return (
-    <ToastProvider>
-      <DashboardContent />
-    </ToastProvider>
-  );
+  return <DashboardContent />;
 }
