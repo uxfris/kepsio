@@ -291,7 +291,7 @@ function DashboardContent() {
               <Card
                 key={caption.id}
                 variant="outlined"
-                className="hover:border-accent/30 hover:shadow-sm transition-all duration-200 cursor-pointer group overflow-hidden"
+                className="cursor-pointer group overflow-hidden"
                 onMouseEnter={() => setHoveredCard(caption.id)}
                 onMouseLeave={() => setHoveredCard(null)}
               >
@@ -299,7 +299,11 @@ function DashboardContent() {
                   padding="none"
                   className={`transition-all duration-200`}
                 >
-                  <div className="space-y-4">
+                  <div
+                    className={` space-y-4 ${
+                      hoveredCard === caption.id ? "" : "-mb-3"
+                    }`}
+                  >
                     {/* Platform Badge and Date */}
                     <div className="flex items-center justify-between">
                       <div
