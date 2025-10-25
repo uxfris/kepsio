@@ -79,3 +79,4 @@ const NotificationSettingsContent = () => {
 export default function NotificationSettingsPage() {
   return <NotificationSettingsContent />;
 }
+

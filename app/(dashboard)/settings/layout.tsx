@@ -102,3 +102,4 @@ const SettingsLayout = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default SettingsLayout;
+

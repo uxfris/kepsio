@@ -88,8 +88,8 @@ export default function CaptionInputPage() {
     Option 2: Always show paywall on button click (for testing)
     Uncomment the line below:
     */
-    showPaywall({ used: 10, limit: 10 });
-    return;
+    // showPaywall({ used: 10, limit: 10 });
+    // return;
 
     /*
     Option 3: Show paywall when credits are 0 (alternative logic)

@@ -1,10 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import {
-  Instagram,
-  Linkedin,
-  Twitter,
   TrendingUp,
   Sparkles,
   ArrowRight,
@@ -12,6 +9,7 @@ import {
   ArrowLeft,
   SkipForward,
 } from "lucide-react";
+import { SocialIcon } from "react-social-icons";
 import { Button } from "../../components/ui/Button";
 import {
   Card,
@@ -39,37 +37,32 @@ export default function OnboardingPage() {
     {
       id: "instagram",
       name: "Instagram",
-      icon: Instagram,
+      network: "instagram",
       description: "Visual storytelling & engagement",
-      color: "from-pink-500 to-purple-600",
     },
     {
       id: "tiktok",
       name: "TikTok",
-      icon: TrendingUp,
+      network: "tiktok",
       description: "Short-form video content",
-      color: "from-gray-900 to-gray-700",
     },
     {
       id: "linkedin",
       name: "LinkedIn",
-      icon: Linkedin,
+      network: "linkedin",
       description: "Professional networking",
-      color: "from-blue-600 to-blue-700",
     },
     {
       id: "twitter",
       name: "Twitter/X",
-      icon: Twitter,
+      network: "x",
       description: "Real-time conversations",
-      color: "from-gray-900 to-gray-600",
     },
     {
       id: "multi",
       name: "Multi-platform",
       icon: Sparkles,
       description: "Cross-platform strategy",
-      color: "from-purple-600 to-pink-600",
     },
   ];
 
@@ -159,6 +152,24 @@ export default function OnboardingPage() {
     return false;
   };
 
+  // Keyboard navigation support
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter" && canProceed()) {
+        handleNext();
+      } else if (event.key === "Escape") {
+        handleSkip();
+      } else if (event.key === "ArrowLeft" && currentStep > 1) {
+        handleBack();
+      } else if (event.key === "ArrowRight" && canProceed()) {
+        handleNext();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentStep, onboardingData]);
+
   const getStepTitle = () => {
     switch (currentStep) {
       case 1:
@@ -186,61 +197,63 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="flex items-center justify-center p-6">
-      <div className="w-full max-w-4xl">
-        {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+    <div className="flex items-center justify-center p-4 sm:p-6 min-h-screen">
+      <div className="w-full max-w-3xl">
+        {/* Compact Progress Bar */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-medium text-text-body">
               Step {currentStep} of 3
             </span>
-            <span className="text-sm text-hint">
-              {currentStep === 1 && "2 min setup"}
-              {currentStep === 2 && "Almost there"}
+            <span className="text-xs text-hint">
+              {currentStep === 1 && "Quick setup"}
+              {currentStep === 2 && "Almost done"}
               {currentStep === 3 && "Final step"}
             </span>
           </div>
-          <div className="h-2 bg-border rounded-full overflow-hidden">
+          <div className="h-1.5 bg-border rounded-full overflow-hidden">
             <div
               className="h-full bg-accent transition-all duration-500 ease-out"
               style={{ width: `${(currentStep / 3) * 100}%` }}
             />
           </div>
-          {/* Progress Dots */}
-          <div className="flex items-center justify-center gap-2 mt-4">
+          {/* Compact Progress Dots */}
+          <div className="flex items-center justify-center gap-1.5 mt-3">
             {[1, 2, 3].map((step) => (
               <div
                 key={step}
                 className={cn(
-                  "h-2 rounded-full transition-all duration-300",
+                  "h-1.5 rounded-full transition-all duration-300",
                   step === currentStep
-                    ? "w-8 bg-accent"
+                    ? "w-6 bg-accent"
                     : step < currentStep
-                    ? "w-2 bg-accent"
-                    : "w-2 bg-border"
+                    ? "w-1.5 bg-accent"
+                    : "w-1.5 bg-border"
                 )}
               />
             ))}
           </div>
         </div>
 
-        {/* Main Content Card */}
-        <Card className="shadow-xl border-border-alt">
-          <CardHeader className="text-center pb-6">
-            <CardTitle className="text-2xl font-display text-text-head mb-2">
+        {/* Compact Main Content Card */}
+        <Card className="border-border-alt">
+          <CardHeader className="text-center pb-4 px-6 pt-6">
+            <CardTitle className="text-xl sm:text-2xl font-display text-text-head mb-1">
               {getStepTitle()}
             </CardTitle>
-            <p className="text-text-body text-base">{getStepDescription()}</p>
+            <p className="text-text-body text-sm sm:text-base">
+              {getStepDescription()}
+            </p>
           </CardHeader>
 
-          <CardContent className="px-8 pb-8">
+          <CardContent className="px-6 pb-6">
             {/* Step 1: Platform Selection */}
             {currentStep === 1 && (
               <div className="animate-fade-in">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-3">
                   {platforms.map((platform) => {
-                    const Icon = platform.icon;
                     const isSelected = onboardingData.platform === platform.id;
+                    const isMultiPlatform = platform.id === "multi";
                     return (
                       <button
                         key={platform.id}
@@ -251,29 +264,35 @@ export default function OnboardingPage() {
                           }))
                         }
                         className={cn(
-                          "relative p-6 rounded-xl border-2 transition-all duration-200 text-left group",
+                          "relative p-4 rounded-lg border border-border-alt transition-all duration-200 text-center group focus:outline-none focus:ring-2 focus:ring-accent/20",
                           isSelected
-                            ? "border-accent bg-accent/5 scale-105 shadow-lg"
-                            : "border-border bg-surface hover:border-border-alt hover:bg-section-light"
+                            ? "border-accent bg-accent/5"
+                            : "border-border bg-surface hover:border-border-alt hover:bg-section-light hover:scale-102",
+                          isMultiPlatform && "col-span-2"
                         )}
                       >
                         {isSelected && (
-                          <div className="absolute -top-2 -right-2 w-6 h-6 bg-accent rounded-full flex items-center justify-center">
-                            <Check className="w-4 h-4 text-surface" />
+                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-accent rounded-full flex items-center justify-center">
+                            <Check className="w-3 h-3 text-surface" />
                           </div>
                         )}
-                        <div
-                          className={cn(
-                            "w-12 h-12 mb-4 rounded-lg bg-linear-to-r flex items-center justify-center",
-                            platform.color
+                        <div className="w-10 h-10 mx-auto mb-3 flex items-center justify-center">
+                          {platform.network ? (
+                            <SocialIcon
+                              network={platform.network}
+                              style={{ width: 40, height: 40 }}
+                              className="rounded-lg"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-linear-to-r from-purple-600 to-pink-600 flex items-center justify-center">
+                              <Sparkles className="w-5 h-5 text-white" />
+                            </div>
                           )}
-                        >
-                          <Icon className="w-6 h-6 text-surface" />
                         </div>
-                        <div className="font-semibold text-text-head mb-1">
+                        <div className="font-semibold text-text-head text-sm mb-1">
                           {platform.name}
                         </div>
-                        <div className="text-sm text-text-body">
+                        <div className="text-xs text-text-body leading-tight">
                           {platform.description}
                         </div>
                       </button>
@@ -286,7 +305,7 @@ export default function OnboardingPage() {
             {/* Step 2: Tone Selection */}
             {currentStep === 2 && (
               <div className="animate-fade-in">
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
                   {tones.map((tone) => {
                     const isSelected = onboardingData.tone === tone.id;
                     return (
@@ -299,30 +318,30 @@ export default function OnboardingPage() {
                           }))
                         }
                         className={cn(
-                          "w-full p-5 rounded-xl border-2 transition-all duration-200 text-left group",
+                          "w-full p-4 rounded-lg border border-border-alt transition-all duration-200 text-left group focus:outline-none",
                           isSelected
-                            ? "border-accent bg-accent/5 shadow-md"
-                            : "border-border bg-surface hover:border-border-alt hover:bg-section-light"
+                            ? "border-accent bg-accent/5"
+                            : "border-border bg-surface hover:border-border-alt hover:bg-section-light hover:scale-102"
                         )}
                       >
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-start gap-4 flex-1">
-                            <span className="text-3xl">{tone.emoji}</span>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-start gap-3 flex-1">
+                            <span className="text-2xl -mt-1">{tone.emoji}</span>
                             <div className="flex-1">
-                              <div className="font-semibold text-text-head mb-1">
+                              <div className="font-semibold text-text-head text-sm mb-1">
                                 {tone.name}
                               </div>
-                              <div className="text-sm text-text-body mb-2">
+                              <div className="text-xs text-text-body mb-1">
                                 {tone.description}
                               </div>
-                              <div className="text-sm text-hint italic">
+                              <div className="text-xs text-hint italic">
                                 "{tone.example}"
                               </div>
                             </div>
                           </div>
                           {isSelected && (
-                            <div className="w-6 h-6 bg-accent rounded-full flex items-center justify-center shrink-0 ml-3">
-                              <Check className="w-4 h-4 text-surface" />
+                            <div className="w-5 h-5 bg-accent rounded-full flex items-center justify-center shrink-0 ml-2">
+                              <Check className="w-3 h-3 text-surface" />
                             </div>
                           )}
                         </div>
@@ -336,7 +355,7 @@ export default function OnboardingPage() {
             {/* Step 3: Content Type */}
             {currentStep === 3 && (
               <div className="animate-fade-in">
-                <div className="flex flex-wrap gap-3 justify-center">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                   {contentTypes.map((type) => {
                     const isSelected =
                       onboardingData.contentTypes.includes(type);
@@ -345,76 +364,86 @@ export default function OnboardingPage() {
                         key={type}
                         onClick={() => toggleContentType(type)}
                         className={cn(
-                          "px-5 py-3 rounded-full border-2 transition-all duration-200 font-medium flex items-center gap-2",
+                          "px-3 py-2 rounded-lg border border-border-alt transition-all duration-200 font-medium text-sm flex items-center justify-center gap-1.5 focus:outline-none",
                           isSelected
-                            ? "border-accent bg-accent text-surface shadow-md scale-105"
-                            : "border-border bg-surface text-text-body hover:border-accent hover:bg-accent/5"
+                            ? "border-accent bg-accent text-surface"
+                            : "border-border bg-surface text-text-body hover:border-accent hover:bg-accent/5 hover:scale-102"
                         )}
                       >
-                        {type}
-                        {isSelected && <Check className="w-4 h-4" />}
+                        <span className="truncate">{type}</span>
+                        {isSelected && <Check className="w-3 h-3 shrink-0" />}
                       </button>
                     );
                   })}
                 </div>
 
                 {onboardingData.contentTypes.length > 0 && (
-                  <div className="text-center mt-6">
-                    <div className="text-sm text-text-body">
+                  <div className="text-center mt-4">
+                    <div className="text-xs text-text-body">
                       <span className="font-semibold text-accent">
                         {onboardingData.contentTypes.length}
                       </span>{" "}
-                      content types selected
+                      selected
                     </div>
                   </div>
                 )}
               </div>
             )}
 
-            {/* Action Buttons */}
-            <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
+            {/* Compact Action Buttons */}
+            <div className="flex items-center justify-between mt-6 pt-4 border-t border-border">
               <Button
                 variant="ghost"
                 onClick={handleBack}
                 disabled={currentStep === 1}
                 leftIcon={<ArrowLeft className="w-4 h-4" />}
                 className={cn(
+                  "text-sm",
                   currentStep === 1 && "opacity-50 cursor-not-allowed"
                 )}
               >
-                Back
+                <span className="hidden sm:inline">Back</span>
               </Button>
 
-              <Button
-                variant="ghost"
-                onClick={handleSkip}
-                leftIcon={<SkipForward className="w-4 h-4" />}
-                className="text-hint hover:text-text-body"
-              >
-                Skip for now
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  onClick={handleSkip}
+                  leftIcon={<SkipForward className="w-4 h-4" />}
+                  className="text-xs text-hint hover:text-text-body"
+                >
+                  <span className="hidden sm:inline">Skip for now</span>
+                  <span className="sm:hidden">Skip</span>
+                </Button>
 
-              <Button
-                variant="primary"
-                onClick={handleNext}
-                disabled={!canProceed()}
-                rightIcon={<ArrowRight className="w-4 h-4" />}
-                className="min-w-[140px]"
-              >
-                {currentStep === 3 ? "Get Started" : "Continue"}
-              </Button>
+                <Button
+                  variant="primary"
+                  onClick={handleNext}
+                  disabled={!canProceed()}
+                  rightIcon={<ArrowRight className="w-4 h-4" />}
+                  className="min-w-[100px] sm:min-w-[120px] text-sm"
+                >
+                  {currentStep === 3 ? "Get Started" : "Continue"}
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Skip All Option */}
-        <div className="text-center mt-6">
+        {/* Compact Skip All Option */}
+        <div className="text-center mt-4">
           <button
-            className="text-sm text-hint hover:text-text-body transition-colors underline"
+            className="text-xs text-hint hover:text-text-body transition-colors underline"
             onClick={handleSkip}
           >
             Skip and use smart defaults
           </button>
+          <div className="text-xs text-hint mt-2">
+            <span className="hidden sm:inline">
+              Use ← → arrow keys to navigate, Enter to continue, Esc to skip
+            </span>
+            <span className="sm:hidden">Tap to select, swipe to navigate</span>
+          </div>
         </div>
       </div>
     </div>
