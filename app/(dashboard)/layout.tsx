@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, useState, useEffect } from "react";
+import { Menu } from "lucide-react";
 import Sidebar from "../../components/dashboard/sidebar";
 
 interface DashboardLayoutProps {
@@ -40,6 +41,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           sidebarOpen ? "lg:ml-0" : "lg:ml-0"
         }`}
       >
+        {/* Mobile hamburger menu - only show when sidebar is closed */}
+        {!sidebarOpen && (
+          <div className="lg:hidden fixed top-4 left-4 z-50">
+            <button
+              onClick={toggleSidebar}
+              className="p-2 rounded-lg bg-section border border-border hover:bg-section-light transition-colors duration-200 shadow-sm"
+              aria-label="Toggle sidebar"
+            >
+              <Menu className="h-5 w-5 text-text-body" />
+            </button>
+          </div>
+        )}
+
         {children}
       </main>
     </div>

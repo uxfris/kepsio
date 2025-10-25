@@ -15,6 +15,7 @@ import {
   PanelLeft,
   ArrowLeftToLine,
   Crown,
+  X,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import ProBadge from "./ProBadge";
@@ -37,6 +38,34 @@ const navigation = [
 
 export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const pathname = usePathname();
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if we're on mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Prevent body scroll when sidebar is open on mobile
+  useEffect(() => {
+    if (isMobile && isOpen) {
+      // Prevent body scroll
+      document.body.style.overflow = "hidden";
+    } else {
+      // Restore body scroll
+      document.body.style.overflow = "unset";
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isMobile, isOpen]);
 
   // Keyboard shortcut for toggling sidebar (Cmd + .)
   useEffect(() => {
@@ -112,14 +141,14 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
       <motion.aside
         initial={false}
         animate={{
-          width: isOpen ? 280 : 80,
-          x: 0,
+          width: isMobile ? 280 : isOpen ? 280 : 80,
+          x: isMobile ? (isOpen ? 0 : -280) : 0, // Slide out completely on mobile when closed
         }}
         transition={{
           duration: 0.3,
           ease: [0.4, 0, 0.2, 1],
         }}
-        className={`min-h-screen fixed left-0 top-0 h-full bg-section border-r border-border z-50 flex flex-col group ${
+        className={`min-h-screen fixed left-0 top-0 h-full bg-section border-r border-border z-50 flex flex-col group lg:relative lg:translate-x-0 overflow-hidden ${
           isOpen ? "lg:relative" : "lg:relative"
         }`}
       >
@@ -178,7 +207,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-6 space-y-2">
+        <nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto">
           {navigation.map((item, index) => (
             <div key={item.name}>
               {item.isDivider && index > 0 && (
@@ -186,13 +215,13 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                   <div className="h-px bg-border" />
                 </div>
               )}
-              <MenuItem item={item} isCollapsed={!isOpen} />
+              <MenuItem item={item} isCollapsed={isMobile ? false : !isOpen} />
             </div>
           ))}
         </nav>
 
         {/* Pro Badge */}
-        <ProBadge isCollapsed={!isOpen} />
+        <ProBadge isCollapsed={isMobile ? false : !isOpen} />
       </motion.aside>
     </>
   );
