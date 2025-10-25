@@ -38,6 +38,9 @@ export type {
   SegmentedControlOption,
 } from "./SegmentedControl";
 
+export { UnderlineTabs } from "./UnderlineTabs";
+export type { UnderlineTabsProps, UnderlineTabOption } from "./UnderlineTabs";
+
 export {
   Select,
   SelectTrigger,

@@ -24,7 +24,7 @@ import {
   CardContent,
 } from "../../../components/ui/Card";
 import { Textarea } from "../../../components/ui/Textarea";
-import { SegmentedControl } from "../../../components/ui/SegmentedControl";
+import { UnderlineTabs } from "../../../components/ui/UnderlineTabs";
 import { Slider } from "../../../components/ui/Slider";
 import { Switch } from "../../../components/ui/Switch";
 import { Progress } from "../../../components/ui/Progress";
@@ -328,7 +328,7 @@ const BrandVoiceContent = () => {
 
       {/* Tab Navigation */}
       <div className="bg-surface border-b border-border px-4 sm:px-6 lg:px-8">
-        <SegmentedControl
+        <UnderlineTabs
           options={tabOptions}
           value={activeTab}
           onChange={setActiveTab}
