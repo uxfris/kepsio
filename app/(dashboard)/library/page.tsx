@@ -144,6 +144,7 @@ export default function LibraryPage() {
     null
   );
   const [editedCaptions, setEditedCaptions] = useState(savedCaptions);
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   // Filter and sort captions
   const filteredCaptions = useMemo(() => {
@@ -666,27 +667,33 @@ export default function LibraryPage() {
               </div>
 
               {viewMode === "grid" ? (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredCaptions.map((caption, index) => (
                     <Card
                       key={caption.id}
-                      padding="none"
-                      className={`transition-all hover:shadow-2xl duration-300 hover:-translate-y-2`}
+                      variant="outlined"
+                      className="cursor-pointer group overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+                      onMouseEnter={() => setHoveredCard(caption.id)}
+                      onMouseLeave={() => setHoveredCard(null)}
                     >
-                      <div className="p-5">
-                        {/* Header */}
-                        <div className="flex items-start justify-between mb-3">
+                      <div
+                        className={`space-y-4 ${
+                          hoveredCard === caption.id ? "" : "-mb-3"
+                        }`}
+                      >
+                        {/* Platform Badge and Date */}
+                        <div className="flex items-center justify-between">
+                          <div
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border ${getPlatformColor(
+                              caption.platform
+                            )}`}
+                          >
+                            {getPlatformIcon(caption.platform)}
+                            <span className="capitalize">
+                              {caption.platform}
+                            </span>
+                          </div>
                           <div className="flex items-center gap-2">
-                            <div
-                              className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium border ${getPlatformColor(
-                                caption.platform
-                              )}`}
-                            >
-                              {getPlatformIcon(caption.platform)}
-                              <span className="capitalize">
-                                {caption.platform}
-                              </span>
-                            </div>
                             <span
                               className={`px-2 py-1 rounded-md text-xs font-medium border ${getPerformanceColor(
                                 caption.performance
@@ -695,93 +702,111 @@ export default function LibraryPage() {
                               <TrendingUp className="w-3 h-3 inline mr-1" />
                               {caption.engagementRate}
                             </span>
+                            <label className="relative flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={selectedCaptions.includes(caption.id)}
+                                onChange={() => handleSelectCaption(caption.id)}
+                                className="peer h-4 w-4 appearance-none rounded border border-border checked:bg-accent cursor-pointer transition"
+                              />
+                              <Check className="pointer-events-none absolute left-[2px] top-[2px] h-3 w-3 text-white opacity-0 peer-checked:opacity-100 transition" />
+                            </label>
                           </div>
-                          <label className="relative flex items-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={selectedCaptions.includes(caption.id)}
-                              onChange={() => handleSelectCaption(caption.id)}
-                              className="peer h-4 w-4 appearance-none rounded border border-border checked:bg-accent cursor-pointer transition"
-                            />
-                            <Check className="pointer-events-none absolute left-[2px] top-[2px] h-3 w-3 text-white opacity-0 peer-checked:opacity-100 transition" />
-                          </label>
                         </div>
 
-                        {/* Caption Text */}
-                        <div className="mb-4">
-                          <p className="text-sm text-text-body leading-relaxed">
-                            {expandedCaptions.has(caption.id)
-                              ? caption.content
-                              : caption.content.substring(0, 120) +
-                                (caption.content.length > 120 ? "..." : "")}
-                          </p>
-                          {needsTruncation(caption.content) && (
-                            <button
-                              onClick={() => toggleCaptionExpansion(caption.id)}
-                              className="text-xs text-accent hover:text-accent-hover font-medium mt-1 flex items-center gap-1"
-                            >
-                              {expandedCaptions.has(caption.id) ? (
-                                <>
-                                  <ChevronUp className="w-3 h-3" />
-                                  Show less
-                                </>
-                              ) : (
-                                <>
-                                  <ChevronDown className="w-3 h-3" />
-                                  Read more
-                                </>
-                              )}
-                            </button>
-                          )}
-                        </div>
-
-                        {/* Tags */}
-                        <div className="flex flex-wrap gap-1.5 mb-4">
-                          {caption.tags.map((tag) => (
-                            <span
-                              key={tag}
-                              className="inline-flex items-center gap-1 px-2 py-0.5 bg-chip-bg text-text-body text-xs rounded border border-border"
-                            >
-                              <Tag className="w-3 h-3" />
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-
-                        {/* Footer */}
-                        <div className="flex items-center justify-between pt-4 border-t border-border">
-                          <div className="flex items-center gap-1 text-xs text-hint">
-                            <Calendar className="w-3 h-3" />
-                            {new Date(caption.savedDate).toLocaleDateString(
-                              "en-US",
-                              { month: "short", day: "numeric" }
+                        {/* Caption Preview */}
+                        <div className="space-y-3">
+                          <div>
+                            <p className="text-sm text-text-body leading-relaxed">
+                              {expandedCaptions.has(caption.id)
+                                ? caption.content
+                                : caption.content.substring(0, 120) +
+                                  (caption.content.length > 120 ? "..." : "")}
+                            </p>
+                            {needsTruncation(caption.content) && (
+                              <button
+                                onClick={() =>
+                                  toggleCaptionExpansion(caption.id)
+                                }
+                                className="text-xs text-accent hover:text-accent-hover font-medium mt-1 flex items-center gap-1"
+                              >
+                                {expandedCaptions.has(caption.id) ? (
+                                  <>
+                                    <ChevronUp className="w-3 h-3" />
+                                    Show less
+                                  </>
+                                ) : (
+                                  <>
+                                    <ChevronDown className="w-3 h-3" />
+                                    Read more
+                                  </>
+                                )}
+                              </button>
                             )}
                           </div>
-                          <div className="flex items-center gap-1">
-                            <button
+
+                          {/* Style Tag */}
+                          <div className="flex flex-wrap gap-2">
+                            <span className="inline-block px-3 py-1.5 bg-surface text-text-body text-xs font-medium rounded-lg border border-border">
+                              {caption.style}
+                            </span>
+                            <div className="flex items-center gap-1 text-xs text-hint">
+                              <Calendar className="w-3 h-3" />
+                              {new Date(caption.savedDate).toLocaleDateString(
+                                "en-US",
+                                { month: "short", day: "numeric" }
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons - Show on Hover with Height Animation */}
+                        <div
+                          className={`transition-all duration-200 overflow-hidden ${
+                            hoveredCard === caption.id
+                              ? "opacity-100 max-h-12 translate-y-0"
+                              : "opacity-0 max-h-0 -translate-y-2"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 pt-2">
+                            <Button
                               onClick={() => handleCopy(caption.content, index)}
-                              className={`p-2 rounded transition-colors ${
-                                copiedIndex === index
-                                  ? "bg-accent/10 text-accent"
-                                  : "hover:bg-accent/5 text-hint hover:text-accent"
-                              }`}
-                              title="Copy"
+                              variant="primary"
+                              size="md"
+                              leftIcon={
+                                copiedIndex === index ? (
+                                  <Check className="w-3.5 h-3.5" />
+                                ) : (
+                                  <Copy className="w-3.5 h-3.5" />
+                                )
+                              }
+                              className="flex-1 text-xs font-semibold"
                             >
-                              <Copy className="w-4 h-4" />
-                            </button>
-                            <button
+                              {copiedIndex === index ? "Copied!" : "Copy"}
+                            </Button>
+                            <Button
                               onClick={() => handleEditCaption(index)}
-                              className="p-2 hover:bg-accent/5 text-hint hover:text-accent rounded transition-colors"
-                              title="Edit"
+                              variant="ghost"
+                              size="sm"
+                              className="h-9 w-9 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.edit-label]:block border border-border"
+                              title="Edit caption"
                             >
-                              <Edit2 className="w-4 h-4" />
-                            </button>
-                            <button
-                              className="p-2 hover:bg-error/10 text-hint hover:text-error rounded transition-colors"
-                              title="Delete"
+                              <Edit2 className="w-4 h-4 shrink-0" />
+                              <span className="edit-label ml-2 text-sm font-medium hidden whitespace-nowrap">
+                                Edit
+                              </span>
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-9 w-9 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.delete-label]:block border border-border"
+                              title="Delete caption"
                             >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                              <Trash2 className="w-4 h-4 shrink-0" />
+                              <span className="delete-label ml-2 text-sm font-medium hidden whitespace-nowrap">
+                                Delete
+                              </span>
+                            </Button>
                           </div>
                         </div>
                       </div>

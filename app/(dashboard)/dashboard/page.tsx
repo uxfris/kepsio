@@ -400,7 +400,7 @@ function DashboardContent() {
                             handleCopyCaption(caption.fullText, index)
                           }
                           variant="primary"
-                          size="sm"
+                          size="md"
                           leftIcon={
                             copiedIndex === index ? (
                               <Check className="w-3.5 h-3.5" />
@@ -415,7 +415,7 @@ function DashboardContent() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-9 w-9 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.rotate-label]:block"
+                          className="h-9 w-9 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.rotate-label]:block border border-border"
                           title="Regenerate caption"
                         >
                           <RotateCcw className="w-4 h-4 shrink-0" />
@@ -427,7 +427,7 @@ function DashboardContent() {
                           onClick={() => handleSaveCaption(index)}
                           variant="ghost"
                           size="sm"
-                          className="h-9 w-9 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.bookmark-label]:block"
+                          className="h-9 w-9 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.bookmark-label]:block border border-border"
                           title={
                             savedCaptions.has(index)
                               ? "Remove from library"
