@@ -33,11 +33,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const hasSuccess = success && !hasError;
 
     const baseStyles =
-      "flex h-10 w-full rounded-lg border bg-surface px-3 py-2 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-hint focus:outline-none disabled:cursor-not-allowed disabled:opacity-50";
+      "flex h-10 w-full rounded-lg border bg-surface px-3 py-2 text-sm text-text-head font-medium transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-hint focus:outline-none disabled:cursor-not-allowed disabled:opacity-50";
 
     const stateStyles = {
-      default:
-        "border-border focus:border-border-focus focus:ring-1 focus:ring-border-focus",
+      default: "border-border",
       error: "border-error focus:border-error focus:ring-1 focus:ring-error",
       success:
         "border-success focus:border-success focus:ring-1 focus:ring-success",

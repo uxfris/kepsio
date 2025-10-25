@@ -276,7 +276,7 @@ function DashboardContent() {
                 Your latest caption creations
               </p>
             </div>
-            <Link href="/library">
+            <Link href="/recent-captions">
               <Button
                 variant="ghost"
                 size="sm"
