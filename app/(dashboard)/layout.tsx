@@ -33,11 +33,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex lg:relative">
       <Sidebar isOpen={sidebarOpen} onToggle={toggleSidebar} />
 
       <main
-        className={`flex-1 transition-all duration-300 bg-surface ${
+        className={`flex-1 transition-all duration-300 bg-surface lg:ml-0 ${
           sidebarOpen ? "lg:ml-0" : "lg:ml-0"
         }`}
       >

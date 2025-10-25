@@ -148,7 +148,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
           duration: 0.3,
           ease: [0.4, 0, 0.2, 1],
         }}
-        className={`min-h-screen fixed left-0 top-0 h-full bg-section border-r border-border z-50 flex flex-col group lg:relative lg:translate-x-0 overflow-hidden ${
+        className={`min-h-screen fixed left-0 top-0 h-full bg-section border-r border-border z-50 flex flex-col group lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 overflow-hidden ${
           isOpen ? "lg:relative" : "lg:relative"
         }`}
       >

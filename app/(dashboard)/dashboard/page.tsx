@@ -145,29 +145,31 @@ function DashboardContent() {
       <Card
         variant="outlined"
         padding="none"
-        className="border-0 border-b border-border rounded-none bg-section"
+        className="border-0 border-b border-border rounded-none bg-section pt-12 sm:pt-0"
       >
         <CardHeader padding="lg">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="space-y-1">
-              <h1 className="text-2xl font-semibold text-primary tracking-tight flex items-center gap-2">
-                <Sparkles className="w-6 h-6 text-accent" />
+              <h1 className="text-xl sm:text-2xl font-semibold text-primary tracking-tight flex items-center gap-2">
+                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-accent" />
                 Hey {mockUser.name}, ready to create? 👋
               </h1>
               <p className="text-sm font-medium text-text-body">
                 Generate engaging captions that match your unique voice
               </p>
             </div>
-            <Link href="/generate">
-              <Button
-                variant="primary"
-                size="lg"
-                leftIcon={<Plus className="w-5 h-5" />}
-                className="shadow-sm"
-              >
-                New Caption
-              </Button>
-            </Link>
+            <div className="shrink-0">
+              <Link href="/generate">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  leftIcon={<Plus className="w-5 h-5" />}
+                  className="shadow-sm w-full sm:w-auto"
+                >
+                  New Caption
+                </Button>
+              </Link>
+            </div>
           </div>
         </CardHeader>
       </Card>
