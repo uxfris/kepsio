@@ -20,6 +20,7 @@ import {
   CardTitle,
   CardContent,
 } from "../../../components/ui";
+import { SegmentedControl } from "../../../components/ui/SegmentedControl";
 import { useSubscription } from "../../../hooks/use-subscription";
 import { subscriptionPlans } from "../../../config/plans";
 
@@ -94,66 +95,44 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="min-h-screen bg-section">
       {/* Header Section */}
-      <div className="relative px-8 pt-16 pb-12 bg-linear-to-br from-section to-section-light border-b border-border">
+      <div className="relative px-8 pt-24">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto">
-            {/* Celebration Icon */}
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-linear-to-br from-accent to-accent-hover rounded-2xl mb-6 shadow-lg animate-bounce-in">
-              <Zap className="w-10 h-10 text-surface" />
-            </div>
-
+          <div className="flex flex-col items-center justify-center text-center gap-8 max-w-3xl mx-auto">
             {/* Headline */}
+            <Zap className="w-10 h-10 text-text-body mb-4" />
             <h1 className="text-4xl md:text-5xl font-display font-bold text-text-head mb-4">
               Choose Your Plan
             </h1>
-            <p className="text-xl text-text-body mb-8">
-              Unlock unlimited caption generation and take your content to the
-              next level.
-            </p>
           </div>
         </div>
       </div>
 
       {/* Pricing Section */}
       <div className="px-8 py-16">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           {/* Billing Toggle */}
-          <div className="flex items-center justify-center gap-3 mb-12">
-            <span
-              className={`text-sm font-medium transition-colors ${
-                billingCycle === "monthly" ? "text-text-head" : "text-hint"
-              }`}
-            >
-              Monthly
-            </span>
-            <button
-              onClick={() =>
-                setBillingCycle(
-                  billingCycle === "monthly" ? "annual" : "monthly"
-                )
-              }
-              className="relative inline-flex h-7 w-14 items-center rounded-full bg-accent transition-colors hover:bg-accent-hover"
-            >
-              <span
-                className={`inline-block h-5 w-5 transform rounded-full bg-surface shadow-md transition-transform ${
-                  billingCycle === "annual" ? "translate-x-8" : "translate-x-1"
-                }`}
+          <div className="flex items-center justify-center mb-12">
+            <div className="relative">
+              <SegmentedControl
+                options={[
+                  { value: "monthly", label: "Monthly" },
+                  { value: "annual", label: "Annual" },
+                ]}
+                value={billingCycle}
+                onChange={(value) =>
+                  setBillingCycle(value as "monthly" | "annual")
+                }
+                className="min-w-[200px]"
               />
-            </button>
-            <span
-              className={`text-sm font-medium transition-colors ${
-                billingCycle === "annual" ? "text-text-head" : "text-hint"
-              }`}
-            >
-              Annually
-            </span>
-            {billingCycle === "annual" && (
-              <span className="inline-flex items-center px-2.5 py-1 bg-success/10 text-success text-xs font-semibold rounded-full">
-                Save 20%
-              </span>
-            )}
+              {/* Discount Badge */}
+              {/* <div className="absolute -top-3 -right-3">
+                <div className="bg-linear-to-r from-orange-500 to-red-500 text-white text-xs px-3 py-1 rounded-full font-bold shadow-lg animate-pulse">
+                  Save 20%
+                </div>
+              </div> */}
+            </div>
           </div>
 
           {/* Pricing Cards */}
@@ -161,183 +140,208 @@ export default function PricingPage() {
             {/* Free Plan */}
             <Card
               variant="outlined"
-              className="opacity-60 border-border-alt bg-section-light"
+              className="border-border hover:border-border-alt transition-all rounded-3xl"
             >
               <CardHeader padding="md">
-                <CardTitle className="text-text-body">Free</CardTitle>
-                <div className="text-4xl font-bold text-text-body">$0</div>
-                <p className="text-sm text-hint">Perfect for getting started</p>
+                <div className="flex flex-col items-start gap-8 mb-2">
+                  <Zap className="h-16 w-16 text-text-body" />
+                  <CardTitle className="text-text-head text-2xl">
+                    Free
+                  </CardTitle>
+                </div>
+                <p className="text-md text-text-head mb-4">
+                  Perfect for getting started
+                </p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-text-head">$0</span>
+                  <span className="text-text-body">/month</span>
+                </div>
+                <p className="text-text-body text-sm mt-2">Free for everyone</p>
               </CardHeader>
               <CardContent padding="md">
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-start gap-3 text-sm text-hint">
-                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 shrink-0">
-                      <Check className="w-3 h-3 text-hint" />
-                    </div>
-                    <span>
-                      {subscriptionPlans.free.limits.captionsPerDay}{" "}
-                      captions/day
+                <Button variant="outline" size="md" className="w-full mb-8">
+                  Get Started
+                </Button>
+
+                {/* Divider */}
+                <div className="border-t border-border mb-8"></div>
+
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">
+                      10 captions per month
                     </span>
                   </li>
-                  <li className="flex items-start gap-3 text-sm text-hint">
-                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 shrink-0">
-                      <Check className="w-3 h-3 text-hint" />
-                    </div>
-                    <span>Basic templates</span>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">
+                      5 variations per generation
+                    </span>
                   </li>
-                  <li className="flex items-start gap-3 text-sm text-hint">
-                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 shrink-0">
-                      <Check className="w-3 h-3 text-hint" />
-                    </div>
-                    <span>Standard support</span>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">Basic voice training</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">All platform presets</span>
                   </li>
                 </ul>
-
-                <Button variant="outline" size="lg" className="w-full" disabled>
-                  Current Plan
-                </Button>
               </CardContent>
             </Card>
 
-            {/* Pro Plan (Recommended) */}
+            {/* Pro Plan */}
             <Card
               variant="outlined"
-              className="relative border-2 border-accent bg-linear-to-br from-surface to-section transform scale-105 shadow-xl"
+              className="border-border hover:border-border-alt transition-all rounded-3xl"
             >
-              {/* Recommended Badge */}
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <span className="inline-flex items-center gap-1 px-4 py-2 bg-linear-to-r from-accent to-accent-hover text-surface text-sm font-bold rounded-full shadow-md">
-                  <Crown className="w-4 h-4" />
-                  RECOMMENDED
-                </span>
-              </div>
-
               <CardHeader padding="md">
-                <CardTitle className="text-text-head">Pro</CardTitle>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-accent">
+                <div className="flex flex-col items-start gap-8 mb-2">
+                  <Crown className="h-16 w-16 text-text-body" />
+                  <CardTitle className="text-text-head text-2xl">Pro</CardTitle>
+                </div>
+                <p className="text-md text-text-head mb-4">
+                  For serious creators & agencies
+                </p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-text-head">
                     ${formatPrice(subscriptionPlans.pro.price)}
                   </span>
                   <span className="text-text-body">/month</span>
                 </div>
                 {billingCycle === "annual" && (
-                  <p className="text-sm text-hint">
-                    Billed annually ($
-                    {formatPrice(subscriptionPlans.pro.price) * 12}/year)
-                  </p>
-                )}
-                {billingCycle === "annual" && (
-                  <p className="text-sm text-success font-medium">
-                    Save ${getAnnualSavings(subscriptionPlans.pro.price)}/year
+                  <p className="text-text-body text-sm mt-2">
+                    Billed ${formatPrice(subscriptionPlans.pro.price) * 12}/year
+                    · Save ${getAnnualSavings(subscriptionPlans.pro.price)}/year
                   </p>
                 )}
               </CardHeader>
               <CardContent padding="md">
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-start gap-3 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center mt-0.5 shrink-0">
-                      <Check className="w-3 h-3 text-surface" />
-                    </div>
-                    <span>
-                      <strong>Unlimited</strong> captions
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center mt-0.5 shrink-0">
-                      <Check className="w-3 h-3 text-surface" />
-                    </div>
-                    <span>
-                      <strong>10 variations</strong> per generation
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center mt-0.5 shrink-0">
-                      <Check className="w-3 h-3 text-surface" />
-                    </div>
-                    <span>
-                      <strong>Advanced</strong> voice cloning
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center mt-0.5 shrink-0">
-                      <Check className="w-3 h-3 text-surface" />
-                    </div>
-                    <span>Team collaboration</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center mt-0.5 shrink-0">
-                      <Check className="w-3 h-3 text-surface" />
-                    </div>
-                    <span>Analytics & insights</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center mt-0.5 shrink-0">
-                      <Check className="w-3 h-3 text-surface" />
-                    </div>
-                    <span>Priority support</span>
-                  </li>
-                </ul>
-
                 <Button
                   onClick={() => handleUpgrade("pro")}
                   variant="primary"
-                  size="lg"
-                  leftIcon={<Sparkles className="w-5 h-5" />}
-                  className="w-full"
+                  size="md"
+                  className="w-full mb-8"
                 >
                   Upgrade to Pro
                 </Button>
+
+                {/* Divider */}
+                <div className="border-t border-border mb-8"></div>
+
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">Unlimited captions</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">
+                      10 variations per generation
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">
+                      Advanced voice cloning
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">Analytics & insights</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">
+                      Team collaboration (3 seats)
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">Priority support</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">A/B testing mode</span>
+                  </li>
+                </ul>
               </CardContent>
             </Card>
 
             {/* Enterprise Plan */}
             <Card
               variant="outlined"
-              className="hover:border-border transition-colors"
+              className="border-border hover:border-border-alt transition-all rounded-3xl"
             >
               <CardHeader padding="md">
-                <CardTitle className="text-text-head">Enterprise</CardTitle>
-                <div className="text-3xl font-bold text-text-head mb-1">
-                  Custom
+                <div className="flex flex-col items-start gap-8 mb-2">
+                  <Users className="h-16 w-16 text-text-body" />
+                  <CardTitle className="text-text-head text-2xl">
+                    Enterprise
+                  </CardTitle>
                 </div>
-                <p className="text-sm text-hint">For teams & agencies</p>
+                <p className="text-md text-text-head mb-4">
+                  For teams & brands at scale
+                </p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-text-head">
+                    From $100
+                  </span>
+                </div>
+                <p className="text-text-body text-sm mt-2">
+                  Per person billed monthly
+                </p>
               </CardHeader>
               <CardContent padding="md">
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-start gap-3 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 shrink-0">
-                      <Check className="w-3 h-3 text-text-body" />
-                    </div>
-                    <span>Everything in Pro</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 shrink-0">
-                      <Check className="w-3 h-3 text-text-body" />
-                    </div>
-                    <span>Custom brand guidelines</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 shrink-0">
-                      <Check className="w-3 h-3 text-text-body" />
-                    </div>
-                    <span>API access</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-sm text-text-body">
-                    <div className="w-5 h-5 rounded-full bg-border flex items-center justify-center mt-0.5 shrink-0">
-                      <Check className="w-3 h-3 text-text-body" />
-                    </div>
-                    <span>Dedicated account manager</span>
-                  </li>
-                </ul>
-
                 <Button
                   onClick={() => handleUpgrade("enterprise")}
-                  variant="outline"
-                  size="lg"
-                  className="w-full"
+                  variant="primary"
+                  size="md"
+                  className="w-full mb-8"
                 >
                   Contact Sales
                 </Button>
+
+                {/* Divider */}
+                <div className="border-t border-border mb-8"></div>
+
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">Everything in Pro</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">Unlimited team seats</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">
+                      Custom brand guidelines
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">API access</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">
+                      Dedicated account manager
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">
+                      SSO & advanced security
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">Custom integrations</span>
+                  </li>
+                </ul>
               </CardContent>
             </Card>
           </div>
@@ -418,54 +422,38 @@ export default function PricingPage() {
 
           {/* FAQ Section */}
           <div className="text-center mb-12">
-            <h2 className="text-2xl font-bold text-text-head mb-4">
+            <h2 className="text-3xl font-bold text-text-head mb-8">
               Frequently Asked Questions
             </h2>
-            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-              <Card variant="outlined">
-                <CardContent padding="md">
-                  <h3 className="font-semibold text-text-head mb-2">
-                    Can I change plans anytime?
-                  </h3>
-                  <p className="text-sm text-text-body">
-                    Yes! You can upgrade or downgrade your plan at any time.
-                    Changes take effect immediately.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card variant="outlined">
-                <CardContent padding="md">
-                  <h3 className="font-semibold text-text-head mb-2">
-                    What happens to my data?
-                  </h3>
-                  <p className="text-sm text-text-body">
-                    Your captions and voice profiles are always safe. We never
-                    delete your data when you change plans.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card variant="outlined">
-                <CardContent padding="md">
-                  <h3 className="font-semibold text-text-head mb-2">
-                    Do you offer refunds?
-                  </h3>
-                  <p className="text-sm text-text-body">
-                    We offer a 30-day money-back guarantee. If you're not
-                    satisfied, we'll refund your payment.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card variant="outlined">
-                <CardContent padding="md">
-                  <h3 className="font-semibold text-text-head mb-2">
-                    Need help choosing?
-                  </h3>
-                  <p className="text-sm text-text-body">
-                    Contact our support team and we'll help you find the perfect
-                    plan for your needs.
-                  </p>
-                </CardContent>
-              </Card>
+            <div className="space-y-4 max-w-3xl mx-auto">
+              {[
+                {
+                  q: "Can I cancel anytime?",
+                  a: "Yes! Cancel anytime from your account settings. No questions asked, no hidden fees.",
+                },
+                {
+                  q: "What happens when I hit the free plan limit?",
+                  a: "You'll see a prompt to upgrade. Your saved captions remain accessible, you just can't generate new ones until next month or you upgrade.",
+                },
+                {
+                  q: "Do you offer refunds?",
+                  a: "Absolutely. If you're not satisfied within 30 days, we'll refund you in full.",
+                },
+                {
+                  q: "Can I change plans later?",
+                  a: "Yes! Upgrade or downgrade anytime. Changes take effect on your next billing cycle.",
+                },
+              ].map((faq, index) => (
+                <details
+                  key={index}
+                  className="bg-surface rounded-lg border border-border p-6 cursor-pointer hover:border-accent/20 transition-all"
+                >
+                  <summary className="font-semibold text-text-head cursor-pointer">
+                    {faq.q}
+                  </summary>
+                  <p className="mt-3 text-text-body leading-relaxed">{faq.a}</p>
+                </details>
+              ))}
             </div>
           </div>
 
