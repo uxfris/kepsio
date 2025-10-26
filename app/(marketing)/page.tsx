@@ -172,15 +172,15 @@ export default function Home() {
           {/* Trust Indicators */}
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-hint">
             <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-success" />
+              <Check className="w-4 h-4" />
               <span>Free forever plan</span>
             </div>
             <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-success" />
+              <Check className="w-4 h-4" />
               <span>No credit card required</span>
             </div>
             <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-success" />
+              <Check className="w-4 h-4" />
               <span>10 captions/month free</span>
             </div>
           </div>

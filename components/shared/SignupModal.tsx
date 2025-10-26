@@ -288,11 +288,11 @@ export default function SignupModal({
                 <div className="mt-6 space-y-3">
                   <div className="flex items-center justify-center gap-6 text-sm text-hint">
                     <div className="flex items-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4 text-success" />
+                      <CheckCircle2 className="w-4 h-4 " />
                       <span>Free forever</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4 text-success" />
+                      <CheckCircle2 className="w-4 h-4 " />
                       <span>No card needed</span>
                     </div>
                   </div>
