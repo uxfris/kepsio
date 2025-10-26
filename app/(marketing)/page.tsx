@@ -19,6 +19,7 @@ import {
   FEATURES,
   TESTIMONIALS,
 } from "../../lib/constants/marketing";
+import { PRICING_CONFIG } from "../../lib/constants/pricing";
 
 // Lazy load heavy components
 const LazyTestimonialsSection = lazy(() =>
@@ -72,7 +73,7 @@ export default function HomePage() {
 
   const { formatPrice, getAnnualSavings } = usePricing({
     billingCycle,
-    annualDiscountPercentage: 20, // 20% annual discount
+    annualDiscountPercentage: PRICING_CONFIG.annualDiscountPercentage,
   });
 
   const planOrder = ["free", "pro", "enterprise"] as const;

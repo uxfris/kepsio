@@ -40,19 +40,32 @@ const PricingCard = memo<PricingCardProps>(
           <p className="text-md text-text-head mb-4">{plan.description}</p>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-bold text-text-head">
-              ${formatPrice(plan.price)}
+              {plan.id === "enterprise" ? "From $" : "$"}
+              {formatPrice(plan.price)}
             </span>
-            <span className="text-text-body">/month</span>
+            <span className="text-text-body">
+              {plan.id === "enterprise" ? "" : "/month"}
+            </span>
           </div>
-          {billingCycle === "annual" && getAnnualSavings && plan.price > 0 && (
+          {billingCycle === "annual" &&
+            getAnnualSavings &&
+            plan.price > 0 &&
+            plan.id !== "enterprise" && (
+              <p className="text-text-body text-sm mt-2">
+                Billed ${formatPrice(plan.price) * 12}/year · Save $
+                {getAnnualSavings(plan.price)}/year
+              </p>
+            )}
+          {billingCycle === "monthly" &&
+            plan.price > 0 &&
+            plan.id !== "enterprise" && (
+              <p className="text-text-body text-sm mt-2">
+                Billed monthly · Cancel anytime
+              </p>
+            )}
+          {plan.id === "enterprise" && (
             <p className="text-text-body text-sm mt-2">
-              Billed ${formatPrice(plan.price) * 12}/year · Save $
-              {getAnnualSavings(plan.price)}/year
-            </p>
-          )}
-          {billingCycle === "monthly" && plan.price > 0 && (
-            <p className="text-text-body text-sm mt-2">
-              Billed monthly · Cancel anytime
+              Per person billed monthly
             </p>
           )}
           {plan.price === 0 && (
