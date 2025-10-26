@@ -26,7 +26,7 @@ export const PlatformComparison = memo(function PlatformComparison({
   ];
 
   return (
-    <div id="examples" className="mt-20 max-w-5xl mx-auto">
+    <div id="examples" className="my-20 max-w-5xl mx-auto">
       <div className="text-center mb-8">
         <h3 className="text-2xl font-bold text-primary mb-3">
           See the difference instantly
@@ -45,10 +45,12 @@ export const PlatformComparison = memo(function PlatformComparison({
             size="sm"
             onClick={() => setSelectedPlatform(platform.id)}
             leftIcon={
-              <SocialIcon
-                network={platform.network}
-                style={{ width: 16, height: 16 }}
-              />
+              <div className="flex items-center justify-center">
+                <SocialIcon
+                  network={platform.network}
+                  style={{ width: 16, height: 16 }}
+                />
+              </div>
             }
           >
             {platform.label}
