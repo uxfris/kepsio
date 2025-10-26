@@ -97,13 +97,6 @@ export default function PricingPage() {
 
           {/* FAQ Section */}
           <FAQSection faqs={FAQ_ITEMS} />
-
-          {/* Back to Dashboard */}
-          <div className="text-center">
-            <Button onClick={handleBackToDashboard} variant="outline" size="lg">
-              Back to Dashboard
-            </Button>
-          </div>
         </div>
       </main>
     </div>

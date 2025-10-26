@@ -12,7 +12,7 @@ export interface NavItem {
 
 export interface NavbarProps extends React.HTMLAttributes<HTMLElement> {
   brand: React.ReactNode;
-  items?: NavItem[];
+  items?: readonly NavItem[];
   actions?: React.ReactNode;
   variant?: "default" | "transparent" | "elevated";
   position?: "static" | "sticky" | "fixed";
