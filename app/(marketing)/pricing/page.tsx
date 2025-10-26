@@ -140,7 +140,7 @@ export default function PricingPage() {
             {/* Free Plan */}
             <Card
               variant="outlined"
-              className="border-border hover:border-border-alt transition-all rounded-3xl"
+              className="border-border hover:border-border-alt transition-all rounded-3xl flex flex-col"
             >
               <CardHeader padding="md">
                 <div className="flex flex-col items-start gap-8 mb-2">
@@ -158,7 +158,7 @@ export default function PricingPage() {
                 </div>
                 <p className="text-text-body text-sm mt-2">Free for everyone</p>
               </CardHeader>
-              <CardContent padding="md">
+              <CardContent padding="md" className="flex flex-col flex-1">
                 <Button variant="outline" size="md" className="w-full mb-8">
                   Get Started
                 </Button>
@@ -166,7 +166,7 @@ export default function PricingPage() {
                 {/* Divider */}
                 <div className="border-t border-border mb-8"></div>
 
-                <ul className="space-y-4">
+                <ul className="space-y-4 flex-1">
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5  shrink-0 mt-0.5" />
                     <span className="text-text-body">
@@ -187,6 +187,19 @@ export default function PricingPage() {
                     <Check className="w-5 h-5  shrink-0 mt-0.5" />
                     <span className="text-text-body">All platform presets</span>
                   </li>
+                  {/* Empty space to match other cards */}
+                  <li className="flex items-start gap-3 opacity-0">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">Placeholder</span>
+                  </li>
+                  <li className="flex items-start gap-3 opacity-0">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">Placeholder</span>
+                  </li>
+                  <li className="flex items-start gap-3 opacity-0">
+                    <Check className="w-5 h-5  shrink-0 mt-0.5" />
+                    <span className="text-text-body">Placeholder</span>
+                  </li>
                 </ul>
               </CardContent>
             </Card>
@@ -194,7 +207,7 @@ export default function PricingPage() {
             {/* Pro Plan */}
             <Card
               variant="outlined"
-              className="border-border hover:border-border-alt transition-all rounded-3xl"
+              className="border-border hover:border-border-alt transition-all rounded-3xl flex flex-col"
             >
               <CardHeader padding="md">
                 <div className="flex flex-col items-start gap-8 mb-2">
@@ -216,8 +229,13 @@ export default function PricingPage() {
                     · Save ${getAnnualSavings(subscriptionPlans.pro.price)}/year
                   </p>
                 )}
+                {billingCycle === "monthly" && (
+                  <p className="text-text-body text-sm mt-2">
+                    Billed monthly · Cancel anytime
+                  </p>
+                )}
               </CardHeader>
-              <CardContent padding="md">
+              <CardContent padding="md" className="flex flex-col flex-1">
                 <Button
                   onClick={() => handleUpgrade("pro")}
                   variant="primary"
@@ -230,7 +248,7 @@ export default function PricingPage() {
                 {/* Divider */}
                 <div className="border-t border-border mb-8"></div>
 
-                <ul className="space-y-4">
+                <ul className="space-y-4 flex-1">
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5  shrink-0 mt-0.5" />
                     <span className="text-text-body">Unlimited captions</span>
@@ -272,7 +290,7 @@ export default function PricingPage() {
             {/* Enterprise Plan */}
             <Card
               variant="outlined"
-              className="border-border hover:border-border-alt transition-all rounded-3xl"
+              className="border-border hover:border-border-alt transition-all rounded-3xl flex flex-col"
             >
               <CardHeader padding="md">
                 <div className="flex flex-col items-start gap-8 mb-2">
@@ -293,7 +311,7 @@ export default function PricingPage() {
                   Per person billed monthly
                 </p>
               </CardHeader>
-              <CardContent padding="md">
+              <CardContent padding="md" className="flex flex-col flex-1">
                 <Button
                   onClick={() => handleUpgrade("enterprise")}
                   variant="primary"
@@ -306,7 +324,7 @@ export default function PricingPage() {
                 {/* Divider */}
                 <div className="border-t border-border mb-8"></div>
 
-                <ul className="space-y-4">
+                <ul className="space-y-4 flex-1">
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5  shrink-0 mt-0.5" />
                     <span className="text-text-body">Everything in Pro</span>
