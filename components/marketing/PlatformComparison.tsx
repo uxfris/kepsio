@@ -28,7 +28,7 @@ export const PlatformComparison = memo(function PlatformComparison({
   return (
     <div id="examples" className="my-20 max-w-5xl mx-auto">
       <div className="text-center mb-8">
-        <h3 className="text-2xl font-bold text-primary mb-3">
+        <h3 className="text-5xl font-bold text-primary mb-3">
           See the difference instantly
         </h3>
         <p className="text-text-body">

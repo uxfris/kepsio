@@ -41,8 +41,8 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
   const planOrder = ["free", "pro", "enterprise"] as const;
 
   return (
-    <section id="pricing" className="py-24 bg-surface">
-      <div className="max-w-7xl mx-auto px-6">
+    <section id="pricing" className="py-24 ">
+      <div className="max-w-7xl mx-auto px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-primary mb-4">
             Start free, upgrade when you're ready
@@ -68,7 +68,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
         )}
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8">
           {planOrder.map((planId) => {
             const plan = subscriptionPlans[planId];
             // Override button text and style for marketing page
