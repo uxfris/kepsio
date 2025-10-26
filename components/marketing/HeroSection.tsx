@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo } from "react";
+import { memo } from "react";
 import { ArrowRight, Play, Check } from "lucide-react";
 import { Button } from "../ui/Button";
 

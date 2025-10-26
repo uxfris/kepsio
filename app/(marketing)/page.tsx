@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useCallback, lazy, Suspense } from "react";
+import { useState, useCallback } from "react";
 import {
   HeroSection,
   PlatformComparison,
   FeaturesSection,
-  TestimonialsSection,
   FinalCTASection,
   VideoModal,
   PricingSection,
@@ -16,12 +15,18 @@ import {
   FEATURES,
   TESTIMONIALS,
 } from "../../lib/constants/marketing";
+import dynamic from "next/dynamic";
 
 // Lazy load heavy components
-const LazyTestimonialsSection = lazy(() =>
-  import("../../components/marketing").then((module) => ({
-    default: module.TestimonialsSection,
-  }))
+const TestimonialsSection = dynamic(
+  () =>
+    import("../../components/marketing").then(
+      (module) => module.TestimonialsSection
+    ),
+  {
+    loading: () => <SectionLoader />,
+    ssr: false,
+  }
 );
 
 // Loading component for Suspense fallback
@@ -35,16 +40,16 @@ export default function HomePage() {
   const [showVideo, setShowVideo] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
 
-  const handleSignupClick = useCallback(() => {
-    setShowSignupModal(true);
-  }, []);
-
   const handleVideoClick = useCallback(() => {
     setShowVideo(true);
   }, []);
 
   const handleVideoClose = useCallback(() => {
     setShowVideo(false);
+  }, []);
+
+  const handleSignupClick = useCallback(() => {
+    setShowSignupModal(true);
   }, []);
 
   const handleSignupClose = useCallback(() => {
@@ -77,9 +82,7 @@ export default function HomePage() {
       <FeaturesSection features={FEATURES as any} />
 
       {/* Social Proof / Testimonials */}
-      <Suspense fallback={<SectionLoader />}>
-        <LazyTestimonialsSection testimonials={TESTIMONIALS as any} />
-      </Suspense>
+      <TestimonialsSection testimonials={TESTIMONIALS as any} />
 
       {/* Pricing Section */}
       <PricingSection onUpgrade={handleUpgrade} />
