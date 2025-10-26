@@ -65,12 +65,12 @@ const AccountSettingsContent = () => {
 
       {/* Profile Picture Section */}
       <Card variant="outlined" className="overflow-hidden">
-        <CardHeader padding="lg" className="border-b border-border">
+        <CardHeader padding="none" className="border-b border-border mb-4 pb-4">
           <CardTitle className="text-base font-semibold text-primary">
             Profile Picture
           </CardTitle>
         </CardHeader>
-        <CardContent padding="lg">
+        <CardContent padding="none">
           <div className="flex items-center gap-6">
             <div className="relative">
               <div className="w-24 h-24 bg-linear-to-br from-accent/20 to-accent/30 rounded-full flex items-center justify-center text-primary text-2xl font-bold shadow-lg">
@@ -101,12 +101,12 @@ const AccountSettingsContent = () => {
 
       {/* Personal Information */}
       <Card variant="outlined" className="overflow-hidden">
-        <CardHeader padding="lg" className="border-b border-border">
-          <CardTitle className="text-base font-semibold text-primary">
+        <CardHeader padding="none" className="border-b border-border mb-4">
+          <CardTitle className="text-base font-semibold text-primary pb-4">
             Personal Information
           </CardTitle>
         </CardHeader>
-        <CardContent padding="lg" className="space-y-6">
+        <CardContent padding="none" className="space-y-6 mt-4">
           {/* Full Name */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-primary">
@@ -159,13 +159,13 @@ const AccountSettingsContent = () => {
 
       {/* Danger Zone */}
       <Card variant="outlined" className="border-error/20 bg-error/5">
-        <CardHeader padding="lg" className="border-b border-error/20">
+        <CardHeader padding="none" className="border-b border-error/20 pb-4">
           <CardTitle className="text-base font-semibold text-error flex items-center gap-2">
             <AlertTriangle className="w-5 h-5" />
             Danger Zone
           </CardTitle>
         </CardHeader>
-        <CardContent padding="lg">
+        <CardContent padding="none" className="mt-4">
           <div className="space-y-4">
             <p className="text-sm text-error/80">
               Once you delete your account, there is no going back. Please be

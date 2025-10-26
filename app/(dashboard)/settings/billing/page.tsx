@@ -63,7 +63,7 @@ const BillingSettingsContent = () => {
 
       {/* Current Plan */}
       <Card variant="outlined" className="overflow-hidden">
-        <CardHeader padding="lg" className="border-b border-border">
+        <CardHeader padding="none" className="border-b border-border mb-4 pb-4">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-base font-semibold text-primary">
@@ -78,7 +78,7 @@ const BillingSettingsContent = () => {
             </span>
           </div>
         </CardHeader>
-        <CardContent padding="lg">
+        <CardContent padding="none" className="mt-4">
           {/* Usage Stats */}
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div className="p-4 bg-section-light rounded-xl border border-border">
@@ -138,15 +138,19 @@ const BillingSettingsContent = () => {
 
       {/* Pro Plan Features */}
       <Card
+        padding="none"
         variant="outlined"
         className="bg-accent/5 border-accent/20 overflow-hidden"
       >
-        <CardHeader padding="lg" className="border-b border-accent/20">
+        <CardHeader
+          padding="lg"
+          className="border-b border-accent/20 mb-4 pb-4"
+        >
           <CardTitle className="text-base font-semibold text-primary">
             Why upgrade to Pro?
           </CardTitle>
         </CardHeader>
-        <CardContent padding="lg">
+        <CardContent padding="lg" className="mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {proFeatures.map((feature, idx) => {
               const Icon = feature.icon;
@@ -173,7 +177,7 @@ const BillingSettingsContent = () => {
         variant="outlined"
         className="border-dashed border-border bg-section-light/50"
       >
-        <CardContent padding="lg">
+        <CardContent padding="none" className="mt-4">
           <div className="text-center">
             <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mx-auto mb-4">
               <ExternalLink className="w-6 h-6 text-accent" />

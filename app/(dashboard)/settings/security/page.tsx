@@ -73,8 +73,8 @@ const SecuritySettingsContent = () => {
       </div>
 
       {/* Password Security */}
-      <Card variant="outlined" className="overflow-hidden">
-        <CardHeader padding="lg" className="border-b border-border">
+      <Card variant="outlined" className="overflow-hidden pb-0">
+        <CardHeader padding="none" className="border-b border-border mb-4 pb-4">
           <CardTitle className="text-base font-semibold text-primary flex items-center gap-2">
             <Key className="w-5 h-5 text-accent" />
             Password Security
@@ -103,14 +103,14 @@ const SecuritySettingsContent = () => {
       </Card>
 
       {/* Two-Factor Authentication */}
-      <Card variant="outlined" className="overflow-hidden">
-        <CardHeader padding="lg" className="border-b border-border">
+      <Card variant="outlined" className="overflow-hidden pb-0">
+        <CardHeader padding="none" className="border-b border-border mb-4 pb-4">
           <CardTitle className="text-base font-semibold text-primary flex items-center gap-2">
             <Smartphone className="w-5 h-5 text-accent" />
             Two-Factor Authentication
           </CardTitle>
         </CardHeader>
-        <CardContent padding="lg">
+        <CardContent padding="lg" className="mt-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex-1">
               <h3 className="font-medium text-primary text-sm mb-1">
@@ -137,13 +137,13 @@ const SecuritySettingsContent = () => {
 
       {/* Active Sessions */}
       <Card variant="outlined" className="overflow-hidden">
-        <CardHeader padding="lg" className="border-b border-border">
+        <CardHeader padding="none" className="border-b border-border mb-4 pb-4">
           <CardTitle className="text-base font-semibold text-primary flex items-center gap-2">
             <Monitor className="w-5 h-5 text-accent" />
             Active Sessions
           </CardTitle>
         </CardHeader>
-        <CardContent padding="lg">
+        <CardContent padding="none" className="mt-4">
           <div className="space-y-3">
             {activeSessions.map((session) => {
               const Icon = session.icon;
@@ -194,13 +194,13 @@ const SecuritySettingsContent = () => {
 
       {/* Data Export */}
       <Card variant="outlined" className="overflow-hidden">
-        <CardHeader padding="lg" className="border-b border-border">
+        <CardHeader padding="none" className="border-b border-border mb-4 pb-4">
           <CardTitle className="text-base font-semibold text-primary flex items-center gap-2">
             <Download className="w-5 h-5 text-accent" />
             Data Export
           </CardTitle>
         </CardHeader>
-        <CardContent padding="lg">
+        <CardContent padding="none" className="mt-4">
           <div className="space-y-4">
             <div>
               <h3 className="font-medium text-primary text-sm mb-1">
@@ -223,8 +223,12 @@ const SecuritySettingsContent = () => {
       </Card>
 
       {/* Security Tips */}
-      <Card variant="outlined" className="bg-info/5 border-info/20">
-        <CardContent padding="lg">
+      <Card
+        padding="none"
+        variant="outlined"
+        className="bg-info/5 border-info/20"
+      >
+        <CardContent padding="lg" className="mt-4 pb-4">
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 bg-info/10 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
               <Shield className="w-4 h-4 text-info" />
