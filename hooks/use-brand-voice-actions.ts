@@ -158,10 +158,45 @@ export function useBrandVoiceActions({
     [addToast]
   );
 
+  const handleEditSample = useCallback(
+    async (index: number, text: string) => {
+      try {
+        const response = await fetch("/api/brand-voice/training", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ index, text }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to update sample");
+        }
+
+        addToast({
+          type: "success",
+          title: "Sample Updated",
+          description: "The caption sample has been updated.",
+        });
+        return true;
+      } catch (error) {
+        console.error("Error updating sample:", error);
+        addToast({
+          type: "error",
+          title: "Failed to Update Sample",
+          description: "Could not update the sample. Please try again.",
+        });
+        return false;
+      }
+    },
+    [addToast]
+  );
+
   return {
     saveOnboardingData,
     handleAnalyze,
     handleAddCaptions,
     handleRemoveSample,
+    handleEditSample,
   };
 }

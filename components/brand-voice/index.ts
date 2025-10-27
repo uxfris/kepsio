@@ -5,3 +5,5 @@ export { LoadingSpinner } from "./LoadingSpinner";
 export { TrainingTab } from "./TrainingTab";
 export { ToneTab } from "./ToneTab";
 export { InsightsTab } from "./InsightsTab";
+export { EditSampleModal } from "./EditSampleModal";
+export { ConfirmDeleteModal } from "./ConfirmDeleteModal";

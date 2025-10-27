@@ -14,6 +14,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "../ui/Card";
 import { Textarea } from "../ui/Textarea";
 import { Progress } from "../ui/Progress";
 import { StatusAlert } from "./StatusAlert";
+import { EditSampleModal } from "./EditSampleModal";
+import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
 import { useToast } from "../ui/Toast";
 import {
   MAX_SAMPLES,
@@ -26,6 +28,7 @@ interface TrainingTabProps {
   trainingSamples: UploadedCaption[];
   onAddCaptions: (captions: string) => Promise<boolean>;
   onRemoveSample: (index: number) => Promise<void>;
+  onEditSample: (index: number, text: string) => Promise<void>;
   onAnalyze: () => Promise<void>;
   onShowOnboarding: () => void;
 }
@@ -36,6 +39,7 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
     trainingSamples,
     onAddCaptions,
     onRemoveSample,
+    onEditSample,
     onAnalyze,
     onShowOnboarding,
   }) => {
@@ -44,6 +48,9 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
     const [isAdding, setIsAdding] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [editingIndex, setEditingIndex] = useState<number | null>(null);
+    const [deletingIndex, setDeletingIndex] = useState<number | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     const { addToast } = useToast();
 
@@ -176,6 +183,33 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
 
     const handleChooseFiles = () => {
       fileInputRef.current?.click();
+    };
+
+    const handleEditClick = (index: number) => {
+      setEditingIndex(index);
+    };
+
+    const handleEditSave = async (text: string) => {
+      if (editingIndex !== null) {
+        await onEditSample(editingIndex, text);
+        setEditingIndex(null);
+      }
+    };
+
+    const handleDeleteClick = (index: number) => {
+      setDeletingIndex(index);
+    };
+
+    const handleDeleteConfirm = async () => {
+      if (deletingIndex !== null) {
+        setIsDeleting(true);
+        try {
+          await onRemoveSample(deletingIndex);
+          setDeletingIndex(null);
+        } finally {
+          setIsDeleting(false);
+        }
+      }
     };
 
     const handleAnalyze = async () => {
@@ -414,14 +448,21 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
                         </div>
                       </div>
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleEditClick(index)}
+                          title="Edit sample"
+                        >
                           <Edit3 className="w-4 h-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 hover:bg-error/10 hover:text-error"
-                          onClick={() => onRemoveSample(index)}
+                          onClick={() => handleDeleteClick(index)}
+                          title="Delete sample"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -482,14 +523,41 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
                   <Button
                     variant="outline"
                     leftIcon={<Upload className="w-4 h-4" />}
+                    onClick={handleChooseFiles}
+                    disabled={isUploading}
                   >
-                    Upload Files
+                    {isUploading ? "Uploading..." : "Upload Files"}
                   </Button>
                 </div>
               </div>
             )}
           </CardContent>
         </Card>
+
+        {/* Edit Modal */}
+        <EditSampleModal
+          isOpen={editingIndex !== null}
+          initialText={
+            editingIndex !== null
+              ? trainingSamples[editingIndex]?.text || ""
+              : ""
+          }
+          onClose={() => setEditingIndex(null)}
+          onSave={handleEditSave}
+        />
+
+        {/* Delete Confirmation Modal */}
+        <ConfirmDeleteModal
+          isOpen={deletingIndex !== null}
+          sampleText={
+            deletingIndex !== null
+              ? trainingSamples[deletingIndex]?.text || ""
+              : ""
+          }
+          onClose={() => setDeletingIndex(null)}
+          onConfirm={handleDeleteConfirm}
+          isDeleting={isDeleting}
+        />
       </div>
     );
   }

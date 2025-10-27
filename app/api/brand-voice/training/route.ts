@@ -126,6 +126,75 @@ export async function POST(request: Request) {
   }
 }
 
+// PUT - Update a training sample by index
+export async function PUT(request: Request) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { index, text } = await request.json();
+
+    if (typeof index !== "number" || index < 0) {
+      return NextResponse.json({ error: "Invalid index" }, { status: 400 });
+    }
+
+    if (!text || typeof text !== "string" || text.trim().length === 0) {
+      return NextResponse.json(
+        { error: "Caption text is required" },
+        { status: 400 }
+      );
+    }
+
+    // Find voice profile
+    const voiceProfile = await prisma.voiceProfile.findFirst({
+      where: { userId: user.id },
+    });
+
+    if (!voiceProfile) {
+      return NextResponse.json(
+        { error: "Voice profile not found" },
+        { status: 404 }
+      );
+    }
+
+    // Update the example at the specified index
+    const updatedExamples = [...voiceProfile.examples];
+    if (index >= updatedExamples.length) {
+      return NextResponse.json(
+        { error: "Index out of bounds" },
+        { status: 400 }
+      );
+    }
+
+    updatedExamples[index] = text.trim();
+
+    // Update the voice profile
+    await prisma.voiceProfile.update({
+      where: { id: voiceProfile.id },
+      data: {
+        examples: updatedExamples,
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      text: text.trim(),
+    });
+  } catch (error) {
+    console.error("Error updating training sample:", error);
+    return NextResponse.json(
+      { error: "Failed to update training sample" },
+      { status: 500 }
+    );
+  }
+}
+
 // DELETE - Remove a training sample by index
 export async function DELETE(request: Request) {
   try {

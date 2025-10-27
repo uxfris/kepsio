@@ -58,6 +58,7 @@ const BrandVoiceContent: React.FC = () => {
     handleAnalyze,
     handleAddCaptions,
     handleRemoveSample,
+    handleEditSample,
   } = useBrandVoiceActions({
     selectedPlatformId,
     selectedToneId,
@@ -132,6 +133,16 @@ const BrandVoiceContent: React.FC = () => {
       }
     },
     [handleRemoveSample, refreshSamples]
+  );
+
+  const handleEditSampleWithState = useCallback(
+    async (index: number, text: string) => {
+      const success = await handleEditSample(index, text);
+      if (success) {
+        await refreshSamples(); // Refresh the samples list after editing
+      }
+    },
+    [handleEditSample, refreshSamples]
   );
 
   return (
@@ -210,6 +221,7 @@ const BrandVoiceContent: React.FC = () => {
             trainingSamples={trainingSamples}
             onAddCaptions={handleAddCaptionsWithState}
             onRemoveSample={handleRemoveSampleWithState}
+            onEditSample={handleEditSampleWithState}
             onAnalyze={handleAnalyze}
             onShowOnboarding={() => setShowOnboarding(true)}
           />
