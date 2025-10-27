@@ -6,10 +6,11 @@ import {
   Trash2,
   Save,
   User,
-  Mail,
-  AtSign,
   AlertTriangle,
+  LogOut,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { signOut } from "../../../../lib/supabase/auth-utils";
 
 import { Button } from "../../../../components/ui/Button";
 import {
@@ -23,12 +24,14 @@ import { ToastProvider, useToast } from "../../../../components/ui/Toast";
 
 const AccountSettingsContent = () => {
   const { addToast } = useToast();
+  const router = useRouter();
 
   // Account Settings State
   const [fullName, setFullName] = useState("Sarah Mitchell");
   const [email, setEmail] = useState("sarah.mitchell@email.com");
   const [username, setUsername] = useState("@sarahcreates");
   const [hasChanges, setHasChanges] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const showSuccessToast = (message: string) => {
     addToast({
@@ -49,6 +52,27 @@ const AccountSettingsContent = () => {
       setter(e.target.value);
       setHasChanges(true);
     };
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await signOut();
+      addToast({
+        title: "Logged out",
+        description: "You have been successfully logged out",
+        type: "success",
+      });
+      router.push("/");
+    } catch (error) {
+      addToast({
+        title: "Error",
+        description: "Failed to log out. Please try again.",
+        type: "error",
+      });
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -153,6 +177,33 @@ const AccountSettingsContent = () => {
             <p className="text-xs text-hint">
               Your unique identifier across the platform
             </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Logout Section */}
+      <Card variant="outlined" className="overflow-hidden">
+        <CardHeader padding="none" className="border-b border-border pb-4">
+          <CardTitle className="text-base font-semibold text-primary flex items-center gap-2">
+            <LogOut className="w-5 h-5 text-accent" />
+            Session
+          </CardTitle>
+        </CardHeader>
+        <CardContent padding="none" className="mt-4">
+          <div className="space-y-3">
+            <p className="text-sm text-text-body">
+              End your current session and return to the login page.
+            </p>
+            <Button
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              variant="outline"
+              size="sm"
+              className="disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              {isLoggingOut ? "Logging out..." : "Logout"}
+            </Button>
           </div>
         </CardContent>
       </Card>
