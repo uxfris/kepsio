@@ -14,16 +14,18 @@ import { Card, CardHeader, CardTitle, CardContent } from "../ui/Card";
 import { Textarea } from "../ui/Textarea";
 import { Progress } from "../ui/Progress";
 import { StatusAlert } from "./StatusAlert";
+import { useToast } from "../ui/Toast";
 import {
   MAX_SAMPLES,
-  MOCK_UPLOADED_CAPTIONS,
   MIN_SAMPLES_FOR_TRAINING,
 } from "../../lib/constants/brand-voice";
+import type { UploadedCaption } from "../../types/brand-voice";
 
 interface TrainingTabProps {
   uploadedCaptions: number;
-  onAddCaptions: (captions: string) => boolean;
-  onRemoveSample: (id: number) => void;
+  trainingSamples: UploadedCaption[];
+  onAddCaptions: (captions: string) => Promise<boolean>;
+  onRemoveSample: (index: number) => Promise<void>;
   onAnalyze: () => Promise<void>;
   onShowOnboarding: () => void;
 }
@@ -31,6 +33,7 @@ interface TrainingTabProps {
 export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
   ({
     uploadedCaptions,
+    trainingSamples,
     onAddCaptions,
     onRemoveSample,
     onAnalyze,
@@ -38,11 +41,141 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
   }) => {
     const [pastedCaptions, setPastedCaptions] = useState("");
     const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [isAdding, setIsAdding] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const { addToast } = useToast();
 
-    const handleAddCaptions = () => {
-      if (onAddCaptions(pastedCaptions)) {
-        setPastedCaptions("");
+    const handleAddCaptions = async () => {
+      setIsAdding(true);
+      try {
+        const success = await onAddCaptions(pastedCaptions);
+        if (success) {
+          setPastedCaptions("");
+        }
+      } finally {
+        setIsAdding(false);
       }
+    };
+
+    const parseFileContent = async (file: File): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const content = e.target?.result as string;
+
+          // For CSV files, try to extract text from the first column
+          if (file.name.endsWith(".csv")) {
+            const lines = content.split("\n");
+            const captions = lines
+              .map((line) => {
+                // Get first column value (handling quoted values)
+                const match = line.match(/^"([^"]*)"|^([^,]*)/);
+                return match ? (match[1] || match[2]).trim() : "";
+              })
+              .filter((line) => line.length > 0)
+              .join("\n");
+            resolve(captions);
+          } else {
+            // For .txt files, use content as-is
+            resolve(content);
+          }
+        };
+
+        reader.onerror = () => reject(new Error("Failed to read file"));
+        reader.readAsText(file);
+      });
+    };
+
+    const handleFileUpload = async (files: FileList | null) => {
+      if (!files || files.length === 0) return;
+
+      setIsUploading(true);
+      try {
+        const file = files[0];
+
+        // Validate file type
+        const validExtensions = [".txt", ".csv"];
+        const isValid = validExtensions.some((ext) =>
+          file.name.toLowerCase().endsWith(ext)
+        );
+
+        if (!isValid) {
+          addToast({
+            type: "error",
+            title: "Invalid File Type",
+            description: "Please upload a .txt or .csv file",
+          });
+          return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          addToast({
+            type: "error",
+            title: "File Too Large",
+            description: "File size must be less than 5MB",
+          });
+          return;
+        }
+
+        const content = await parseFileContent(file);
+
+        if (!content.trim()) {
+          addToast({
+            type: "error",
+            title: "Empty File",
+            description: "The file contains no valid captions",
+          });
+          return;
+        }
+
+        const success = await onAddCaptions(content);
+
+        if (success && fileInputRef.current) {
+          fileInputRef.current.value = ""; // Reset file input
+        }
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        addToast({
+          type: "error",
+          title: "Upload Failed",
+          description: "Failed to process file. Please try again.",
+        });
+      } finally {
+        setIsUploading(false);
+      }
+    };
+
+    const handleDragOver = (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(true);
+    };
+
+    const handleDragLeave = (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+    };
+
+    const handleDrop = async (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+
+      const files = e.dataTransfer.files;
+      await handleFileUpload(files);
+    };
+
+    const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      handleFileUpload(e.target.files);
+    };
+
+    const handleChooseFiles = () => {
+      fileInputRef.current?.click();
     };
 
     const handleAnalyze = async () => {
@@ -161,18 +294,47 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
                 <h4 className="text-sm font-medium text-text-head">
                   Upload Files
                 </h4>
-                <div className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-accent hover:bg-accent/5 transition-all cursor-pointer group">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".txt,.csv"
+                  onChange={handleFileInputChange}
+                  className="hidden"
+                />
+                <div
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onClick={handleChooseFiles}
+                  className={`border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer group ${
+                    isDragging
+                      ? "border-accent bg-accent/10"
+                      : "border-border hover:border-accent hover:bg-accent/5"
+                  } ${isUploading ? "opacity-50 pointer-events-none" : ""}`}
+                >
                   <div className="w-16 h-16 bg-accent/10 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-accent/20 transition-colors">
                     <Upload className="w-8 h-8 text-accent" />
                   </div>
                   <p className="text-text-head font-medium mb-2">
-                    Drop your captions here
+                    {isUploading
+                      ? "Uploading..."
+                      : isDragging
+                      ? "Drop your file here"
+                      : "Drop your captions here"}
                   </p>
                   <p className="text-sm text-text-body mb-4">
-                    Supports .txt, .csv, .docx files
+                    Supports .txt and .csv files (max 5MB)
                   </p>
-                  <Button variant="accent" size="sm">
-                    Choose Files
+                  <Button
+                    variant="accent"
+                    size="sm"
+                    disabled={isUploading}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleChooseFiles();
+                    }}
+                  >
+                    {isUploading ? "Uploading..." : "Choose Files"}
                   </Button>
                 </div>
               </div>
@@ -198,10 +360,11 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
                       variant="accent"
                       size="sm"
                       onClick={handleAddCaptions}
-                      disabled={!pastedCaptions.trim()}
+                      disabled={!pastedCaptions.trim() || isAdding}
+                      loading={isAdding}
                       leftIcon={<Plus className="w-4 h-4" />}
                     >
-                      Add Captions
+                      {isAdding ? "Adding..." : "Add Captions"}
                     </Button>
                   </div>
                 </div>
@@ -226,9 +389,9 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
             {uploadedCaptions > 0 ? (
               <>
                 <div className="space-y-3">
-                  {MOCK_UPLOADED_CAPTIONS.map((sample, index) => (
+                  {trainingSamples.map((sample, index) => (
                     <div
-                      key={sample.id}
+                      key={index}
                       className="group flex items-start gap-4 p-4 bg-section rounded-xl border border-border hover:border-accent/30 hover:bg-accent/5 transition-all"
                     >
                       <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center shrink-0 mt-1">
@@ -258,7 +421,7 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 hover:bg-error/10 hover:text-error"
-                          onClick={() => onRemoveSample(sample.id)}
+                          onClick={() => onRemoveSample(index)}
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>

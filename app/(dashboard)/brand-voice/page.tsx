@@ -14,6 +14,7 @@ import {
 
 import { useBrandVoiceData } from "../../../hooks/use-brand-voice-data";
 import { useBrandVoiceActions } from "../../../hooks/use-brand-voice-actions";
+import { useTrainingSamples } from "../../../hooks/use-training-samples";
 import {
   TAB_OPTIONS,
   MOCK_VOICE_INSIGHTS,
@@ -26,7 +27,6 @@ const BrandVoiceContent: React.FC = () => {
   // State management
   const [activeTab, setActiveTab] = useState<TabValue>("training");
   const [voiceStrength, setVoiceStrength] = useState(75);
-  const [uploadedCaptions, setUploadedCaptions] = useState(3);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(0);
   const [stylePreferences, setStylePreferences] = useState<StylePreferences>({
@@ -46,6 +46,12 @@ const BrandVoiceContent: React.FC = () => {
     setSelectedToneId,
     setSelectedContentTypes,
   } = useBrandVoiceData();
+
+  const {
+    samples: trainingSamples,
+    count: uploadedCaptions,
+    refreshSamples,
+  } = useTrainingSamples();
 
   const {
     saveOnboardingData,
@@ -107,23 +113,25 @@ const BrandVoiceContent: React.FC = () => {
 
   // Training handlers
   const handleAddCaptionsWithState = useCallback(
-    (captions: string) => {
-      const success = handleAddCaptions(captions);
+    async (captions: string) => {
+      const success = await handleAddCaptions(captions);
       if (success) {
-        setUploadedCaptions((prev) => prev + 1);
+        await refreshSamples(); // Refresh the samples list after adding
         return true;
       }
       return false;
     },
-    [handleAddCaptions]
+    [handleAddCaptions, refreshSamples]
   );
 
   const handleRemoveSampleWithState = useCallback(
-    (id: number) => {
-      setUploadedCaptions((prev) => Math.max(0, prev - 1));
-      handleRemoveSample();
+    async (index: number) => {
+      const success = await handleRemoveSample(index);
+      if (success) {
+        await refreshSamples(); // Refresh the samples list after removing
+      }
     },
-    [handleRemoveSample]
+    [handleRemoveSample, refreshSamples]
   );
 
   return (
@@ -199,6 +207,7 @@ const BrandVoiceContent: React.FC = () => {
         {activeTab === "training" && (
           <TrainingTab
             uploadedCaptions={uploadedCaptions}
+            trainingSamples={trainingSamples}
             onAddCaptions={handleAddCaptionsWithState}
             onRemoveSample={handleRemoveSampleWithState}
             onAnalyze={handleAnalyze}

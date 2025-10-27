@@ -83,27 +83,80 @@ export function useBrandVoiceActions({
   }, [addToast]);
 
   const handleAddCaptions = useCallback(
-    (captions: string) => {
-      if (captions.trim()) {
+    async (captions: string) => {
+      if (!captions.trim()) {
+        return false;
+      }
+
+      try {
+        const response = await fetch("/api/brand-voice/training", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ captions }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to add captions");
+        }
+
+        const data = await response.json();
+
         addToast({
           type: "success",
           title: "Captions Added",
-          description: "Your captions have been added to the training data.",
+          description: `${data.count} caption${
+            data.count > 1 ? "s" : ""
+          } added to your training data.`,
         });
         return true;
+      } catch (error) {
+        console.error("Error adding captions:", error);
+        addToast({
+          type: "error",
+          title: "Failed to Add Captions",
+          description:
+            "Could not add captions to training data. Please try again.",
+        });
+        return false;
       }
-      return false;
     },
     [addToast]
   );
 
-  const handleRemoveSample = useCallback(() => {
-    addToast({
-      type: "success",
-      title: "Sample Removed",
-      description: "The caption sample has been removed.",
-    });
-  }, [addToast]);
+  const handleRemoveSample = useCallback(
+    async (index: number) => {
+      try {
+        const response = await fetch(
+          `/api/brand-voice/training?index=${index}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to remove sample");
+        }
+
+        addToast({
+          type: "success",
+          title: "Sample Removed",
+          description: "The caption sample has been removed.",
+        });
+        return true;
+      } catch (error) {
+        console.error("Error removing sample:", error);
+        addToast({
+          type: "error",
+          title: "Failed to Remove Sample",
+          description: "Could not remove the sample. Please try again.",
+        });
+        return false;
+      }
+    },
+    [addToast]
+  );
 
   return {
     saveOnboardingData,
