@@ -30,8 +30,8 @@ export default function ProBadge({ isCollapsed }: ProBadgeProps) {
   const isPro = currentPlan === "pro" || currentPlan === "enterprise";
 
   const captionsUsed = usage?.captionsUsed || 0;
-  const captionsLimit = planConfig.limits.captionsPerDay;
-  const usagePercentage = (captionsUsed / captionsLimit) * 100;
+  const captionsLimit = planConfig.limits.captionsPerMonth;
+  const usagePercentage = captionsLimit === -1 ? 0 : (captionsUsed / captionsLimit) * 100;
 
   const getPlanIcon = () => {
     if (currentPlan === "enterprise")

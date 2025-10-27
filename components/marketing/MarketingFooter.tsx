@@ -83,10 +83,10 @@ export const MarketingFooter = memo(function MarketingFooter({
             © 2025 Kepsio. All rights reserved.
           </p>
           <div className="flex items-center gap-6 text-sm text-hint">
-            <a href="#" className="hover:text-surface transition-colors">
+            <a href="/privacy" className="hover:text-surface transition-colors">
               Privacy Policy
             </a>
-            <a href="#" className="hover:text-surface transition-colors">
+            <a href="/terms" className="hover:text-surface transition-colors">
               Terms of Service
             </a>
             <a href="#" className="hover:text-surface transition-colors">

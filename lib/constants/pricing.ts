@@ -1,4 +1,4 @@
-import { Testimonial, FAQItem } from "../components/pricing";
+import { Testimonial, FAQItem } from "../../components/pricing";
 
 export const TESTIMONIALS: Testimonial[] = [
   {

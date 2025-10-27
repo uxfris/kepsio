@@ -107,8 +107,8 @@ export const FOOTER_COLUMNS = [
       { label: "About", href: "#" },
       { label: "Careers", href: "#" },
       { label: "Contact", href: "#" },
-      { label: "Privacy", href: "#" },
-      { label: "Terms", href: "#" },
+      { label: "Privacy", href: "/privacy" },
+      { label: "Terms", href: "/terms" },
     ],
   },
 ];

@@ -61,13 +61,16 @@ export default function HomePage() {
   const handleSignupSuccess = useCallback((email: string) => {
     console.log("Signup successful for:", email);
 
-    //Show a success message (already shown in the modal) if it's using email signup
+    //For the SSO sign up, do:
 
     //Redirect to onboarding page (if it's a new user)
     // router.push("/onboarding");
 
     //Redirect to dashboard page (if it's an existing user)
     // router.push("/dashboard");
+
+    //For the email sign up, do:
+    //will be redirected by the magic link
   }, []);
 
   const handleUpgrade = useCallback((planId: string) => {
@@ -82,7 +85,8 @@ export default function HomePage() {
 
   const handleSigninSuccess = useCallback((email: string) => {
     console.log("Signin successful for:", email);
-    // Here you would typically redirect to the dashboard
+    //For SSO signin: Here you would typically redirect to the dashboard
+    //For Email signin: will be redirected by the magic link
   }, []);
 
   return (

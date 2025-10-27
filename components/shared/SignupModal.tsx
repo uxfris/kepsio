@@ -11,6 +11,12 @@ import {
 } from "lucide-react";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import {
+  signUp,
+  signInWithGoogle,
+  signInWithTwitter,
+} from "@/lib/supabase/auth-utils";
+import { useRouter } from "next/navigation";
 
 interface SignupModalProps {
   isOpen: boolean;
@@ -25,6 +31,7 @@ export default function SignupModal({
   onSuccess,
   onSwitchToSignin,
 }: SignupModalProps) {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -81,18 +88,18 @@ export default function SignupModal({
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const result = await signUp(email);
+
+      if (result.error) {
+        setError(result.error);
+        setIsLoading(false);
+        return;
+      }
 
       setSuccess(true);
       onSuccess?.(email);
-
-      // // Auto close after success
-      // setTimeout(() => {
-      //   onClose();
-      // }, 5000);
-    } catch (err) {
-      setError("Something went wrong. Please try again.");
+    } catch (err: any) {
+      setError(err.message || "Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -103,13 +110,17 @@ export default function SignupModal({
     setError("");
 
     try {
-      // Simulate SSO flow
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log(`Signing up with ${provider}`);
-      onSuccess?.(`${provider} user`);
-    } catch (err) {
-      setError("Something went wrong. Please try again.");
-    } finally {
+      if (provider === "Google") {
+        await signInWithGoogle();
+        // OAuth will redirect the user, so we don't need to update state
+      } else if (provider === "X") {
+        await signInWithTwitter();
+        // OAuth will redirect the user, so we don't need to update state
+      } else {
+        throw new Error("Unsupported provider");
+      }
+    } catch (err: any) {
+      setError(err.message || "Something went wrong. Please try again.");
       setIsLoading(false);
     }
   };
