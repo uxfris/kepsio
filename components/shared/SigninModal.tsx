@@ -128,7 +128,7 @@ export default function SigninModal({
     <>
       {/* Backdrop Overlay */}
       <div
-        className="fixed inset-0 bg-primary/80 backdrop-blur-sm flex items-center justify-center z-[1050] p-4 animate-fade-in"
+        className="fixed inset-0 bg-primary/80 backdrop-blur-sm flex items-center justify-center z-1050 p-4 animate-fade-in"
         onClick={onClose}
       >
         {/* Modal Container */}
