@@ -439,7 +439,7 @@ const BrandVoiceContent = () => {
       <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Voice Training Tab */}
         {activeTab === "training" && (
-          <div className="max-w-5xl space-y-8">
+          <div className="space-y-8">
             {/* Training Overview */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Progress Card */}
@@ -484,37 +484,37 @@ const BrandVoiceContent = () => {
 
                   {/* Status Message */}
                   {uploadedCaptions < 3 ? (
-                    <div className="flex items-start gap-3 p-4 bg-warning/10 border border-warning/20 rounded-lg">
-                      <AlertCircle className="w-5 h-5 text-warning shrink-0 mt-0.5" />
+                    <div className="flex items-start gap-3 p-3 bg-warning/5 border border-warning/10 rounded-lg">
+                      <AlertCircle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
                       <div className="text-sm text-warning">
-                        <p className="font-medium mb-1">Getting Started</p>
-                        <p className="text-warning/80">
+                        <p className="font-medium mb-0.5">Getting Started</p>
+                        <p className="text-warning/70 text-xs">
                           Upload at least 3 captions to begin training your
                           voice. More samples = better results.
                         </p>
                       </div>
                     </div>
                   ) : uploadedCaptions < 7 ? (
-                    <div className="flex items-start gap-3 p-4 bg-info/10 border border-info/20 rounded-lg">
-                      <AlertCircle className="w-5 h-5 text-info shrink-0 mt-0.5" />
+                    <div className="flex items-start gap-3 p-3 bg-info/5 border border-info/10 rounded-lg">
+                      <AlertCircle className="w-4 h-4 text-info shrink-0 mt-0.5" />
                       <div className="text-sm text-info">
-                        <p className="font-medium mb-1">Good Progress</p>
-                        <p className="text-info/80">
-                          You're on the right track! Add {7 - uploadedCaptions}{" "}
-                          more samples for optimal voice matching.
+                        <p className="font-medium mb-0.5">Good Progress</p>
+                        <p className="text-info/70 text-xs">
+                          Add {7 - uploadedCaptions} more samples for optimal
+                          voice matching.
                         </p>
                       </div>
                     </div>
                   ) : (
-                    <div className="flex items-start gap-3 p-4 bg-success/10 border border-success/20 rounded-lg">
-                      <Check className="w-5 h-5 text-success shrink-0 mt-0.5" />
+                    <div className="flex items-start gap-3 p-3 bg-success/5 border border-success/10 rounded-lg">
+                      <Check className="w-4 h-4 text-success shrink-0 mt-0.5" />
                       <div className="text-sm text-success">
-                        <p className="font-medium mb-1">
+                        <p className="font-medium mb-0.5">
                           Excellent Training Data
                         </p>
-                        <p className="text-success/80">
-                          Great job! You have enough samples for high-quality
-                          voice matching.
+                        <p className="text-success/70 text-xs">
+                          You have enough samples for high-quality voice
+                          matching.
                         </p>
                       </div>
                     </div>
@@ -522,41 +522,48 @@ const BrandVoiceContent = () => {
                 </CardContent>
               </Card>
 
-              {/* Quick Actions Card */}
+              {/* Training Tips Card */}
               <Card padding="none">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <Zap className="w-4 h-4 text-primary" />
+                      <Sparkles className="w-4 h-4 text-primary" />
                     </div>
-                    Quick Actions
+                    Training Tips
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start"
-                    leftIcon={<Upload className="w-4 h-4" />}
-                  >
-                    Upload Files
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start"
-                    leftIcon={<FileText className="w-4 h-4" />}
-                  >
-                    Import from Instagram
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start"
-                    leftIcon={<Plus className="w-4 h-4" />}
-                  >
-                    Add Sample Manually
-                  </Button>
+                  <div className="space-y-2">
+                    <div className="flex gap-2 ">
+                      <span className="text-accent font-bold shrink-0">1.</span>
+                      <p className="text-text-body text-sm">
+                        Upload diverse captions from different periods
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <span className="text-accent font-bold shrink-0">2.</span>
+                      <p className="text-text-body text-sm">
+                        Include your best-performing posts
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <span className="text-accent font-bold shrink-0">3.</span>
+                      <p className="text-text-body text-sm">
+                        Mix different caption styles and lengths
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <span className="text-accent font-bold shrink-0">4.</span>
+                      <p className="text-text-body text-sm">
+                        More samples = better voice accuracy
+                      </p>
+                    </div>
+                  </div>
+                  <div className="pt-3 border-t border-border/50">
+                    <p className="text-sm text-hint">
+                      Pro tip: Aim for at least 10 captions for optimal results.
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -594,26 +601,6 @@ const BrandVoiceContent = () => {
                       </p>
                       <Button variant="accent" size="sm">
                         Choose Files
-                      </Button>
-                    </div>
-
-                    {/* Platform Import */}
-                    <div className="p-4 bg-section rounded-lg border border-border">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                          <FileText className="w-4 h-4 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-text-head">
-                            Import from Platform
-                          </p>
-                          <p className="text-xs text-text-body">
-                            Connect your social accounts
-                          </p>
-                        </div>
-                      </div>
-                      <Button variant="outline" size="sm" className="w-full">
-                        Import from Instagram
                       </Button>
                     </div>
                   </div>
@@ -666,15 +653,6 @@ const BrandVoiceContent = () => {
                     </div>
                     Training Samples ({uploadedCaptions})
                   </CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      leftIcon={<Plus className="w-4 h-4" />}
-                    >
-                      Add More
-                    </Button>
-                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -789,7 +767,7 @@ const BrandVoiceContent = () => {
 
         {/* Tone & Style Tab */}
         {activeTab === "tone" && (
-          <div className="max-w-5xl space-y-8">
+          <div className="space-y-8">
             {/* Platform Selection */}
             <Card padding="none">
               <CardHeader>
@@ -1218,7 +1196,7 @@ const BrandVoiceContent = () => {
 
         {/* Voice Insights Tab */}
         {activeTab === "insights" && (
-          <div className="max-w-6xl space-y-8">
+          <div className="space-y-8">
             {/* Voice Analysis Overview */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Main Analysis Card */}
