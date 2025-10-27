@@ -15,11 +15,48 @@ interface MarketingLayoutProps {
   children: ReactNode;
 }
 
+// Responsive Actions Component for Unauthenticated Users
+function UnauthenticatedNavActions({
+  isScrolled,
+  onSigninClick,
+  onSignupClick,
+}: {
+  isScrolled: boolean;
+  onSigninClick: () => void;
+  onSignupClick: () => void;
+}) {
+  return (
+    <div
+      className={`flex items-center ${
+        isScrolled ? "gap-2" : "gap-3"
+      } transition-all duration-300`}
+    >
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onSigninClick}
+        className={isScrolled ? "text-xs px-2 h-7" : ""}
+      >
+        Sign In
+      </Button>
+      <Button
+        variant="accent"
+        size="sm"
+        onClick={onSignupClick}
+        className={isScrolled ? "text-xs px-2 h-7" : ""}
+      >
+        Start Free
+      </Button>
+    </div>
+  );
+}
+
 export default function MarketingLayout({ children }: MarketingLayoutProps) {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showSigninModal, setShowSigninModal] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -51,6 +88,16 @@ export default function MarketingLayout({ children }: MarketingLayoutProps) {
     };
   }, []);
 
+  // Track scroll state for responsive actions
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const brand = (
     <div className="flex items-center gap-2">
       <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
@@ -60,29 +107,14 @@ export default function MarketingLayout({ children }: MarketingLayoutProps) {
     </div>
   );
 
-  const unauthenticatedNavActions = (
-    <div className="flex items-center gap-3">
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setShowSigninModal(true)}
-      >
-        Sign In
-      </Button>
-      <Button
-        variant="accent"
-        size="sm"
-        onClick={() => setShowSignupModal(true)}
-      >
-        Start Free
-      </Button>
-    </div>
-  );
-
   const navActions = isLoading ? null : user ? (
     <AuthenticatedNavbarCTAs user={user} />
   ) : (
-    unauthenticatedNavActions
+    <UnauthenticatedNavActions
+      isScrolled={isScrolled}
+      onSigninClick={() => setShowSigninModal(true)}
+      onSignupClick={() => setShowSignupModal(true)}
+    />
   );
 
   return (
