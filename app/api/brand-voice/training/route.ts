@@ -14,12 +14,16 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch user's voice profile with examples
+    // Fetch user's voice profile with examples and platform details
     const voiceProfile = await prisma.voiceProfile.findFirst({
       where: { userId: user.id },
       select: {
         examples: true,
-        platformId: true,
+        platform: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 
@@ -28,7 +32,7 @@ export async function GET() {
       (text, index) => ({
         id: index,
         text,
-        platform: voiceProfile?.platformId || "unknown",
+        platform: voiceProfile?.platform?.name || "general",
         date: "Recently added", // We could enhance this by storing timestamps
       })
     );

@@ -50,6 +50,7 @@ const BrandVoiceContent: React.FC = () => {
   const {
     samples: trainingSamples,
     count: uploadedCaptions,
+    isLoading: isLoadingSamples,
     refreshSamples,
   } = useTrainingSamples();
 
@@ -219,6 +220,7 @@ const BrandVoiceContent: React.FC = () => {
           <TrainingTab
             uploadedCaptions={uploadedCaptions}
             trainingSamples={trainingSamples}
+            isLoadingSamples={isLoadingSamples}
             onAddCaptions={handleAddCaptionsWithState}
             onRemoveSample={handleRemoveSampleWithState}
             onEditSample={handleEditSampleWithState}

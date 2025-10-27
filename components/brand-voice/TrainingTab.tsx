@@ -26,6 +26,7 @@ import type { UploadedCaption } from "../../types/brand-voice";
 interface TrainingTabProps {
   uploadedCaptions: number;
   trainingSamples: UploadedCaption[];
+  isLoadingSamples: boolean;
   onAddCaptions: (captions: string) => Promise<boolean>;
   onRemoveSample: (index: number) => Promise<void>;
   onEditSample: (index: number, text: string) => Promise<void>;
@@ -37,6 +38,7 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
   ({
     uploadedCaptions,
     trainingSamples,
+    isLoadingSamples,
     onAddCaptions,
     onRemoveSample,
     onEditSample,
@@ -420,7 +422,34 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
             </div>
           </CardHeader>
           <CardContent>
-            {uploadedCaptions > 0 ? (
+            {isLoadingSamples ? (
+              // Loading Skeleton
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="flex items-start gap-4 p-4 bg-section rounded-xl border border-border animate-pulse"
+                  >
+                    <div className="w-8 h-8 bg-hint/20 rounded-lg shrink-0 mt-1"></div>
+                    <div className="flex-1 min-w-0 space-y-3">
+                      <div className="h-4 bg-hint/20 rounded w-3/4"></div>
+                      <div className="h-4 bg-hint/20 rounded w-1/2"></div>
+                      <div className="flex items-center gap-3">
+                        <div className="h-6 bg-hint/20 rounded w-20"></div>
+                        <div className="h-3 bg-hint/20 rounded-full w-1"></div>
+                        <div className="h-6 bg-hint/20 rounded w-24"></div>
+                        <div className="h-3 bg-hint/20 rounded-full w-1"></div>
+                        <div className="h-6 bg-hint/20 rounded w-16"></div>
+                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      <div className="h-8 w-8 bg-hint/20 rounded"></div>
+                      <div className="h-8 w-8 bg-hint/20 rounded"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : uploadedCaptions > 0 ? (
               <>
                 <div className="space-y-3">
                   {trainingSamples.map((sample, index) => (
