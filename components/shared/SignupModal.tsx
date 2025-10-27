@@ -16,12 +16,14 @@ interface SignupModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: (email: string) => void;
+  onSwitchToSignin?: () => void;
 }
 
 export default function SignupModal({
   isOpen,
   onClose,
   onSuccess,
+  onSwitchToSignin,
 }: SignupModalProps) {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -118,7 +120,7 @@ export default function SignupModal({
     <>
       {/* Backdrop Overlay */}
       <div
-        className="fixed inset-0 bg-primary/80 backdrop-blur-sm flex items-center justify-center z-modal p-4 animate-fade-in"
+        className="fixed inset-0 bg-primary/80 backdrop-blur-sm flex items-center justify-center z-[1050] p-4 animate-fade-in"
         onClick={onClose}
       >
         {/* Modal Container */}
@@ -284,15 +286,31 @@ export default function SignupModal({
                   </Button>
                 </form>
 
+                {/* Sign In Link */}
+                <div className="mt-6 text-center">
+                  <p className="text-sm text-text-body">
+                    Already have an account?{" "}
+                    <button
+                      onClick={() => {
+                        onClose();
+                        onSwitchToSignin?.();
+                      }}
+                      className="text-accent hover:text-accent-hover font-semibold transition-colors"
+                    >
+                      Sign in
+                    </button>
+                  </p>
+                </div>
+
                 {/* Trust Indicators */}
                 <div className="mt-6 space-y-3">
                   <div className="flex items-center justify-center gap-6 text-sm text-hint">
                     <div className="flex items-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4 " />
+                      <CheckCircle2 className="w-4 h-4 text-success" />
                       <span>Free forever</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4 " />
+                      <CheckCircle2 className="w-4 h-4 text-success" />
                       <span>No card needed</span>
                     </div>
                   </div>

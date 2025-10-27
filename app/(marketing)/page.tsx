@@ -10,6 +10,7 @@ import {
   PricingSection,
 } from "../../components/marketing";
 import SignupModal from "../../components/shared/SignupModal";
+import SigninModal from "../../components/shared/SigninModal";
 import {
   PLATFORM_EXAMPLES,
   FEATURES,
@@ -39,6 +40,7 @@ const SectionLoader = () => (
 export default function HomePage() {
   const [showVideo, setShowVideo] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [showSigninModal, setShowSigninModal] = useState(false);
 
   const handleVideoClick = useCallback(() => {
     setShowVideo(true);
@@ -58,13 +60,29 @@ export default function HomePage() {
 
   const handleSignupSuccess = useCallback((email: string) => {
     console.log("Signup successful for:", email);
-    // Here you would typically redirect to the dashboard or show a success message
+
+    //Show a success message (already shown in the modal) if it's using email signup
+
+    //Redirect to onboarding page (if it's a new user)
+    // router.push("/onboarding");
+
+    //Redirect to dashboard page (if it's an existing user)
+    // router.push("/dashboard");
   }, []);
 
   const handleUpgrade = useCallback((planId: string) => {
     console.log(`Upgrading to ${planId}`);
     // Here you would typically redirect to signup or billing
     setShowSignupModal(true);
+  }, []);
+
+  const handleSigninClose = useCallback(() => {
+    setShowSigninModal(false);
+  }, []);
+
+  const handleSigninSuccess = useCallback((email: string) => {
+    console.log("Signin successful for:", email);
+    // Here you would typically redirect to the dashboard
   }, []);
 
   return (
@@ -98,6 +116,15 @@ export default function HomePage() {
         isOpen={showSignupModal}
         onClose={handleSignupClose}
         onSuccess={handleSignupSuccess}
+        onSwitchToSignin={() => setShowSigninModal(true)}
+      />
+
+      {/* Signin Modal */}
+      <SigninModal
+        isOpen={showSigninModal}
+        onClose={handleSigninClose}
+        onSuccess={handleSigninSuccess}
+        onSwitchToSignup={() => setShowSignupModal(true)}
       />
     </>
   );

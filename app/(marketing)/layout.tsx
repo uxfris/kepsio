@@ -6,6 +6,7 @@ import { Button } from "../../components/ui/Button";
 import { Navbar } from "../../components/shared/Navbar";
 import { MarketingFooter } from "../../components/marketing";
 import SignupModal from "../../components/shared/SignupModal";
+import SigninModal from "../../components/shared/SigninModal";
 import { NAV_ITEMS, FOOTER_COLUMNS } from "../../lib/constants/marketing";
 
 interface MarketingLayoutProps {
@@ -14,6 +15,7 @@ interface MarketingLayoutProps {
 
 export default function MarketingLayout({ children }: MarketingLayoutProps) {
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [showSigninModal, setShowSigninModal] = useState(false);
 
   const brand = (
     <div className="flex items-center gap-2">
@@ -26,7 +28,11 @@ export default function MarketingLayout({ children }: MarketingLayoutProps) {
 
   const navActions = (
     <div className="flex items-center gap-3">
-      <Button variant="ghost" size="sm">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setShowSigninModal(true)}
+      >
         Sign In
       </Button>
       <Button
@@ -58,6 +64,17 @@ export default function MarketingLayout({ children }: MarketingLayoutProps) {
           console.log("Signup successful for:", email);
           // Here you would typically redirect to the dashboard or show a success message
         }}
+        onSwitchToSignin={() => setShowSigninModal(true)}
+      />
+
+      <SigninModal
+        isOpen={showSigninModal}
+        onClose={() => setShowSigninModal(false)}
+        onSuccess={(email) => {
+          console.log("Signin successful for:", email);
+          // Here you would typically redirect to the dashboard
+        }}
+        onSwitchToSignup={() => setShowSignupModal(true)}
       />
     </div>
   );
