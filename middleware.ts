@@ -3,6 +3,16 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
+  // Check if environment variables are set
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("Missing Supabase environment variables");
+    // Allow the request to continue if Supabase is not configured
+    return NextResponse.next();
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -10,8 +20,8 @@ export async function middleware(request: NextRequest) {
   });
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         get(name: string) {
@@ -64,7 +74,7 @@ export async function middleware(request: NextRequest) {
     if (!user) {
       // Allow access to login page
       const url = request.nextUrl.clone();
-      url.pathname = '/';
+      url.pathname = "/";
       return NextResponse.redirect(url);
     }
   }
