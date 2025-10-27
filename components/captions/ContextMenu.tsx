@@ -7,8 +7,8 @@ interface ContextMenuProps {
   selectedItems: string[];
   onItemToggle: (itemId: string) => void;
   onClose: () => void;
-  menuRef: React.RefObject<HTMLDivElement | null>;
-  plusButtonRef: React.RefObject<HTMLButtonElement | null>;
+  menuRef: React.RefObject<HTMLDivElement>;
+  plusButtonRef: React.RefObject<HTMLButtonElement>;
 }
 
 interface Position {

@@ -11,7 +11,7 @@ interface SelectContextValue {
   onValueChange: (value: string) => void;
   open: boolean;
   setOpen: (open: boolean) => void;
-  triggerRef: React.RefObject<HTMLElement | null>;
+  triggerRef: React.MutableRefObject<HTMLElement | null>;
 }
 
 const SelectContext = React.createContext<SelectContextValue | null>(null);
@@ -35,7 +35,7 @@ interface SelectProps {
 const Select = React.forwardRef<HTMLDivElement, SelectProps>(
   ({ value, onValueChange, children, disabled = false }, ref) => {
     const [open, setOpen] = React.useState(false);
-    const triggerRef = React.useRef<HTMLElement>(null);
+    const triggerRef = React.useRef<HTMLElement | null>(null);
 
     const contextValue: SelectContextValue = {
       value,
