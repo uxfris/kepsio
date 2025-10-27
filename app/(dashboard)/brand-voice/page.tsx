@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Target,
   Upload,
@@ -15,6 +15,7 @@ import {
   Zap,
   Sparkles,
 } from "lucide-react";
+import { SocialIcon } from "react-social-icons";
 
 import { Button } from "../../../components/ui/Button";
 import {
@@ -30,10 +31,40 @@ import { Switch } from "../../../components/ui/Switch";
 import { Progress } from "../../../components/ui/Progress";
 import { ToastProvider, useToast } from "../../../components/ui/Toast";
 
+interface Platform {
+  id: string;
+  name: string;
+  network?: string;
+  description: string;
+}
+
+interface BrandTone {
+  id: string;
+  name: string;
+  emoji: string;
+  description: string;
+  example: string;
+}
+
+interface ContentType {
+  id: string;
+  name: string;
+}
+
+interface OnboardingOptions {
+  platforms: Platform[];
+  brandTones: BrandTone[];
+  contentTypes: ContentType[];
+}
+
 const BrandVoiceContent = () => {
   const [activeTab, setActiveTab] = useState("training");
   const [voiceStrength, setVoiceStrength] = useState(75);
-  const [selectedTone, setSelectedTone] = useState("casual");
+  const [selectedToneId, setSelectedToneId] = useState("");
+  const [selectedPlatformId, setSelectedPlatformId] = useState("");
+  const [selectedContentTypes, setSelectedContentTypes] = useState<string[]>(
+    []
+  );
   const [uploadedCaptions, setUploadedCaptions] = useState(3);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -45,8 +76,54 @@ const BrandVoiceContent = () => {
     includeEmojis: true,
     includeCTA: true,
   });
+  const [onboardingOptions, setOnboardingOptions] = useState<OnboardingOptions>(
+    {
+      platforms: [],
+      brandTones: [],
+      contentTypes: [],
+    }
+  );
+  const [isLoadingOptions, setIsLoadingOptions] = useState(true);
 
   const { addToast } = useToast();
+
+  // Fetch onboarding options
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const [optionsResponse, userDataResponse] = await Promise.all([
+          fetch("/api/onboarding/options"),
+          fetch("/api/user/onboarding"),
+        ]);
+
+        if (!optionsResponse.ok) throw new Error("Failed to fetch options");
+        const optionsData = await optionsResponse.json();
+        setOnboardingOptions(optionsData);
+
+        // Fetch user's saved onboarding data
+        let userPlatformId = optionsData.platforms[0]?.id || "";
+        let userToneId = optionsData.brandTones[0]?.id || "";
+        let userContentTypeIds: string[] = [];
+
+        if (userDataResponse.ok) {
+          const userData = await userDataResponse.json();
+          userPlatformId = userData.platformId || userPlatformId;
+          userToneId = userData.toneId || userToneId;
+          userContentTypeIds = userData.contentTypeIds || [];
+        }
+
+        setSelectedPlatformId(userPlatformId);
+        setSelectedToneId(userToneId);
+        setSelectedContentTypes(userContentTypeIds);
+      } catch (error) {
+        console.error("Error fetching onboarding options:", error);
+      } finally {
+        setIsLoadingOptions(false);
+      }
+    };
+
+    fetchOptions();
+  }, []);
 
   const tabOptions = [
     { value: "training", label: "Voice Training" },
@@ -92,39 +169,6 @@ const BrandVoiceContent = () => {
   const handleOnboardingSkip = () => {
     setShowOnboarding(false);
   };
-
-  const toneOptions = [
-    {
-      value: "casual",
-      label: "Casual & Friendly",
-      emoji: "🌟",
-      example: '"Hey friends! Let me share something cool with you..."',
-    },
-    {
-      value: "professional",
-      label: "Professional",
-      emoji: "💼",
-      example: '"Excited to announce our latest innovation in..."',
-    },
-    {
-      value: "bold",
-      label: "Bold & Edgy",
-      emoji: "🔥",
-      example: '"Let\'s be real. Most people get this wrong..."',
-    },
-    {
-      value: "warm",
-      label: "Warm & Authentic",
-      emoji: "💛",
-      example: '"I want to share something personal with you today..."',
-    },
-    {
-      value: "witty",
-      label: "Witty & Playful",
-      emoji: "😄",
-      example: '"Plot twist: You don\'t need to be perfect to..."',
-    },
-  ];
 
   const voiceInsights = {
     topPhrases: [
@@ -202,6 +246,81 @@ const BrandVoiceContent = () => {
       description: "The caption sample has been removed.",
     });
   };
+
+  const toggleContentType = (type: string) => {
+    setSelectedContentTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
+
+  // Save onboarding data to database
+  const saveOnboardingData = async (
+    platformId?: string,
+    toneId?: string,
+    contentTypeIds?: string[]
+  ) => {
+    try {
+      const response = await fetch("/api/user/onboarding", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          onboardingData: {
+            platformId: platformId ?? selectedPlatformId,
+            toneId: toneId ?? selectedToneId,
+            contentTypeIds: contentTypeIds ?? selectedContentTypes,
+          },
+          onboardingCompleted: true,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save settings");
+      }
+
+      addToast({
+        type: "success",
+        title: "Settings Saved",
+        description: "Your brand voice settings have been updated.",
+      });
+    } catch (error) {
+      console.error("Error saving onboarding data:", error);
+      addToast({
+        type: "error",
+        title: "Save Failed",
+        description: "Could not save your settings. Please try again.",
+      });
+    }
+  };
+
+  // Handle platform change
+  const handlePlatformChange = (platformId: string) => {
+    setSelectedPlatformId(platformId);
+    saveOnboardingData(platformId, undefined, undefined);
+  };
+
+  // Handle tone change
+  const handleToneChange = (toneId: string) => {
+    setSelectedToneId(toneId);
+    saveOnboardingData(undefined, toneId, undefined);
+  };
+
+  // Handle content type toggle
+  const handleContentTypeToggle = (type: string) => {
+    const updatedTypes = selectedContentTypes.includes(type)
+      ? selectedContentTypes.filter((t) => t !== type)
+      : [...selectedContentTypes, type];
+    setSelectedContentTypes(updatedTypes);
+    saveOnboardingData(undefined, undefined, updatedTypes);
+  };
+
+  const selectedTone = onboardingOptions.brandTones.find(
+    (t) => t.id === selectedToneId
+  );
+  const selectedPlatform = onboardingOptions.platforms.find(
+    (p) => p.id === selectedPlatformId
+  );
 
   return (
     <div className="min-h-screen bg-section">
@@ -292,35 +411,15 @@ const BrandVoiceContent = () => {
                     {uploadedCaptions} training samples
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Target className="w-4 h-4 text-hint" />
-                  <span className="text-sm text-text-body capitalize">
-                    {selectedTone} tone
-                  </span>
-                </div>
+                {selectedTone && (
+                  <div className="flex items-center gap-2">
+                    <Target className="w-4 h-4 text-hint" />
+                    <span className="text-sm text-text-body capitalize">
+                      {selectedTone.name} tone
+                    </span>
+                  </div>
+                )}
               </div>
-            </div>
-
-            {/* Action Button */}
-            <div className="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end gap-3">
-              <div className="px-4 py-2 bg-success/10 border border-success/20 rounded-lg flex items-center gap-2">
-                <Check className="w-4 h-4 text-success" />
-                <span className="text-sm font-medium text-success">
-                  Voice Active
-                </span>
-              </div>
-              {uploadedCaptions > 0 && (
-                <Button
-                  onClick={handleAnalyze}
-                  loading={isAnalyzing}
-                  variant="accent"
-                  size="md"
-                  leftIcon={<Wand2 className="w-4 h-4" />}
-                  className="w-full sm:w-auto"
-                >
-                  {isAnalyzing ? "Analyzing..." : "Update Voice"}
-                </Button>
-              )}
             </div>
           </div>
         </div>
@@ -691,6 +790,76 @@ const BrandVoiceContent = () => {
         {/* Tone & Style Tab */}
         {activeTab === "tone" && (
           <div className="max-w-5xl space-y-8">
+            {/* Platform Selection */}
+            <Card padding="none">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-accent" />
+                  </div>
+                  Primary Platform
+                </CardTitle>
+                <p className="text-sm text-text-body">
+                  Select the platform where you post most of your content
+                </p>
+              </CardHeader>
+              <CardContent>
+                {isLoadingOptions ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="text-center">
+                      <div className="w-8 h-8 border-3 border-border border-t-accent rounded-full animate-spin mx-auto mb-2" />
+                      <p className="text-sm text-text-body">
+                        Loading options...
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 gap-3">
+                    {onboardingOptions.platforms.map((platform) => {
+                      const isSelected = selectedPlatformId === platform.id;
+                      const isMultiPlatform = platform.id === "multi";
+                      return (
+                        <button
+                          key={platform.id}
+                          onClick={() => handlePlatformChange(platform.id)}
+                          className={`relative p-4 rounded-lg border border-border-alt transition-all duration-200 text-center group focus:outline-none focus:ring-2 focus:ring-accent/20 ${
+                            isSelected
+                              ? "border-accent bg-accent/5"
+                              : "border-border bg-surface hover:border-border-alt hover:bg-section-light"
+                          } ${isMultiPlatform ? "col-span-2" : ""}`}
+                        >
+                          {isSelected && (
+                            <div className="absolute -top-1 -right-1 w-5 h-5 bg-accent rounded-full flex items-center justify-center">
+                              <Check className="w-3 h-3 text-surface" />
+                            </div>
+                          )}
+                          <div className="w-10 h-10 mx-auto mb-3 flex items-center justify-center">
+                            {platform.network ? (
+                              <SocialIcon
+                                network={platform.network}
+                                style={{ width: 40, height: 40 }}
+                                className="rounded-lg"
+                              />
+                            ) : (
+                              <div className="w-10 h-10 rounded-full bg-linear-to-r from-purple-600 to-pink-600 flex items-center justify-center">
+                                <Sparkles className="w-5 h-5 text-white" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="font-semibold text-text-head text-sm mb-1">
+                            {platform.name}
+                          </div>
+                          <div className="text-xs text-text-body leading-tight">
+                            {platform.description}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
             {/* Tone Selector */}
             <Card padding="none">
               <CardHeader>
@@ -706,46 +875,124 @@ const BrandVoiceContent = () => {
                 </p>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {toneOptions.map((tone) => (
-                    <button
-                      key={tone.value}
-                      onClick={() => setSelectedTone(tone.value)}
-                      className={`group p-6 rounded-xl border-2 text-left transition-all duration-200 hover:scale-[1.02] ${
-                        selectedTone === tone.value
-                          ? "border-accent bg-accent/5 shadow-lg shadow-accent/10"
-                          : "border-border hover:border-accent/50 bg-surface hover:bg-accent/5"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <span className="text-3xl">{tone.emoji}</span>
-                          <div>
-                            <h3 className="font-semibold text-text-head text-sm">
-                              {tone.label}
-                            </h3>
+                {isLoadingOptions ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="text-center">
+                      <div className="w-8 h-8 border-3 border-border border-t-accent rounded-full animate-spin mx-auto mb-2" />
+                      <p className="text-sm text-text-body">
+                        Loading options...
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {onboardingOptions.brandTones.map((tone) => (
+                      <button
+                        key={tone.id}
+                        onClick={() => handleToneChange(tone.id)}
+                        className={`group p-6 rounded-xl border-2 text-left transition-all duration-200 hover:scale-[1.02] ${
+                          selectedToneId === tone.id
+                            ? "border-accent bg-accent/5 shadow-lg shadow-accent/10"
+                            : "border-border hover:border-accent/50 bg-surface hover:bg-accent/5"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <span className="text-3xl">{tone.emoji}</span>
+                            <div>
+                              <h3 className="font-semibold text-text-head text-sm">
+                                {tone.name}
+                              </h3>
+                            </div>
                           </div>
+                          {selectedToneId === tone.id && (
+                            <div className="w-6 h-6 bg-accent rounded-full flex items-center justify-center">
+                              <Check className="w-4 h-4 text-surface" />
+                            </div>
+                          )}
                         </div>
-                        {selectedTone === tone.value && (
-                          <div className="w-6 h-6 bg-accent rounded-full flex items-center justify-center">
-                            <Check className="w-4 h-4 text-surface" />
+                        <p className="text-xs text-text-body mb-2">
+                          {tone.description}
+                        </p>
+                        <p className="text-sm text-text-body italic leading-relaxed">
+                          {tone.example}
+                        </p>
+                        {selectedToneId === tone.id && (
+                          <div className="mt-3 pt-3 border-t border-accent/20">
+                            <div className="flex items-center gap-2 text-xs text-accent font-medium">
+                              <div className="w-2 h-2 bg-accent rounded-full"></div>
+                              Currently selected
+                            </div>
                           </div>
                         )}
-                      </div>
-                      <p className="text-sm text-text-body italic leading-relaxed">
-                        {tone.example}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Content Type Selection */}
+            <Card padding="none">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <FileText className="w-4 h-4 text-primary" />
+                  </div>
+                  Content Types
+                </CardTitle>
+                <p className="text-sm text-text-body">
+                  Select all the content types you create or plan to create
+                </p>
+              </CardHeader>
+              <CardContent>
+                {isLoadingOptions ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="text-center">
+                      <div className="w-8 h-8 border-3 border-border border-t-accent rounded-full animate-spin mx-auto mb-2" />
+                      <p className="text-sm text-text-body">
+                        Loading options...
                       </p>
-                      {selectedTone === tone.value && (
-                        <div className="mt-3 pt-3 border-t border-accent/20">
-                          <div className="flex items-center gap-2 text-xs text-accent font-medium">
-                            <div className="w-2 h-2 bg-accent rounded-full"></div>
-                            Currently selected
-                          </div>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                      {onboardingOptions.contentTypes.map((type) => {
+                        const isSelected = selectedContentTypes.includes(
+                          type.id
+                        );
+                        return (
+                          <button
+                            key={type.id}
+                            onClick={() => handleContentTypeToggle(type.id)}
+                            className={`px-3 py-2 rounded-lg border border-border-alt transition-all duration-200 font-medium text-sm flex items-center justify-center gap-1.5 focus:outline-none ${
+                              isSelected
+                                ? "border-accent bg-accent text-surface"
+                                : "border-border bg-surface text-text-body hover:border-accent hover:bg-accent/5"
+                            }`}
+                          >
+                            <span className="truncate">{type.name}</span>
+                            {isSelected && (
+                              <Check className="w-3 h-3 shrink-0" />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {selectedContentTypes.length > 0 && (
+                      <div className="text-center mt-4">
+                        <div className="text-xs text-text-body">
+                          <span className="font-semibold text-accent">
+                            {selectedContentTypes.length}
+                          </span>{" "}
+                          selected
                         </div>
-                      )}
-                    </button>
-                  ))}
-                </div>
+                      </div>
+                    )}
+                  </>
+                )}
               </CardContent>
             </Card>
 
@@ -914,10 +1161,7 @@ const BrandVoiceContent = () => {
                   <div className="flex items-start gap-3 mb-4">
                     <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center shrink-0">
                       <span className="text-sm">
-                        {
-                          toneOptions.find((t) => t.value === selectedTone)
-                            ?.emoji
-                        }
+                        {selectedTone?.emoji || "✨"}
                       </span>
                     </div>
                     <div className="flex-1">
@@ -925,8 +1169,9 @@ const BrandVoiceContent = () => {
                         Sample Caption Preview
                       </p>
                       <p className="text-xs text-text-body">
-                        Based on your {selectedTone} tone and {voiceStrength}%
-                        voice strength
+                        Based on your{" "}
+                        {selectedTone?.name.toLowerCase() || "tone"} tone and{" "}
+                        {voiceStrength}% voice strength
                       </p>
                     </div>
                   </div>
@@ -943,9 +1188,9 @@ const BrandVoiceContent = () => {
                       "
                     </p>
                   </div>
-                  <div className="mt-4 flex items-center gap-2 text-xs text-hint">
+                  <div className="mt-4 flex items-center gap-2 text-xs text-hint flex-wrap">
                     <span>•</span>
-                    <span>{selectedTone} tone</span>
+                    <span>{selectedTone?.name.toLowerCase() || "tone"}</span>
                     <span>•</span>
                     <span>{voiceStrength}% voice strength</span>
                     <span>•</span>

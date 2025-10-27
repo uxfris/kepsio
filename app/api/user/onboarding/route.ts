@@ -2,6 +2,41 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db/prisma";
 
+export async function GET() {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Fetch user's voice profile
+    const voiceProfile = await prisma.voiceProfile.findFirst({
+      where: { userId: user.id },
+      select: {
+        platformId: true,
+        toneId: true,
+        contentTypeIds: true,
+      },
+    });
+
+    return NextResponse.json({
+      platformId: voiceProfile?.platformId || null,
+      toneId: voiceProfile?.toneId || null,
+      contentTypeIds: voiceProfile?.contentTypeIds || [],
+    });
+  } catch (error) {
+    console.error("Error fetching onboarding data:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch onboarding data" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();
