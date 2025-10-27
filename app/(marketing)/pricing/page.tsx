@@ -4,14 +4,12 @@ import React, { useState, useCallback } from "react";
 import { Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { Button } from "../../../components/ui";
 import { SegmentedControl } from "../../../components/ui/SegmentedControl";
 import {
   PricingCard,
   TestimonialCarousel,
   FAQSection,
 } from "../../../components/pricing";
-import { useSubscription } from "../../../hooks/use-subscription";
 import { usePricing, type BillingCycle } from "../../../hooks/use-pricing";
 import { subscriptionPlans } from "../../../config/plans";
 import {
@@ -22,7 +20,6 @@ import {
 
 export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("annual");
-  const { subscription, isLoading } = useSubscription();
   const router = useRouter();
 
   const { formatPrice, getAnnualSavings } = usePricing({
@@ -77,16 +74,25 @@ export default function PricingPage() {
 
           {/* Pricing Cards */}
           <section className="grid md:grid-cols-3 gap-8 mb-16">
-            {planOrder.map((planId) => (
-              <PricingCard
-                key={planId}
-                plan={subscriptionPlans[planId]}
-                billingCycle={billingCycle}
-                onUpgrade={handleUpgrade}
-                formatPrice={formatPrice}
-                getAnnualSavings={getAnnualSavings}
-              />
-            ))}
+            {planOrder.map((planId) => {
+              const plan = subscriptionPlans[planId];
+              // Override button text and style for marketing page
+              const marketingPlan = {
+                ...plan,
+                buttonText: "Try Kepsio Free",
+                buttonVariant: "primary",
+              } as const;
+              return (
+                <PricingCard
+                  key={planId}
+                  plan={marketingPlan}
+                  billingCycle={billingCycle}
+                  onUpgrade={handleUpgrade}
+                  formatPrice={formatPrice}
+                  getAnnualSavings={getAnnualSavings}
+                />
+              );
+            })}
           </section>
 
           {/* Social Proof Section */}

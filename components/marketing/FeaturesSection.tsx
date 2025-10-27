@@ -31,7 +31,7 @@ export const FeaturesSection = memo(function FeaturesSection({
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <Card key={index} className="p-8 hover:shadow-md transition-shadow">
               <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mb-6">
@@ -49,7 +49,7 @@ export const FeaturesSection = memo(function FeaturesSection({
                     key={benefitIndex}
                     className="flex items-start gap-2 text-sm text-text-body"
                   >
-                    <Check className="w-4 h-4 text-success mt-0.5 shrink-0" />
+                    <Check className="w-4 h-4  mt-0.5 shrink-0" />
                     <span>{benefit}</span>
                   </li>
                 ))}

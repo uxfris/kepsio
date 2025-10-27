@@ -14,12 +14,12 @@ export interface PricingSectionProps {
   customButtonVariant?: "primary" | "outline";
 }
 
-export const PricingSection: React.FC<PricingSectionProps> = ({
+export const PricingSection = ({
   onUpgrade = () => {},
   showBillingToggle = true,
   customButtonText,
   customButtonVariant = "primary",
-}) => {
+}: PricingSectionProps) => {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("annual");
 
   const handleBillingCycleChange = useCallback((value: string) => {
@@ -41,7 +41,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
   const planOrder = ["free", "pro", "enterprise"] as const;
 
   return (
-    <section id="pricing" className="py-24 ">
+    <section id="pricing" className="py-24">
       <div className="max-w-7xl mx-auto px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-primary mb-4">

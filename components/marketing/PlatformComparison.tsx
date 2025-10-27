@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState, memo } from "react";
-import { SocialIcon } from "react-social-icons";
-import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { SegmentedControl } from "../ui/SegmentedControl";
 
 interface PlatformExample {
   generic: string;
@@ -19,10 +18,10 @@ export const PlatformComparison = memo(function PlatformComparison({
 }: PlatformComparisonProps) {
   const [selectedPlatform, setSelectedPlatform] = useState("instagram");
 
-  const platforms = [
-    { id: "instagram", network: "instagram", label: "Instagram" },
-    { id: "linkedin", network: "linkedin", label: "LinkedIn" },
-    { id: "x", network: "x", label: "X" },
+  const platformOptions = [
+    { value: "instagram", label: "Instagram" },
+    { value: "linkedin", label: "LinkedIn" },
+    { value: "x", label: "X" },
   ];
 
   return (
@@ -37,32 +36,19 @@ export const PlatformComparison = memo(function PlatformComparison({
       </div>
 
       {/* Platform Selector */}
-      <div className="flex justify-center gap-3 mb-6">
-        {platforms.map((platform) => (
-          <Button
-            key={platform.id}
-            variant={selectedPlatform === platform.id ? "accent" : "outline"}
-            size="sm"
-            onClick={() => setSelectedPlatform(platform.id)}
-            leftIcon={
-              <div className="flex items-center justify-center">
-                <SocialIcon
-                  network={platform.network}
-                  style={{ width: 16, height: 16 }}
-                />
-              </div>
-            }
-          >
-            {platform.label}
-          </Button>
-        ))}
+      <div className="flex justify-center mb-6">
+        <SegmentedControl
+          options={platformOptions}
+          value={selectedPlatform}
+          onChange={setSelectedPlatform}
+        />
       </div>
 
       {/* Comparison Cards */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-6 px-4">
         {/* Generic AI */}
-        <Card className="p-6 border-border">
-          <div className="flex items-center justify-between mb-4">
+        <Card className="p-6 border-border bg-section">
+          <div className="flex items-center justify-between mb-4 border-b border-border pb-4">
             <span className="text-sm font-semibold text-hint uppercase tracking-wide">
               Generic AI
             </span>
@@ -76,9 +62,9 @@ export const PlatformComparison = memo(function PlatformComparison({
         </Card>
 
         {/* Our AI */}
-        <Card className="p-6 border-accent bg-linear-to-br from-accent/5 to-accent/10 relative overflow-hidden">
+        <Card className="p-6  bg-surface relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-accent rounded-full filter blur-3xl opacity-20" />
-          <div className="flex items-center justify-between mb-4 relative z-10">
+          <div className="flex items-center justify-between mb-4 border-b border-border pb-4 relative z-10">
             <span className="text-sm font-semibold text-primary uppercase tracking-wide">
               Kepsio
             </span>

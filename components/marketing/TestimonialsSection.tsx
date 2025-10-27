@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, memo } from "react";
+import { useState, useCallback, memo } from "react";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
@@ -56,7 +56,7 @@ export const TestimonialsSection = memo(function TestimonialsSection({
 
         {/* Testimonial Carousel */}
         <div className="max-w-4xl mx-auto">
-          <Card className="p-12 bg-linear-to-br from-accent/5 to-accent/10 border-accent/20 relative">
+          <Card className="p-12 bg-surface relative">
             <div className="absolute top-8 left-8 text-accent/30 text-6xl font-serif">
               "
             </div>

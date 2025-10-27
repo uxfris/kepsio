@@ -44,16 +44,13 @@ export const MarketingFooter = memo(function MarketingFooter({
             </p>
             <div className="flex gap-3">
               {socialLinks.map((social) => (
-                <a
+                <SocialIcon
                   key={social.network}
-                  href={social.href}
-                  className="w-9 h-9 bg-primary/50 hover:bg-primary/70 rounded-lg flex items-center justify-center transition-colors"
-                >
-                  <SocialIcon
-                    network={social.network}
-                    style={{ width: 16, height: 16 }}
-                  />
-                </a>
+                  network={social.network}
+                  url={social.href}
+                  style={{ width: 16, height: 16 }}
+                  className="w-9 h-9 bg-primary/50 hover:bg-primary/70 rounded-lg transition-colors"
+                />
               ))}
             </div>
           </div>
