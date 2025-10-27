@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { LogOut, LayoutDashboard, User } from "lucide-react";
 import { signOut } from "../../lib/supabase/auth-utils";
@@ -22,6 +22,36 @@ export default function AuthenticatedNavbarCTAs({
   const [dropdownTimeout, setDropdownTimeout] = useState<NodeJS.Timeout | null>(
     null
   );
+  const [isMobile, setIsMobile] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Detect mobile on mount and window resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Close dropdown when clicking outside on mobile
+  useEffect(() => {
+    if (!isMobile || !isDropdownOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isMobile, isDropdownOpen]);
 
   const handleLogout = async () => {
     await signOut();
@@ -29,6 +59,8 @@ export default function AuthenticatedNavbarCTAs({
   };
 
   const handleMouseLeave = () => {
+    if (isMobile) return; // Don't use mouse leave on mobile
+
     const timeout = setTimeout(() => {
       setIsDropdownOpen(false);
     }, 100);
@@ -36,11 +68,20 @@ export default function AuthenticatedNavbarCTAs({
   };
 
   const handleMouseEnter = () => {
+    if (isMobile) return; // Don't use mouse enter on mobile
+
     if (dropdownTimeout) {
       clearTimeout(dropdownTimeout);
       setDropdownTimeout(null);
     }
     setIsDropdownOpen(true);
+  };
+
+  // Handle button click (for mobile tap or desktop click)
+  const handleButtonClick = () => {
+    if (isMobile) {
+      setIsDropdownOpen(!isDropdownOpen);
+    }
   };
 
   const getInitials = (email?: string) => {
@@ -53,19 +94,19 @@ export default function AuthenticatedNavbarCTAs({
 
   return (
     <div
+      ref={dropdownRef}
       className="relative"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <button
+        onClick={handleButtonClick}
         className="flex items-center gap-2 px-3 py-2 rounded-lg bg-section hover:bg-section-light transition-colors focus:outline-none "
         aria-expanded={isDropdownOpen}
         aria-label="User menu"
       >
         {/* Label */}
-        <span className="text-sm font-medium text-text-head hidden sm:inline">
-          Dashboard
-        </span>
+        <span className="text-sm font-medium text-text-head">Dashboard</span>
         {/* Avatar */}
         <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center text-sm font-semibold text-surface overflow-hidden">
           {avatarUrl ? (
