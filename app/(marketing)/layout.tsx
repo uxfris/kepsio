@@ -1,13 +1,15 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { Sparkles } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { Navbar } from "../../components/shared/Navbar";
 import { MarketingFooter } from "../../components/marketing";
 import SignupModal from "../../components/shared/SignupModal";
 import SigninModal from "../../components/shared/SigninModal";
+import AuthenticatedNavbarCTAs from "../../components/shared/AuthenticatedNavbarCTAs";
 import { NAV_ITEMS, FOOTER_COLUMNS } from "../../lib/constants/marketing";
+import { createClient } from "../../lib/supabase/client";
 
 interface MarketingLayoutProps {
   children: ReactNode;
@@ -16,6 +18,38 @@ interface MarketingLayoutProps {
 export default function MarketingLayout({ children }: MarketingLayoutProps) {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showSigninModal, setShowSigninModal] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const supabase = createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        setUser(user);
+      } catch (error) {
+        console.error("Error checking user:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkUser();
+
+    // Listen for auth state changes
+    const supabase = createClient();
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, []);
 
   const brand = (
     <div className="flex items-center gap-2">
@@ -26,7 +60,7 @@ export default function MarketingLayout({ children }: MarketingLayoutProps) {
     </div>
   );
 
-  const navActions = (
+  const unauthenticatedNavActions = (
     <div className="flex items-center gap-3">
       <Button
         variant="ghost"
@@ -43,6 +77,12 @@ export default function MarketingLayout({ children }: MarketingLayoutProps) {
         Start Free
       </Button>
     </div>
+  );
+
+  const navActions = isLoading ? null : user ? (
+    <AuthenticatedNavbarCTAs user={user} />
+  ) : (
+    unauthenticatedNavActions
   );
 
   return (

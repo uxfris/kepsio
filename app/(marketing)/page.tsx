@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   HeroSection,
   PlatformComparison,
@@ -16,6 +17,7 @@ import {
   FEATURES,
   TESTIMONIALS,
 } from "../../lib/constants/marketing";
+import { createClient } from "../../lib/supabase/client";
 import dynamic from "next/dynamic";
 
 // Lazy load heavy components
@@ -38,9 +40,42 @@ const SectionLoader = () => (
 );
 
 export default function HomePage() {
+  const router = useRouter();
   const [showVideo, setShowVideo] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showSigninModal, setShowSigninModal] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const supabase = createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        setUser(user);
+      } catch (error) {
+        console.error("Error checking user:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkUser();
+
+    // Listen for auth state changes
+    const supabase = createClient();
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, []);
 
   const handleVideoClick = useCallback(() => {
     setShowVideo(true);
@@ -51,8 +86,12 @@ export default function HomePage() {
   }, []);
 
   const handleSignupClick = useCallback(() => {
-    setShowSignupModal(true);
-  }, []);
+    if (user) {
+      router.push("/generate");
+    } else {
+      setShowSignupModal(true);
+    }
+  }, [user, router]);
 
   const handleSignupClose = useCallback(() => {
     setShowSignupModal(false);
@@ -73,11 +112,17 @@ export default function HomePage() {
     //will be redirected by the magic link
   }, []);
 
-  const handleUpgrade = useCallback((planId: string) => {
-    console.log(`Upgrading to ${planId}`);
-    // Here you would typically redirect to signup or billing
-    setShowSignupModal(true);
-  }, []);
+  const handleUpgrade = useCallback(
+    (planId: string) => {
+      if (user) {
+        router.push("/generate");
+      } else {
+        console.log(`Upgrading to ${planId}`);
+        setShowSignupModal(true);
+      }
+    },
+    [user, router]
+  );
 
   const handleSigninClose = useCallback(() => {
     setShowSigninModal(false);

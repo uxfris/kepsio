@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { cn } from "../../lib/utils/cn";
 
 export interface NavItem {
@@ -46,6 +46,17 @@ const Navbar = React.forwardRef<HTMLElement, NavbarProps>(
       sticky: "sticky top-0 z-50",
       fixed: "fixed top-0 z-50",
     };
+
+    useEffect(() => {
+      const updateMobileMenu = () => {
+        if (window.innerWidth > 768) {
+          setIsMobileMenuOpen(false);
+        }
+      };
+
+      window.addEventListener("resize", updateMobileMenu);
+      return () => window.removeEventListener("resize", updateMobileMenu);
+    }, []);
 
     return (
       <nav
