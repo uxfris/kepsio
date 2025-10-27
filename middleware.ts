@@ -55,16 +55,17 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  await supabase.auth.getUser();
-
   // Protect dashboard routes
   if (request.nextUrl.pathname.startsWith("/dashboard")) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user && !request.nextUrl.pathname.startsWith("/dashboard/login")) {
-      return NextResponse.redirect(new URL("/", request.url));
+    if (!user) {
+      // Allow access to login page
+      const url = request.nextUrl.clone();
+      url.pathname = '/';
+      return NextResponse.redirect(url);
     }
   }
 
