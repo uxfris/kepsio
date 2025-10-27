@@ -15,16 +15,46 @@ export async function POST(request: Request) {
 
     const { onboardingData, onboardingCompleted } = await request.json();
 
-    // Update user's onboarding status in the database
+    // Update user's onboarding status
     await prisma.user.update({
       where: { id: user.id },
       data: {
         onboardingCompleted: onboardingCompleted ?? true,
-        // You can optionally store the onboarding preferences here
-        // For example, you might want to add fields to the User model
-        // to store platform, tone, and contentTypes
       },
     });
+
+    // Create or update voice profile with onboarding preferences using IDs
+    if (onboardingData) {
+      const voiceProfile = await prisma.voiceProfile.findFirst({
+        where: { userId: user.id },
+      });
+
+      if (voiceProfile) {
+        // Update existing voice profile
+        await prisma.voiceProfile.update({
+          where: { id: voiceProfile.id },
+          data: {
+            platformId: onboardingData.platformId || null,
+            toneId: onboardingData.toneId || null,
+            contentTypeIds: onboardingData.contentTypeIds || [],
+          },
+        });
+      } else {
+        // Create new voice profile with onboarding data
+        await prisma.voiceProfile.create({
+          data: {
+            userId: user.id,
+            name: "Brand Voice",
+            description: "Your brand voice profile",
+            platformId: onboardingData.platformId || null,
+            toneId: onboardingData.toneId || null,
+            style: "default",
+            contentTypeIds: onboardingData.contentTypeIds || [],
+            examples: [],
+          },
+        });
+      }
+    }
 
     console.log("Onboarding completed for user:", user.id, onboardingData);
 

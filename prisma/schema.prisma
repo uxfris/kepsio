@@ -61,18 +61,60 @@ model Caption {
 }
 
 model VoiceProfile {
+  id               String   @id @default(cuid())
+  userId           String   @db.Uuid
+  name             String
+  description      String
+  platformId       String?
+  toneId           String?
+  style            String
+  contentTypeIds   String[] @default([]) // Array of content type IDs
+  examples         String[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  platform    Platform? @relation(fields: [platformId], references: [id])
+  tone        BrandTone? @relation(fields: [toneId], references: [id])
+
+  @@map("voice_profiles")
+}
+
+model Platform {
   id          String   @id @default(cuid())
-  userId      String   @db.Uuid
-  name        String
+  name        String   @unique
+  network     String?  // Social network identifier for SocialIcon
   description String
-  tone        String
-  style       String
-  examples    String[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  voiceProfiles VoiceProfile[]
 
-  @@map("voice_profiles")
+  @@map("platforms")
+}
+
+model BrandTone {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  emoji       String
+  description String
+  example     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  voiceProfiles VoiceProfile[]
+
+  @@map("brand_tones")
+}
+
+model ContentType {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("content_types")
 }
