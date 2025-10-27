@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   TrendingUp,
   Sparkles,
@@ -18,6 +19,7 @@ import {
   CardContent,
 } from "../../components/ui/Card";
 import { cn } from "../../lib/utils/cn";
+import { createClient } from "@/lib/supabase/client";
 
 interface OnboardingData {
   platform: string | null;
@@ -26,12 +28,14 @@ interface OnboardingData {
 }
 
 export default function OnboardingPage() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
     platform: null,
     tone: null,
     contentTypes: [],
   });
+  const [isCompleting, setIsCompleting] = useState(false);
 
   const platforms = [
     {
@@ -115,13 +119,48 @@ export default function OnboardingPage() {
     "Tips & tutorials",
   ];
 
+  const completeOnboarding = async () => {
+    setIsCompleting(true);
+    try {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+
+      // Update user's onboarding status
+      const response = await fetch("/api/user/onboarding", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          onboardingData,
+          onboardingCompleted: true,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to complete onboarding");
+      }
+
+      // Redirect to dashboard
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Error completing onboarding:", error);
+      setIsCompleting(false);
+    }
+  };
+
   const handleNext = () => {
     if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
     } else {
       // Complete onboarding
-      console.log("Onboarding complete:", onboardingData);
-      // Here you would typically save to backend and redirect
+      completeOnboarding();
     }
   };
 
@@ -132,8 +171,8 @@ export default function OnboardingPage() {
   };
 
   const handleSkip = () => {
-    console.log("Skipped onboarding, using defaults");
-    // Here you would typically redirect to dashboard with defaults
+    // Skip onboarding with default values
+    completeOnboarding();
   };
 
   const toggleContentType = (type: string) => {
@@ -419,11 +458,16 @@ export default function OnboardingPage() {
                 <Button
                   variant="primary"
                   onClick={handleNext}
-                  disabled={!canProceed()}
+                  disabled={!canProceed() || isCompleting}
+                  loading={isCompleting}
                   rightIcon={<ArrowRight className="w-4 h-4" />}
                   className="min-w-[100px] sm:min-w-[120px] text-sm"
                 >
-                  {currentStep === 3 ? "Get Started" : "Continue"}
+                  {isCompleting
+                    ? "Setting up..."
+                    : currentStep === 3
+                    ? "Get Started"
+                    : "Continue"}
                 </Button>
               </div>
             </div>

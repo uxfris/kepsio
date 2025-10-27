@@ -5,6 +5,7 @@ export interface User {
   email: string;
   name: string;
   image?: string;
+  onboardingCompleted: boolean;
   subscription?: Subscription;
   createdAt: Date;
   updatedAt: Date;

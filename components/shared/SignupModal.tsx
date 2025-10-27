@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  X,
-  Mail,
-  Loader2,
-  CheckCircle2,
-  Sparkles,
-  ArrowRight,
-} from "lucide-react";
+import { X, Mail, CheckCircle2, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import {
@@ -16,7 +9,6 @@ import {
   signInWithGoogle,
   signInWithTwitter,
 } from "@/lib/supabase/auth-utils";
-import { useRouter } from "next/navigation";
 
 interface SignupModalProps {
   isOpen: boolean;
@@ -31,7 +23,6 @@ export default function SignupModal({
   onSuccess,
   onSwitchToSignin,
 }: SignupModalProps) {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");

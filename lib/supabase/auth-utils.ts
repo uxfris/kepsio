@@ -40,7 +40,7 @@ export async function signIn(email: string): Promise<AuthResponse> {
       email,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
-        shouldCreateUser: false, // Don't create user if they don't exist
+        shouldCreateUser: true, // Create user if they don't exist
       },
     });
 
