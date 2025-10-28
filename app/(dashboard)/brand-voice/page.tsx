@@ -205,8 +205,9 @@ const BrandVoiceContent: React.FC = () => {
       <div className="bg-linear-to-r from-surface to-section border-b border-border">
         <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+            {/* Title Section */}
             <div className="flex-1">
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-accent/10 rounded-xl flex items-center justify-center">
                   <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-accent" />
                 </div>
@@ -220,8 +221,8 @@ const BrandVoiceContent: React.FC = () => {
                 </div>
               </div>
 
-              {/* Quick Stats */}
-              <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+              {/* Quick Stats - Visible on mobile below title */}
+              <div className="flex flex-wrap items-center gap-4 sm:gap-6 mt-4 lg:hidden">
                 {/* Voice Status */}
                 {isLoading || isLoadingSamples ? (
                   <div className="flex items-center gap-2">
@@ -274,6 +275,61 @@ const BrandVoiceContent: React.FC = () => {
                   )
                 )}
               </div>
+            </div>
+
+            {/* Quick Stats - Visible on desktop top right */}
+            <div className="hidden lg:flex flex-wrap gap-3">
+              {/* Voice Status */}
+              {isLoading || isLoadingSamples ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-hint/20 rounded-full animate-pulse"></div>
+                  <div className="h-4 w-24 bg-hint/20 rounded animate-pulse"></div>
+                </div>
+              ) : (
+                <div
+                  className="flex items-center gap-2 group cursor-help"
+                  title={voiceStatus.description}
+                >
+                  <div
+                    className={`w-2 h-2 ${voiceStatus.color} rounded-full transition-colors`}
+                  ></div>
+                  <span className="text-sm font-medium text-text-body">
+                    {voiceStatus.text}
+                  </span>
+                </div>
+              )}
+
+              {/* Training Samples Count */}
+              {isLoadingSamples ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-hint/20 rounded animate-pulse"></div>
+                  <div className="h-4 w-32 bg-hint/20 rounded animate-pulse"></div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-hint" />
+                  <span className="text-sm text-text-body">
+                    {uploadedCaptions} training samples
+                  </span>
+                </div>
+              )}
+
+              {/* Selected Tone */}
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-hint/20 rounded animate-pulse"></div>
+                  <div className="h-4 w-28 bg-hint/20 rounded animate-pulse"></div>
+                </div>
+              ) : (
+                selectedTone && (
+                  <div className="flex items-center gap-2">
+                    <Target className="w-4 h-4 text-hint" />
+                    <span className="text-sm text-text-body capitalize">
+                      {selectedTone.name} tone
+                    </span>
+                  </div>
+                )
+              )}
             </div>
           </div>
         </div>
