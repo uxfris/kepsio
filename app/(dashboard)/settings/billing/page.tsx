@@ -28,6 +28,21 @@ import { useUserUsage } from "../../../../hooks/use-user-usage";
 import { useToast } from "../../../../components/ui/Toast";
 import { subscriptionPlans } from "../../../../config/plans";
 
+// Skeleton Components
+const SkeletonCard = () => (
+  <div className="animate-pulse space-y-4">
+    <div className="h-4 bg-section-light rounded w-1/3"></div>
+    <div className="h-8 bg-section-light rounded w-2/3"></div>
+  </div>
+);
+
+const SkeletonStatCard = () => (
+  <div className="p-4 bg-section-light rounded-xl border border-border animate-pulse">
+    <div className="h-3 bg-section rounded w-1/2 mb-2"></div>
+    <div className="h-8 bg-section rounded w-3/4"></div>
+  </div>
+);
+
 const BillingSettingsContent = () => {
   const router = useRouter();
   const { subscription, isLoading: subscriptionLoading } = useSubscription();
@@ -37,6 +52,8 @@ const BillingSettingsContent = () => {
 
   const isPaidPlan =
     subscription?.plan === "pro" || subscription?.plan === "enterprise";
+
+  const isLoading = subscriptionLoading || usageLoading;
 
   const handleUpgrade = () => {
     router.push("/upgrade");
@@ -81,6 +98,11 @@ const BillingSettingsContent = () => {
       )
     : 0;
 
+  // Calculate captions left
+  const captionsLeft = usage
+    ? Math.max(0, usage.captionsLimit - usage.captionsUsed)
+    : 0;
+
   const proFeatures = [
     { icon: Zap, text: "Unlimited caption generation" },
     { icon: TrendingUp, text: "10 variations per generation (vs 5)" },
@@ -90,6 +112,44 @@ const BillingSettingsContent = () => {
     { icon: Headphones, text: "Priority support" },
     { icon: Download, text: "Export to scheduling tools" },
   ];
+
+  // Show loading skeleton if data is being fetched
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="space-y-1">
+          <h2 className="text-lg font-semibold text-primary tracking-tight flex items-center gap-2">
+            <CreditCard className="w-5 h-5 text-accent" />
+            Billing & Plan
+          </h2>
+          <p className="text-sm font-medium text-text-body">
+            Manage your subscription and payment methods
+          </p>
+        </div>
+
+        {/* Loading Skeleton */}
+        <Card variant="outlined" className="overflow-hidden">
+          <CardHeader
+            padding="none"
+            className="border-b border-border mb-4 pb-4"
+          >
+            <SkeletonCard />
+          </CardHeader>
+          <CardContent padding="none" className="mt-4">
+            {/* Usage Stats Skeletons */}
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              <SkeletonStatCard />
+              <SkeletonStatCard />
+              <SkeletonStatCard />
+            </div>
+            {/* Button Skeleton */}
+            <div className="h-12 bg-section-light rounded-lg animate-pulse"></div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -129,11 +189,7 @@ const BillingSettingsContent = () => {
                 {isPaidPlan ? "Generations Used" : "Captions Remaining"}
               </p>
               <p className="text-2xl font-display font-bold text-primary">
-                {usageLoading
-                  ? "..."
-                  : isPaidPlan
-                  ? usage?.generationsUsed || 0
-                  : usage?.generationsLeft || 0}
+                {isPaidPlan ? usage?.captionsUsed || 0 : captionsLeft}
               </p>
             </div>
             <div className="p-4 bg-section-light rounded-xl border border-border">
@@ -160,9 +216,7 @@ const BillingSettingsContent = () => {
               <div className="flex justify-between text-xs text-hint mb-2">
                 <span>Usage this month</span>
                 <span>
-                  {(usage?.generationsLimit || 0) -
-                    (usage?.generationsLeft || 0)}
-                  /{usage?.generationsLimit || 0}
+                  {usage?.captionsUsed || 0}/{usage?.captionsLimit || 0}
                 </span>
               </div>
               <div className="w-full bg-section-light rounded-full h-2">
@@ -170,9 +224,8 @@ const BillingSettingsContent = () => {
                   className="bg-accent h-2 rounded-full transition-all duration-300"
                   style={{
                     width: `${
-                      (((usage?.generationsLimit || 0) -
-                        (usage?.generationsLeft || 0)) /
-                        (usage?.generationsLimit || 1)) *
+                      ((usage?.captionsUsed || 0) /
+                        (usage?.captionsLimit || 1)) *
                       100
                     }%`,
                   }}
