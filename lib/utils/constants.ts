@@ -4,7 +4,7 @@ import { ContextOption, PreviousPost } from "../../types";
 export const CONTEXT_OPTIONS: ContextOption[] = [
   { id: "product-link", label: "Add product link", icon: Link2 },
   { id: "upload-image", label: "Upload image", icon: Image },
-  { id: "previous-post", label: "Use previous post", icon: Clock },
+  // { id: "previous-post", label: "Use previous post", icon: Clock },
 ];
 
 export const PREVIOUS_POSTS: PreviousPost[] = [
@@ -22,12 +22,12 @@ export const PREVIOUS_POSTS: PreviousPost[] = [
 ];
 
 export const CTA_OPTIONS = [
-  { value: "none", label: "None" },
   { value: "link-in-bio", label: "Link in bio" },
   { value: "shop-now", label: "Shop now" },
   { value: "dm-me", label: "DM me" },
   { value: "comment-below", label: "Comment below" },
   { value: "custom", label: "Custom" },
+  { value: "none", label: "None" },
 ];
 
 export const CAPTION_LENGTH_OPTIONS = [

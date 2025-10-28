@@ -74,7 +74,12 @@ export const AdvancedOptions = ({
               }}
             >
               <SelectTrigger className="w-full border border-border rounded-xl bg-surface text-sm">
-                <SelectValue placeholder="Choose a CTA" />
+                <span className={options.cta ? "" : "text-hint"}>
+                  {options.cta
+                    ? CTA_OPTIONS.find((opt) => opt.value === options.cta)
+                        ?.label
+                    : "Choose a CTA"}
+                </span>
               </SelectTrigger>
               <SelectContent>
                 {CTA_OPTIONS.map((option) => (

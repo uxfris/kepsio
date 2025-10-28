@@ -8,7 +8,7 @@ import {
   SelectContent,
   SelectItem,
 } from "../ui/Select";
-import { PREVIOUS_POSTS } from "../../lib/utils/constants";
+// import { PREVIOUS_POSTS } from "../../lib/utils/constants";
 import { ContextData } from "../../types";
 
 interface ContextInputsProps {
@@ -104,7 +104,7 @@ export const ContextInputs = ({
         </div>
       )}
 
-      {/* Previous Post Select */}
+      {/* Previous Post Select
       {selectedContextItems.includes("previous-post") && (
         <div className="border-t border-border p-4 bg-section">
           <label className="block text-sm font-medium text-primary mb-2">
@@ -133,8 +133,8 @@ export const ContextInputs = ({
               ))}
             </SelectContent>
           </Select>
-        </div>
-      )}
+        </div> */}
+      {/* )} */}
     </>
   );
 };
