@@ -4,7 +4,7 @@ import { updateCaption } from "@/lib/db/queries/captions";
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -26,7 +26,7 @@ export async function PUT(
       );
     }
 
-    const captionId = params.id;
+    const { id: captionId } = await params;
     const updatedCaption = await updateCaption(captionId, user.id, content);
 
     return NextResponse.json({

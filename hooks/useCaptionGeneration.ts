@@ -96,6 +96,17 @@ export const useCaptionGeneration = () => {
         const errorData = await response
           .json()
           .catch(() => ({ error: "Unknown error" }));
+
+        // If it's a usage limit error, throw with the full error data
+        if (errorData.limitReached) {
+          const error = new Error(
+            errorData.message || "Usage limit exceeded"
+          ) as any;
+          error.limitReached = true;
+          error.usage = errorData.usage;
+          throw error;
+        }
+
         throw new Error(errorData.error || "Failed to generate captions");
       }
 

@@ -12,6 +12,8 @@ import {
   useCaptionInput,
   useCaptionGeneration,
   usePaywall,
+  useSubscription,
+  useUserUsage,
 } from "../../../hooks";
 
 // Components
@@ -58,6 +60,14 @@ export default function CaptionInputPage() {
     showPaywall,
   } = usePaywall();
 
+  // Fetch subscription and usage data
+  const { subscription, isLoading: subLoading } = useSubscription();
+  const {
+    usage,
+    isLoading: usageLoading,
+    refetch: refetchUsage,
+  } = useUserUsage();
+
   // Track caption IDs and saved states
   const [captionIds, setCaptionIds] = React.useState<string[]>([]);
   const [savedStates, setSavedStates] = React.useState<boolean[]>([]);
@@ -75,35 +85,17 @@ export default function CaptionInputPage() {
       return;
     }
 
-    /* 
-    ========================================
-    PAYWALL INTEGRATION OPTIONS
-    ========================================
-    
-    Option 1: Trigger paywall when user hits usage limit (recommended for production)
-    Uncomment the lines below:
-    */
-    // const hasHitLimit = checkUsageLimit(CREDITS.remaining, CREDITS.total);
-    // if (hasHitLimit) {
-    //   return; // Paywall modal will be shown
-    // }
-
-    /*
-    Option 2: Always show paywall on button click (for testing)
-    Uncomment the line below:
-    */
-    // showPaywall({ used: 10, limit: 10 });
-    // return;
-
-    /*
-    Option 3: Show paywall when credits are 0 (alternative logic)
-    Uncomment the lines below:
-    */
-    // if (CREDITS.remaining === 0) {
-    //   showPaywall({ used: CREDITS.total, limit: CREDITS.total });
-    //   return;
-    // }
-    // */
+    // Check usage limits before generating
+    if (usage && usage.captionsLimit !== -1) {
+      // -1 means unlimited
+      if (usage.captionsUsed >= usage.captionsLimit) {
+        showPaywall({
+          used: usage.captionsUsed,
+          limit: usage.captionsLimit,
+        });
+        return;
+      }
+    }
 
     // Start immersive loading
     updateState({
@@ -126,6 +118,9 @@ export default function CaptionInputPage() {
       setCaptionIds(result.captionIds);
       setSavedStates(result.savedStates);
 
+      // Refetch usage data to update the UI
+      refetchUsage();
+
       // Complete loading
       updateState({
         generatedCaptions: result.captions,
@@ -133,7 +128,15 @@ export default function CaptionInputPage() {
         showImmersiveLoading: false,
         loadingPhase: "complete",
       });
-    } catch (error) {
+    } catch (error: any) {
+      // Check if it's a usage limit error
+      if (error?.limitReached) {
+        showPaywall({
+          used: error.usage?.used || 0,
+          limit: error.usage?.limit || 10,
+        });
+      }
+
       // Handle error
       updateState({
         isGenerating: false,
@@ -284,13 +287,24 @@ export default function CaptionInputPage() {
       setCaptionIds(result.captionIds);
       setSavedStates(result.savedStates);
 
+      // Refetch usage data to update the UI
+      refetchUsage();
+
       updateState({
         generatedCaptions: result.captions,
         isGenerating: false,
         showImmersiveLoading: false,
         loadingPhase: "complete",
       });
-    } catch (error) {
+    } catch (error: any) {
+      // Check if it's a usage limit error
+      if (error?.limitReached) {
+        showPaywall({
+          used: error.usage?.used || 0,
+          limit: error.usage?.limit || 10,
+        });
+      }
+
       updateState({
         isGenerating: false,
         showImmersiveLoading: false,
@@ -431,18 +445,37 @@ export default function CaptionInputPage() {
               {state.isGenerating ? "Generating..." : "Generate Captions"}
             </Button>
             <div className="mt-3 text-center">
-              <span className="text-sm text-secondary">
-                <span className="font-semibold text-accent">
-                  {CREDITS.remaining}/{CREDITS.total}
-                </span>{" "}
-                free captions left
-              </span>
-              {CREDITS.remaining === 0 && (
-                <div className="mt-2">
-                  <span className="text-xs text-warning">
-                    You've reached your free limit
+              {usageLoading ? (
+                <span className="text-sm text-secondary">Loading usage...</span>
+              ) : usage ? (
+                <>
+                  <span className="text-sm text-secondary">
+                    <span className="font-semibold text-accent">
+                      {usage.captionsLimit === -1
+                        ? "∞"
+                        : `${Math.max(
+                            0,
+                            usage.captionsLimit - usage.captionsUsed
+                          )}/${usage.captionsLimit}`}
+                    </span>{" "}
+                    {subscription?.plan === "free"
+                      ? "free captions left"
+                      : "captions left this month"}
                   </span>
-                </div>
+                  {usage.captionsUsed >= usage.captionsLimit &&
+                    usage.captionsLimit !== -1 && (
+                      <div className="mt-2">
+                        <span className="text-xs text-warning">
+                          You've reached your limit for this period
+                        </span>
+                      </div>
+                    )}
+                </>
+              ) : (
+                <span className="text-sm text-secondary">
+                  <span className="font-semibold text-accent">10/10</span> free
+                  captions left
+                </span>
               )}
             </div>
           </div>

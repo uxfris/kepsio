@@ -27,6 +27,7 @@ export async function GET(request: NextRequest) {
 
         // If user doesn't exist, create them in the database
         if (!user) {
+          // Create user with default free subscription
           user = await prisma.user.create({
             data: {
               id: data.user.id,
@@ -39,9 +40,19 @@ export async function GET(request: NextRequest) {
                 data.user.user_metadata?.avatar_url ??
                 data.user.user_metadata?.picture ??
                 null,
+              subscriptions: {
+                create: {
+                  plan: "free",
+                  status: "active",
+                  // Set period end to 30 days from now
+                  currentPeriodEnd: new Date(
+                    Date.now() + 30 * 24 * 60 * 60 * 1000
+                  ),
+                },
+              },
             },
           });
-          console.log("Created new user in database:", user.id);
+          console.log("Created new user with free subscription:", user.id);
         }
 
         // Check if user has completed onboarding

@@ -6,6 +6,8 @@ import {
   createMultipleCaptions,
   getUserCaptions,
 } from "@/lib/db/queries/captions";
+import { prisma } from "@/lib/db/prisma";
+import { subscriptionPlans } from "@/config/plans";
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,6 +28,55 @@ export async function POST(request: NextRequest) {
         { error: "Content input is required" },
         { status: 400 }
       );
+    }
+
+    // Check subscription and usage limits
+    const subscription = await prisma.subscription.findFirst({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const plan = subscription?.plan || "free";
+    const planConfig =
+      subscriptionPlans[plan as keyof typeof subscriptionPlans];
+    const captionsLimit = planConfig?.limits.captionsPerMonth || 10;
+
+    // For unlimited plans, skip the limit check
+    if (captionsLimit !== -1) {
+      // Calculate current usage
+      const currentPeriodEnd =
+        subscription?.currentPeriodEnd ||
+        new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      const periodStart = new Date(currentPeriodEnd);
+      periodStart.setDate(periodStart.getDate() - 30);
+
+      const captionsUsed = await prisma.caption.count({
+        where: {
+          userId: user.id,
+          createdAt: {
+            gte: periodStart,
+            lte: currentPeriodEnd,
+          },
+        },
+      });
+
+      // Check if user has exceeded their limit
+      if (captionsUsed >= captionsLimit) {
+        return NextResponse.json(
+          {
+            error: "Usage limit exceeded",
+            message:
+              "You've reached your caption generation limit for this period",
+            limitReached: true,
+            usage: {
+              used: captionsUsed,
+              limit: captionsLimit,
+              resetDate: currentPeriodEnd,
+            },
+          },
+          { status: 429 }
+        );
+      }
     }
 
     // Fetch user's voice profile

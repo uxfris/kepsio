@@ -100,22 +100,36 @@ export default function ProBadge({ isCollapsed }: ProBadgeProps) {
         {/* Credit counter - made to stand out */}
         <div className="mb-4">
           <div>
-            <span className="text-2xl font-bold text-primary">
-              {captionsUsed}{" "}
-            </span>
-            <span className="text-xs text-text-body">
-              / {captionsLimit} left
-            </span>
+            {captionsLimit === -1 ? (
+              <>
+                <span className="text-2xl font-bold text-primary">∞</span>
+                <span className="text-xs text-text-body ml-1">
+                  Unlimited captions
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="text-2xl font-bold text-primary">
+                  {Math.max(0, captionsLimit - captionsUsed)}
+                </span>
+                <span className="text-xs text-text-body">
+                  {" "}
+                  / {captionsLimit} left
+                </span>
+              </>
+            )}
           </div>
 
-          <div className="flex-1 bg-border rounded-full h-2 overflow-hidden mt-1">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${usagePercentage}%` }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="h-full bg-linear-to-r from-primary to-accent rounded-full transition-all duration-300 ease-out"
-            />
-          </div>
+          {captionsLimit !== -1 && (
+            <div className="flex-1 bg-border rounded-full h-2 overflow-hidden mt-1">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${usagePercentage}%` }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="h-full bg-linear-to-r from-primary to-accent rounded-full transition-all duration-300 ease-out"
+              />
+            </div>
+          )}
         </div>
 
         {/* CTA Button */}
