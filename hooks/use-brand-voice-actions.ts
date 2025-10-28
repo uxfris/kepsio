@@ -65,19 +65,36 @@ export function useBrandVoiceActions({
 
   const handleAnalyze = useCallback(async () => {
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2500));
+      const response = await fetch("/api/brand-voice/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to analyze voice");
+      }
+
       addToast({
         type: "success",
         title: "Voice Updated Successfully! 🎉",
         description: "Your brand voice has been analyzed and updated.",
       });
     } catch (error) {
+      console.error("Error analyzing voice:", error);
+
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "There was an error analyzing your voice. Please try again.";
+
       addToast({
         type: "error",
         title: "Analysis Failed",
-        description:
-          "There was an error analyzing your voice. Please try again.",
+        description: errorMessage,
       });
     }
   }, [addToast]);

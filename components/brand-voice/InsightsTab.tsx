@@ -92,6 +92,23 @@ export const InsightsTab: React.FC<InsightsTabProps> = React.memo(
               </div>
             </CardHeader>
             <CardContent>
+              {/* Overall Tone - Show if available from OpenAI */}
+              {voiceInsights.tone && (
+                <div className="mb-6 p-6 bg-primary/5 rounded-xl border border-primary/20">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-6 h-6 bg-primary/10 rounded-lg flex items-center justify-center">
+                      <span className="text-xs">🎯</span>
+                    </div>
+                    <p className="text-sm font-medium text-text-head">
+                      Overall Tone
+                    </p>
+                  </div>
+                  <p className="text-lg font-semibold text-text-head">
+                    {voiceInsights.tone}
+                  </p>
+                </div>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Signature Phrases */}
                 <div className="p-6 bg-section rounded-xl border border-border">
@@ -104,7 +121,7 @@ export const InsightsTab: React.FC<InsightsTabProps> = React.memo(
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {voiceInsights.topPhrases.map((phrase, idx) => (
+                    {voiceInsights.topPhrases?.map((phrase, idx) => (
                       <span
                         key={idx}
                         className="px-3 py-1 bg-accent/10 text-accent text-xs font-medium rounded-full hover:bg-accent/20 transition-colors cursor-default"
@@ -153,21 +170,88 @@ export const InsightsTab: React.FC<InsightsTabProps> = React.memo(
                 <p className="text-lg font-semibold text-text-head mb-2">
                   {voiceInsights.ctaStyle}
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    "Let me know below",
-                    "Drop a comment",
-                    "Tell me your thoughts",
-                  ].map((cta) => (
-                    <span
-                      key={cta}
-                      className="px-3 py-1 bg-success/10 text-success text-xs font-medium rounded-full"
-                    >
-                      "{cta}"
-                    </span>
-                  ))}
-                </div>
               </div>
+
+              {/* Key Themes - Show if available from OpenAI */}
+              {voiceInsights.keyThemes &&
+                voiceInsights.keyThemes.length > 0 && (
+                  <div className="mt-6 p-6 bg-section rounded-xl border border-border">
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="w-6 h-6 bg-info/10 rounded-lg flex items-center justify-center">
+                        <span className="text-xs">📚</span>
+                      </div>
+                      <p className="text-sm font-medium text-text-head">
+                        Key Themes
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {voiceInsights.keyThemes.map((theme, idx) => (
+                        <span
+                          key={idx}
+                          className="px-3 py-1 bg-info/10 text-info text-xs font-medium rounded-full"
+                        >
+                          {theme}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+              {/* Additional Insights Grid */}
+              {(voiceInsights.sentenceStructure ||
+                voiceInsights.vocabularyStyle ||
+                voiceInsights.uniqueCharacteristics) && (
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {voiceInsights.sentenceStructure && (
+                    <div className="p-6 bg-section rounded-xl border border-border">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-6 h-6 bg-warning/10 rounded-lg flex items-center justify-center">
+                          <span className="text-xs">📝</span>
+                        </div>
+                        <p className="text-sm font-medium text-text-head">
+                          Sentence Structure
+                        </p>
+                      </div>
+                      <p className="text-sm text-text-body">
+                        {voiceInsights.sentenceStructure}
+                      </p>
+                    </div>
+                  )}
+
+                  {voiceInsights.vocabularyStyle && (
+                    <div className="p-6 bg-section rounded-xl border border-border">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-6 h-6 bg-accent/10 rounded-lg flex items-center justify-center">
+                          <span className="text-xs">📖</span>
+                        </div>
+                        <p className="text-sm font-medium text-text-head">
+                          Vocabulary Style
+                        </p>
+                      </div>
+                      <p className="text-sm text-text-body">
+                        {voiceInsights.vocabularyStyle}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Unique Characteristics - Highlight Box */}
+              {voiceInsights.uniqueCharacteristics && (
+                <div className="mt-6 p-6 bg-accent/5 rounded-xl border border-accent/20">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-6 h-6 bg-accent/10 rounded-lg flex items-center justify-center">
+                      <Sparkles className="w-4 h-4 text-accent" />
+                    </div>
+                    <p className="text-sm font-medium text-text-head">
+                      What Makes Your Voice Unique
+                    </p>
+                  </div>
+                  <p className="text-sm text-text-body leading-relaxed">
+                    {voiceInsights.uniqueCharacteristics}
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
 

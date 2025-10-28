@@ -20,6 +20,7 @@ export async function GET() {
         platformId: true,
         toneId: true,
         contentTypeIds: true,
+        style: true,
       },
     });
 
@@ -27,6 +28,7 @@ export async function GET() {
       platformId: voiceProfile?.platformId || null,
       toneId: voiceProfile?.toneId || null,
       contentTypeIds: voiceProfile?.contentTypeIds || [],
+      voiceInsights: voiceProfile?.style || null,
     });
   } catch (error) {
     console.error("Error fetching onboarding data:", error);

@@ -38,11 +38,16 @@ export interface UploadedCaption {
 }
 
 export interface VoiceInsights {
+  tone?: string;
   topPhrases: string[];
   emojiUsage: string;
   avgLength: string;
   questionFrequency: string;
   ctaStyle: string;
+  keyThemes?: string[];
+  sentenceStructure?: string;
+  vocabularyStyle?: string;
+  uniqueCharacteristics?: string;
 }
 
 export interface OnboardingStep {

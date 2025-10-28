@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import type { OnboardingOptions } from "../types/brand-voice";
+import type { OnboardingOptions, VoiceInsights } from "../types/brand-voice";
 
 interface UseBrandVoiceDataReturn {
   onboardingOptions: OnboardingOptions;
   selectedPlatformId: string;
   selectedToneId: string;
   selectedContentTypes: string[];
+  voiceInsights: VoiceInsights | null;
   isLoading: boolean;
   error: Error | null;
   setSelectedPlatformId: (id: string) => void;
@@ -25,6 +26,9 @@ export function useBrandVoiceData(): UseBrandVoiceDataReturn {
   const [selectedToneId, setSelectedToneId] = useState("");
   const [selectedContentTypes, setSelectedContentTypes] = useState<string[]>(
     []
+  );
+  const [voiceInsights, setVoiceInsights] = useState<VoiceInsights | null>(
+    null
   );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -56,6 +60,19 @@ export function useBrandVoiceData(): UseBrandVoiceDataReturn {
           platformId = userData.platformId || platformId;
           toneId = userData.toneId || toneId;
           contentTypeIds = userData.contentTypeIds || [];
+
+          // Parse voice insights if available
+          if (userData.voiceInsights) {
+            try {
+              const parsedInsights =
+                typeof userData.voiceInsights === "string"
+                  ? JSON.parse(userData.voiceInsights)
+                  : userData.voiceInsights;
+              setVoiceInsights(parsedInsights);
+            } catch (e) {
+              console.error("Failed to parse voice insights:", e);
+            }
+          }
         }
 
         setSelectedPlatformId(platformId);
@@ -77,6 +94,7 @@ export function useBrandVoiceData(): UseBrandVoiceDataReturn {
     selectedPlatformId,
     selectedToneId,
     selectedContentTypes,
+    voiceInsights,
     isLoading,
     error,
     setSelectedPlatformId,
