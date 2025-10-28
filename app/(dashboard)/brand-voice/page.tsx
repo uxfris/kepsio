@@ -43,6 +43,7 @@ const BrandVoiceContent: React.FC = () => {
     setSelectedPlatformId,
     setSelectedToneId,
     setSelectedContentTypes,
+    refreshVoiceInsights,
   } = useBrandVoiceData();
 
   const {
@@ -62,6 +63,7 @@ const BrandVoiceContent: React.FC = () => {
     selectedPlatformId,
     selectedToneId,
     selectedContentTypes,
+    refreshVoiceInsights,
   });
 
   // Memoized values

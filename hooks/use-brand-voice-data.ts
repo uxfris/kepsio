@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { OnboardingOptions, VoiceInsights } from "../types/brand-voice";
 
 interface UseBrandVoiceDataReturn {
@@ -12,6 +12,7 @@ interface UseBrandVoiceDataReturn {
   setSelectedPlatformId: (id: string) => void;
   setSelectedToneId: (id: string) => void;
   setSelectedContentTypes: (types: string[]) => void;
+  refreshVoiceInsights: () => Promise<void>;
 }
 
 export function useBrandVoiceData(): UseBrandVoiceDataReturn {
@@ -89,6 +90,32 @@ export function useBrandVoiceData(): UseBrandVoiceDataReturn {
     fetchData();
   }, []);
 
+  // Function to refresh only voice insights
+  const refreshVoiceInsights = useCallback(async () => {
+    try {
+      const response = await fetch("/api/user/onboarding");
+
+      if (response.ok) {
+        const userData = await response.json();
+
+        // Parse and update voice insights
+        if (userData.voiceInsights) {
+          try {
+            const parsedInsights =
+              typeof userData.voiceInsights === "string"
+                ? JSON.parse(userData.voiceInsights)
+                : userData.voiceInsights;
+            setVoiceInsights(parsedInsights);
+          } catch (e) {
+            console.error("Failed to parse voice insights:", e);
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Error refreshing voice insights:", err);
+    }
+  }, []);
+
   return {
     onboardingOptions,
     selectedPlatformId,
@@ -100,5 +127,6 @@ export function useBrandVoiceData(): UseBrandVoiceDataReturn {
     setSelectedPlatformId,
     setSelectedToneId,
     setSelectedContentTypes,
+    refreshVoiceInsights,
   };
 }

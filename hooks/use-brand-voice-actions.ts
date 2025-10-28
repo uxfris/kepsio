@@ -11,12 +11,14 @@ interface UseBrandVoiceActionsProps {
   selectedPlatformId: string;
   selectedToneId: string;
   selectedContentTypes: string[];
+  refreshVoiceInsights: () => Promise<void>;
 }
 
 export function useBrandVoiceActions({
   selectedPlatformId,
   selectedToneId,
   selectedContentTypes,
+  refreshVoiceInsights,
 }: UseBrandVoiceActionsProps) {
   const { addToast } = useToast();
 
@@ -78,6 +80,9 @@ export function useBrandVoiceActions({
         throw new Error(data.error || "Failed to analyze voice");
       }
 
+      // Refresh voice insights to get the latest analysis
+      await refreshVoiceInsights();
+
       addToast({
         type: "success",
         title: "Voice Updated Successfully! 🎉",
@@ -97,7 +102,7 @@ export function useBrandVoiceActions({
         description: errorMessage,
       });
     }
-  }, [addToast]);
+  }, [addToast, refreshVoiceInsights]);
 
   const handleAddCaptions = useCallback(
     async (captions: string) => {
