@@ -26,6 +26,9 @@ interface EditCaptionModalProps {
   onClose: () => void;
   onSave: (editedCaption: string) => void;
   onCopy?: (caption: string) => void;
+  captionId?: string;
+  platform?: string;
+  saveToDatabase?: boolean;
 }
 
 interface CaptionInsights {
@@ -120,6 +123,9 @@ export default function EditCaptionModal({
   onClose,
   onSave,
   onCopy,
+  captionId,
+  platform = "Instagram",
+  saveToDatabase = false,
 }: EditCaptionModalProps) {
   const [editedCaption, setEditedCaption] = useState(originalCaption);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -127,13 +133,24 @@ export default function EditCaptionModal({
   const [copied, setCopied] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [showInsights, setShowInsights] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const hashtagPickerRef = useRef<HTMLDivElement>(null);
   const { addToast } = useToast();
 
-  const maxCharacters = 2200; // Instagram limit
+  // Platform-specific character limits
+  const platformLimits: Record<string, number> = {
+    instagram: 2200,
+    linkedin: 3000,
+    x: 280,
+    twitter: 280,
+    facebook: 63206,
+    tiktok: 2200,
+  };
+
+  const maxCharacters = platformLimits[platform.toLowerCase()] || 2200;
   const insights = getCaptionInsights(editedCaption);
   const originalInsights = getCaptionInsights(originalCaption);
   const isOverLimit = insights.characterCount > maxCharacters;
@@ -250,15 +267,58 @@ export default function EditCaptionModal({
     }
   }, [editedCaption, onCopy, addToast]);
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     if (isOverLimit) {
       addToast(toast.error("Caption is too long. Please shorten it."));
       return;
     }
 
-    onSave(editedCaption);
-    addToast(toast.success("Caption saved successfully"));
-  }, [editedCaption, isOverLimit, onSave, addToast]);
+    setIsSaving(true);
+
+    try {
+      // If we have a captionId and should save to database
+      if (saveToDatabase && captionId) {
+        const response = await fetch(`/api/captions/${captionId}/edit`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ content: editedCaption }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to save caption to database");
+        }
+
+        const data = await response.json();
+        if (!data.success) {
+          throw new Error(data.error || "Failed to save caption");
+        }
+      }
+
+      // Call the onSave callback (for local state updates)
+      onSave(editedCaption);
+      addToast(toast.success("Caption saved successfully"));
+      onClose();
+    } catch (error) {
+      console.error("Error saving caption:", error);
+      addToast(
+        toast.error(
+          error instanceof Error ? error.message : "Failed to save caption"
+        )
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  }, [
+    editedCaption,
+    isOverLimit,
+    onSave,
+    addToast,
+    saveToDatabase,
+    captionId,
+    onClose,
+  ]);
 
   const handleReset = useCallback(() => {
     setEditedCaption(originalCaption);
@@ -287,6 +347,197 @@ export default function EditCaptionModal({
     return <Heart className="w-4 h-4" />;
   };
 
+  // Platform-specific guidelines
+  const getPlatformGuidelines = () => {
+    const platformName = platform.toLowerCase();
+    switch (platformName) {
+      case "instagram":
+        return {
+          name: "Instagram",
+          icon: "📸",
+          tips: [
+            "First 125 characters are most important",
+            "Use line breaks for readability",
+            "3-5 hashtags perform best",
+            "Include a clear CTA",
+          ],
+          idealLength: "138-150 characters",
+        };
+      case "linkedin":
+        return {
+          name: "LinkedIn",
+          icon: "💼",
+          tips: [
+            "First 2 lines hook readers",
+            "Professional yet conversational tone",
+            "Use hashtags sparingly (3-5)",
+            "Ask thought-provoking questions",
+          ],
+          idealLength: "150-300 characters",
+        };
+      case "x":
+      case "twitter":
+        return {
+          name: "X (Twitter)",
+          icon: "✖️",
+          tips: [
+            "Be concise and punchy",
+            "Front-load key message",
+            "Use threads for longer content",
+            "1-2 hashtags maximum",
+          ],
+          idealLength: "71-100 characters",
+        };
+      case "facebook":
+        return {
+          name: "Facebook",
+          icon: "👥",
+          tips: [
+            "First 3 lines show in feed",
+            "Conversational and relatable",
+            "Questions boost engagement",
+            "Minimal hashtags (1-2)",
+          ],
+          idealLength: "100-250 characters",
+        };
+      case "tiktok":
+        return {
+          name: "TikTok",
+          icon: "🎵",
+          tips: [
+            "Short and catchy hooks",
+            "Use trending hashtags",
+            "Encourage comments/duets",
+            "Emoji-friendly platform",
+          ],
+          idealLength: "100-150 characters",
+        };
+      default:
+        return {
+          name: "Social Media",
+          icon: "📱",
+          tips: [
+            "Keep it engaging",
+            "Include a clear message",
+            "Use relevant hashtags",
+            "Add a call-to-action",
+          ],
+          idealLength: "150-200 characters",
+        };
+    }
+  };
+
+  const platformGuide = getPlatformGuidelines();
+
+  // Contextual AI suggestions based on content analysis
+  const getContextualSuggestions = () => {
+    const suggestions = [];
+    const lowerCaption = editedCaption.toLowerCase();
+
+    // Length-based suggestions
+    if (
+      platform.toLowerCase() === "x" ||
+      platform.toLowerCase() === "twitter"
+    ) {
+      if (insights.characterCount > 200) {
+        suggestions.push({
+          type: "warning",
+          message: "Consider splitting into a thread",
+          action: "X works best with concise messages or engaging threads",
+        });
+      }
+    }
+
+    if (
+      platform.toLowerCase() === "instagram" &&
+      insights.characterCount > 150
+    ) {
+      suggestions.push({
+        type: "tip",
+        message: "Front-load your hook",
+        action: "First 125 characters show before 'more' - make them count!",
+      });
+    }
+
+    // Engagement-based suggestions
+    if (insights.engagementScore < 40) {
+      if (!insights.hasQuestion) {
+        suggestions.push({
+          type: "tip",
+          message: "Add a question",
+          action: "Questions drive 2x more comments and engagement",
+        });
+      }
+      if (!insights.hasEmojis && platform.toLowerCase() !== "linkedin") {
+        suggestions.push({
+          type: "tip",
+          message: "Add emojis",
+          action: "Emojis increase engagement by 48% on most platforms",
+        });
+      }
+    }
+
+    // Platform-specific suggestions
+    if (platform.toLowerCase() === "linkedin") {
+      if (
+        insights.hasEmojis &&
+        editedCaption.match(/[\u{1F600}-\u{1F64F}]/gu)?.length! > 2
+      ) {
+        suggestions.push({
+          type: "caution",
+          message: "Keep emojis professional",
+          action: "LinkedIn prefers minimal, professional emoji usage",
+        });
+      }
+      if (!lowerCaption.includes("?") && insights.characterCount > 100) {
+        suggestions.push({
+          type: "tip",
+          message: "Add thought leadership",
+          action: "Ask a thought-provoking question to spark discussions",
+        });
+      }
+    }
+
+    // CTA suggestions
+    if (
+      !lowerCaption.includes("comment") &&
+      !lowerCaption.includes("share") &&
+      !lowerCaption.includes("link in bio") &&
+      !lowerCaption.includes("dm") &&
+      insights.characterCount > 50
+    ) {
+      suggestions.push({
+        type: "tip",
+        message: "Add a call-to-action",
+        action: "Guide your audience on what to do next",
+      });
+    }
+
+    // Hashtag suggestions
+    if (platform.toLowerCase() === "instagram" && !insights.hasHashtags) {
+      suggestions.push({
+        type: "tip",
+        message: "Consider hashtags",
+        action: "3-5 relevant hashtags can boost discoverability",
+      });
+    }
+
+    if (
+      platform.toLowerCase() === "x" &&
+      editedCaption.match(/#\w+/g)?.length! > 2
+    ) {
+      suggestions.push({
+        type: "caution",
+        message: "Too many hashtags",
+        action: "X performs best with 1-2 hashtags maximum",
+      });
+    }
+
+    return suggestions.slice(0, 3); // Return top 3 suggestions
+  };
+
+  const contextualSuggestions = getContextualSuggestions();
+
   if (!isOpen) return null;
 
   return (
@@ -301,7 +552,8 @@ export default function EditCaptionModal({
                 Edit Caption
               </h2>
               <p className="text-sm text-text-body">
-                Perfect your caption with our smart editing tools
+                Optimize for {platformGuide.icon} {platformGuide.name} •{" "}
+                {platformGuide.idealLength} recommended
               </p>
             </div>
             <Button
@@ -370,6 +622,27 @@ export default function EditCaptionModal({
                 >
                   {showInsights ? "Hide" : "Show"}
                 </Button>
+              </div>
+
+              {/* Platform Guidelines */}
+              <div className="bg-accent/5 border border-accent/20 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">{platformGuide.icon}</span>
+                  <span className="text-sm font-semibold text-accent">
+                    {platformGuide.name} Best Practices
+                  </span>
+                </div>
+                <ul className="space-y-1">
+                  {platformGuide.tips.map((tip, index) => (
+                    <li
+                      key={index}
+                      className="text-xs text-text-body flex items-start gap-2"
+                    >
+                      <span className="text-accent mt-0.5">•</span>
+                      <span>{tip}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
 
               {/* Smart Insights */}
@@ -601,38 +874,75 @@ export default function EditCaptionModal({
                 </div>
               </div>
 
-              {/* Smart Suggestions */}
-              <div className="space-y-3">
-                {insights.characterCount > 300 && (
-                  <div className="flex items-start gap-3 p-3 bg-warning/10 border border-warning/20 rounded-lg">
-                    <AlertCircle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
-                    <div>
-                      <div className="text-sm font-medium text-warning">
-                        Consider shortening
-                      </div>
-                      <div className="text-xs text-warning/80 mt-0.5">
-                        Captions over 300 characters may get truncated on some
-                        platforms
+              {/* Contextual AI Suggestions */}
+              {contextualSuggestions.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sparkles className="w-4 h-4 text-accent" />
+                    <span className="text-sm font-semibold text-text-head">
+                      AI Recommendations
+                    </span>
+                  </div>
+                  {contextualSuggestions.map((suggestion, index) => (
+                    <div
+                      key={index}
+                      className={`flex items-start gap-3 p-3 rounded-lg border ${
+                        suggestion.type === "warning"
+                          ? "bg-warning/10 border-warning/20"
+                          : suggestion.type === "caution"
+                          ? "bg-error/10 border-error/20"
+                          : "bg-accent/10 border-accent/20"
+                      }`}
+                    >
+                      {suggestion.type === "warning" ? (
+                        <AlertCircle
+                          className={`w-4 h-4 shrink-0 mt-0.5 ${
+                            suggestion.type === "warning"
+                              ? "text-warning"
+                              : suggestion.type === "caution"
+                              ? "text-error"
+                              : "text-accent"
+                          }`}
+                        />
+                      ) : (
+                        <Lightbulb
+                          className={`w-4 h-4 shrink-0 mt-0.5 ${
+                            suggestion.type === "warning"
+                              ? "text-warning"
+                              : suggestion.type === "caution"
+                              ? "text-error"
+                              : "text-accent"
+                          }`}
+                        />
+                      )}
+                      <div>
+                        <div
+                          className={`text-sm font-medium ${
+                            suggestion.type === "warning"
+                              ? "text-warning"
+                              : suggestion.type === "caution"
+                              ? "text-error"
+                              : "text-accent"
+                          }`}
+                        >
+                          {suggestion.message}
+                        </div>
+                        <div
+                          className={`text-xs mt-0.5 ${
+                            suggestion.type === "warning"
+                              ? "text-warning/80"
+                              : suggestion.type === "caution"
+                              ? "text-error/80"
+                              : "text-accent/80"
+                          }`}
+                        >
+                          {suggestion.action}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-
-                {!insights.hasQuestion && insights.engagementScore < 50 && (
-                  <div className="flex items-start gap-3 p-3 bg-accent/10 border border-accent/20 rounded-lg">
-                    <Lightbulb className="w-4 h-4 text-accent shrink-0 mt-0.5" />
-                    <div>
-                      <div className="text-sm font-medium text-accent">
-                        Boost engagement
-                      </div>
-                      <div className="text-xs text-accent/80 mt-0.5">
-                        Try adding a question or call-to-action to increase
-                        comments
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -677,10 +987,11 @@ export default function EditCaptionModal({
                 size="md"
                 onClick={handleSave}
                 leftIcon={<Save className="w-4 h-4" />}
-                disabled={isOverLimit || !hasChanges}
+                disabled={isOverLimit || !hasChanges || isSaving}
+                loading={isSaving}
                 className="font-semibold"
               >
-                Save Changes
+                {isSaving ? "Saving..." : "Save Changes"}
               </Button>
             </div>
           </div>

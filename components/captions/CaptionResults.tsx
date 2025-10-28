@@ -496,6 +496,9 @@ export const CaptionResults = ({
           onClose={handleCloseEditModal}
           onSave={handleSaveEditedCaption}
           onCopy={(caption) => onCopyCaption(caption, editingCaptionIndex)}
+          captionId={captionIds[editingCaptionIndex]}
+          platform={platform}
+          saveToDatabase={true}
         />
       )}
     </div>

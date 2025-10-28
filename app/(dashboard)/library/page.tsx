@@ -242,8 +242,9 @@ export default function LibraryPage() {
     setEditingCaptionIndex(index);
   };
 
-  const handleSaveEditedCaption = (newCaption: string) => {
+  const handleSaveEditedCaption = async (newCaption: string) => {
     if (editingCaptionIndex !== null) {
+      // Update local state
       const updatedCaptions = [...editedCaptions];
       updatedCaptions[editingCaptionIndex] = {
         ...updatedCaptions[editingCaptionIndex],
@@ -251,6 +252,11 @@ export default function LibraryPage() {
       };
       setEditedCaptions(updatedCaptions);
       setEditingCaptionIndex(null);
+
+      // Invalidate cache to ensure fresh data on next fetch
+      dataCache.invalidate(CACHE_KEYS.SAVED_CAPTIONS);
+      dataCache.invalidate(CACHE_KEYS.RECENT_CAPTIONS);
+
       setToastMessage("Caption updated successfully! ✏️");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2000);
@@ -335,10 +341,23 @@ export default function LibraryPage() {
     };
   }, []);
 
-  // Handle save/unsave caption
+  // Handle save/unsave caption with optimistic update
   const handleSaveCaption = async (captionId: string) => {
+    // Store the caption to revert if needed
+    const captionToRemove = editedCaptions.find((c) => c.id === captionId);
+    if (!captionToRemove) return;
+
     try {
       setSavingCaptionId(captionId);
+
+      // Optimistic update: remove immediately
+      setEditedCaptions((prev) =>
+        prev.filter((caption) => caption.id !== captionId)
+      );
+      setToastMessage("Caption removed from library");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
+
       const response = await fetch("/api/captions/save", {
         method: "POST",
         headers: {
@@ -347,26 +366,75 @@ export default function LibraryPage() {
         body: JSON.stringify({ captionId }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        // If unsaved, remove from the list
-        if (!data.isSaved) {
-          setEditedCaptions((prev) =>
-            prev.filter((caption) => caption.id !== captionId)
-          );
-          setToastMessage("Caption removed from library");
-          setShowToast(true);
-          setTimeout(() => setShowToast(false), 2000);
-
-          // Invalidate cache
-          dataCache.invalidate(CACHE_KEYS.SAVED_CAPTIONS);
-          dataCache.invalidate(CACHE_KEYS.RECENT_CAPTIONS);
-        }
+      if (!response.ok) {
+        // Revert on failure
+        setEditedCaptions((prev) => [...prev, captionToRemove]);
+        setToastMessage("Failed to remove caption. Please try again.");
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 2000);
+      } else {
+        // Invalidate cache on success
+        dataCache.invalidate(CACHE_KEYS.SAVED_CAPTIONS);
+        dataCache.invalidate(CACHE_KEYS.RECENT_CAPTIONS);
       }
     } catch (error) {
       console.error("Failed to save caption:", error);
+      // Revert on error
+      setEditedCaptions((prev) => [...prev, captionToRemove]);
+      setToastMessage("Failed to remove caption. Please try again.");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
     } finally {
       setSavingCaptionId(null);
+    }
+  };
+
+  // Export captions to CSV
+  const handleExportCaptions = () => {
+    if (editedCaptions.length === 0) {
+      setToastMessage("No captions to export");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
+      return;
+    }
+
+    try {
+      // Create CSV content
+      const headers = ["Content", "Platform", "Style", "Date"];
+      const csvContent = [
+        headers.join(","),
+        ...editedCaptions.map((caption) =>
+          [
+            `"${caption.content.replace(/"/g, '""')}"`, // Escape quotes in content
+            caption.platform,
+            caption.style,
+            new Date(caption.savedDate).toLocaleDateString(),
+          ].join(",")
+        ),
+      ].join("\n");
+
+      // Create blob and download
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute(
+        "download",
+        `captions-library-${new Date().toISOString().split("T")[0]}.csv`
+      );
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      setToastMessage(`Exported ${editedCaptions.length} captions! 📥`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
+    } catch (error) {
+      console.error("Failed to export captions:", error);
+      setToastMessage("Failed to export captions");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
     }
   };
 
@@ -382,6 +450,29 @@ export default function LibraryPage() {
           topPlatform[a] > topPlatform[b] ? a : b
         )
       : "instagram";
+
+  // Calculate top style
+  const topStyle = editedCaptions.reduce((acc, caption) => {
+    acc[caption.style] = (acc[caption.style] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  const topStyleName =
+    Object.keys(topStyle).length > 0
+      ? Object.keys(topStyle).reduce((a, b) =>
+          topStyle[a] > topStyle[b] ? a : b
+        )
+      : "Thought Leadership";
+
+  // Get unique platforms and styles from actual data for contextual filters
+  const availablePlatforms = useMemo(() => {
+    const platforms = new Set(editedCaptions.map((c) => c.platform));
+    return Array.from(platforms).sort();
+  }, [editedCaptions]);
+
+  const availableStyles = useMemo(() => {
+    const styles = new Set(editedCaptions.map((c) => c.style));
+    return Array.from(styles).sort();
+  }, [editedCaptions]);
 
   return (
     <ToastProvider>
@@ -411,6 +502,8 @@ export default function LibraryPage() {
                 <Button
                   variant="outline"
                   leftIcon={<Download className="w-4 h-4" />}
+                  onClick={handleExportCaptions}
+                  disabled={editedCaptions.length === 0}
                 >
                   Export All
                 </Button>
@@ -472,23 +565,29 @@ export default function LibraryPage() {
                           Platform
                         </label>
                         <div className="flex flex-wrap gap-2">
-                          {["instagram", "linkedin", "x"].map((platform) => (
-                            <button
-                              key={platform}
-                              onClick={() => togglePlatformFilter(platform)}
-                              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
-                                selectedPlatforms.includes(platform)
-                                  ? `${getPlatformColor(platform)} border-2`
-                                  : "bg-chip-bg text-text-body hover:bg-section-light border-border"
-                              }`}
-                            >
-                              {getPlatformIcon(platform)}
-                              <span className="capitalize">{platform}</span>
-                              {selectedPlatforms.includes(platform) && (
-                                <Check className="w-3 h-3" />
-                              )}
-                            </button>
-                          ))}
+                          {availablePlatforms.length > 0 ? (
+                            availablePlatforms.map((platform) => (
+                              <button
+                                key={platform}
+                                onClick={() => togglePlatformFilter(platform)}
+                                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
+                                  selectedPlatforms.includes(platform)
+                                    ? `${getPlatformColor(platform)} border-2`
+                                    : "bg-chip-bg text-text-body hover:bg-section-light border-border"
+                                }`}
+                              >
+                                {getPlatformIcon(platform)}
+                                <span className="capitalize">{platform}</span>
+                                {selectedPlatforms.includes(platform) && (
+                                  <Check className="w-3 h-3" />
+                                )}
+                              </button>
+                            ))
+                          ) : (
+                            <p className="text-sm text-hint">
+                              No platforms available
+                            </p>
+                          )}
                         </div>
                       </div>
 
@@ -498,28 +597,25 @@ export default function LibraryPage() {
                           Style
                         </label>
                         <div className="flex flex-wrap gap-2">
-                          {[
-                            "Teaser",
-                            "Educational",
-                            "Engagement",
-                            "Thought Leadership",
-                            "Listicle",
-                            "Relatable",
-                            "Hot Take",
-                            "Motivational",
-                          ].map((style) => (
-                            <button
-                              key={style}
-                              onClick={() => toggleStyleFilter(style)}
-                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
-                                selectedStyles.includes(style)
-                                  ? "bg-accent/10 text-accent border-accent border-2"
-                                  : "bg-chip-bg text-text-body hover:bg-section-light border-border"
-                              }`}
-                            >
-                              {style}
-                            </button>
-                          ))}
+                          {availableStyles.length > 0 ? (
+                            availableStyles.map((style) => (
+                              <button
+                                key={style}
+                                onClick={() => toggleStyleFilter(style)}
+                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
+                                  selectedStyles.includes(style)
+                                    ? "bg-accent/10 text-accent border-accent border-2"
+                                    : "bg-chip-bg text-text-body hover:bg-section-light border-border"
+                                }`}
+                              >
+                                {style}
+                              </button>
+                            ))
+                          ) : (
+                            <p className="text-sm text-hint">
+                              No styles available
+                            </p>
+                          )}
                         </div>
                       </div>
 
@@ -613,7 +709,7 @@ export default function LibraryPage() {
                   <div className="p-4">
                     <div className="text-sm text-hint mb-1">Best Style</div>
                     <div className="text-lg font-display font-semibold text-text-head">
-                      Thought Leadership
+                      {topStyleName}
                     </div>
                   </div>
                 </Card>
@@ -774,6 +870,9 @@ export default function LibraryPage() {
             onClose={handleCloseEditModal}
             onSave={handleSaveEditedCaption}
             onCopy={(caption) => handleCopy(caption, editingCaptionIndex)}
+            captionId={editedCaptions[editingCaptionIndex].id}
+            platform={editedCaptions[editingCaptionIndex].platform}
+            saveToDatabase={true}
           />
         )}
       </div>
