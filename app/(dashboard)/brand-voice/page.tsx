@@ -228,26 +228,26 @@ const BrandVoiceContent: React.FC = () => {
 
       {/* Header */}
       <div className="bg-linear-to-r from-surface to-section border-b border-border">
-        <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6">
             {/* Title Section */}
             <div className="flex-1">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-accent/10 rounded-xl flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-accent" />
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-accent/10 rounded-xl flex items-center justify-center shrink-0">
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-accent" />
                 </div>
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-text-head">
+                <div className="min-w-0">
+                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-text-head">
                     Brand Voice
                   </h1>
-                  <p className="text-text-body text-base sm:text-lg">
+                  <p className="text-text-body text-sm sm:text-base lg:text-lg">
                     Train the AI to write in your unique style
                   </p>
                 </div>
               </div>
 
               {/* Quick Stats - Visible on mobile below title */}
-              <div className="flex flex-wrap items-center gap-4 sm:gap-6 mt-4 lg:hidden">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 lg:gap-6 mt-3 sm:mt-4 lg:hidden">
                 {/* Voice Status */}
                 {isLoading || isLoadingSamples ? (
                   <div className="flex items-center gap-2">
@@ -256,13 +256,13 @@ const BrandVoiceContent: React.FC = () => {
                   </div>
                 ) : (
                   <div
-                    className="flex items-center gap-2 group cursor-help"
+                    className="flex items-center gap-1.5 sm:gap-2 group cursor-help"
                     title={voiceStatus.description}
                   >
                     <div
-                      className={`w-2 h-2 ${voiceStatus.color} rounded-full transition-colors`}
+                      className={`w-2 h-2 ${voiceStatus.color} rounded-full transition-colors shrink-0`}
                     ></div>
-                    <span className="text-sm font-medium text-text-body">
+                    <span className="text-xs sm:text-sm font-medium text-text-body">
                       {voiceStatus.text}
                     </span>
                   </div>
@@ -270,14 +270,14 @@ const BrandVoiceContent: React.FC = () => {
 
                 {/* Training Samples Count */}
                 {isLoadingSamples ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-hint/20 rounded animate-pulse"></div>
-                    <div className="h-4 w-32 bg-hint/20 rounded animate-pulse"></div>
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 bg-hint/20 rounded animate-pulse"></div>
+                    <div className="h-3.5 sm:h-4 w-28 sm:w-32 bg-hint/20 rounded animate-pulse"></div>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-hint" />
-                    <span className="text-sm text-text-body">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-hint shrink-0" />
+                    <span className="text-xs sm:text-sm text-text-body">
                       {uploadedCaptions} training samples
                     </span>
                   </div>
@@ -285,15 +285,15 @@ const BrandVoiceContent: React.FC = () => {
 
                 {/* Selected Tone */}
                 {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-hint/20 rounded animate-pulse"></div>
-                    <div className="h-4 w-28 bg-hint/20 rounded animate-pulse"></div>
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 bg-hint/20 rounded animate-pulse"></div>
+                    <div className="h-3.5 sm:h-4 w-24 sm:w-28 bg-hint/20 rounded animate-pulse"></div>
                   </div>
                 ) : (
                   selectedTone && (
-                    <div className="flex items-center gap-2">
-                      <Target className="w-4 h-4 text-hint" />
-                      <span className="text-sm text-text-body capitalize">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <Target className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-hint shrink-0" />
+                      <span className="text-xs sm:text-sm text-text-body capitalize">
                         {selectedTone.name} tone
                       </span>
                     </div>
@@ -371,7 +371,7 @@ const BrandVoiceContent: React.FC = () => {
       </div>
 
       {/* Content Area */}
-      <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         {activeTab === "training" && (
           <TrainingTab
             uploadedCaptions={uploadedCaptions}
