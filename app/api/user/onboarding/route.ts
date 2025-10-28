@@ -85,7 +85,7 @@ export async function POST(request: Request) {
             description: "Your brand voice profile",
             platformId: onboardingData.platformId || null,
             toneId: onboardingData.toneId || null,
-            style: "default",
+            style: "",
             contentTypeIds: onboardingData.contentTypeIds || [],
             examples: [],
           },
