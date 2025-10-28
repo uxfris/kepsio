@@ -463,40 +463,40 @@ export default function CaptionInputPage() {
             >
               {state.isGenerating ? "Generating..." : "Generate Captions"}
             </Button>
-            <div className="mt-3 text-center">
-              {usageLoading ? (
-                <span className="text-sm text-secondary">Loading usage...</span>
-              ) : usage ? (
-                <>
+            {subscription?.plan === "free" && (
+              <div className="mt-3 text-center">
+                {usageLoading ? (
                   <span className="text-sm text-secondary">
-                    <span className="font-semibold text-accent">
-                      {usage.captionsLimit === -1
-                        ? "∞"
-                        : `${Math.max(
-                            0,
-                            usage.captionsLimit - usage.captionsUsed
-                          )}/${usage.captionsLimit}`}
-                    </span>{" "}
-                    {subscription?.plan === "free"
-                      ? "free generations left"
-                      : "generations left this month"}
+                    Loading usage...
                   </span>
-                  {usage.captionsUsed >= usage.captionsLimit &&
-                    usage.captionsLimit !== -1 && (
-                      <div className="mt-2">
-                        <span className="text-xs text-warning">
-                          You've reached your limit for this period
-                        </span>
-                      </div>
-                    )}
-                </>
-              ) : (
-                <span className="text-sm text-secondary">
-                  <span className="font-semibold text-accent">10/10</span> free
-                  generations left
-                </span>
-              )}
-            </div>
+                ) : usage ? (
+                  <>
+                    <span className="text-sm text-secondary">
+                      <span className="font-semibold text-accent">
+                        {`${Math.max(
+                          0,
+                          usage.captionsLimit - usage.captionsUsed
+                        )}/${usage.captionsLimit}`}
+                      </span>{" "}
+                      free generations left
+                    </span>
+                    {usage.captionsUsed >= usage.captionsLimit &&
+                      usage.captionsLimit !== -1 && (
+                        <div className="mt-2">
+                          <span className="text-xs text-warning">
+                            You've reached your limit for this period
+                          </span>
+                        </div>
+                      )}
+                  </>
+                ) : (
+                  <span className="text-sm text-secondary">
+                    <span className="font-semibold text-accent">10/10</span>{" "}
+                    free generations left
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
