@@ -15,11 +15,7 @@ import {
 import { useBrandVoiceData } from "../../../hooks/use-brand-voice-data";
 import { useBrandVoiceActions } from "../../../hooks/use-brand-voice-actions";
 import { useTrainingSamples } from "../../../hooks/use-training-samples";
-import {
-  TAB_OPTIONS,
-  MOCK_VOICE_INSIGHTS,
-} from "../../../lib/constants/brand-voice";
-import type { VoiceInsights } from "../../../types/brand-voice";
+import { TAB_OPTIONS } from "../../../lib/constants/brand-voice";
 import type { StylePreferences } from "../../../types/brand-voice";
 
 type TabValue = (typeof TAB_OPTIONS)[number]["value"];
@@ -251,7 +247,7 @@ const BrandVoiceContent: React.FC = () => {
         {activeTab === "insights" && (
           <InsightsTab
             uploadedCaptions={uploadedCaptions}
-            voiceInsights={voiceInsights || MOCK_VOICE_INSIGHTS}
+            voiceInsights={voiceInsights}
           />
         )}
       </div>

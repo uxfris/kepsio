@@ -6,6 +6,11 @@ import {
   Check,
   AlertCircle,
   Zap,
+  AlertTriangle,
+  BarChart3,
+  TrendingDown,
+  CheckCircle2,
+  Lightbulb,
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/Card";
 import { VoiceStatCard } from "./VoiceStatCard";
@@ -14,7 +19,7 @@ import { MAX_SAMPLES } from "../../lib/constants/brand-voice";
 
 interface InsightsTabProps {
   uploadedCaptions: number;
-  voiceInsights: VoiceInsights;
+  voiceInsights: VoiceInsights | null;
 }
 
 const RECOMMENDATIONS = [
@@ -66,11 +71,98 @@ export const InsightsTab: React.FC<InsightsTabProps> = React.memo(
     const trainingQuality = Math.round((uploadedCaptions / MAX_SAMPLES) * 100);
     const samplesRemaining = MAX_SAMPLES - uploadedCaptions;
 
-    const getQualityLabel = () => {
-      if (uploadedCaptions < 3) return "Getting started - add more samples";
-      if (uploadedCaptions < 7) return "Good progress - almost there";
-      return "Excellent - well trained voice";
+    // Get contextual voice strength state
+    const getVoiceStrength = () => {
+      const isAnalyzed =
+        voiceInsights &&
+        (voiceInsights.tone || voiceInsights.topPhrases?.length > 0);
+
+      // No samples yet
+      if (uploadedCaptions === 0) {
+        return {
+          percentage: 0,
+          color: "error",
+          bgColor: "bg-error/10",
+          barColor: "bg-error",
+          textColor: "text-error",
+          icon: <AlertTriangle className="w-5 h-5 text-error" />,
+          title: "Not Started",
+          description: "Upload training samples to begin",
+          action: "Add your first caption to train your voice",
+        };
+      }
+
+      // Has samples but not analyzed
+      if (!isAnalyzed) {
+        if (uploadedCaptions < 3) {
+          return {
+            percentage: trainingQuality,
+            color: "warning",
+            bgColor: "bg-warning/10",
+            barColor: "bg-warning",
+            textColor: "text-warning",
+            icon: <BarChart3 className="w-5 h-5 text-warning" />,
+            title: "Getting Started",
+            description: `${samplesRemaining} more samples recommended`,
+            action: "Add more samples for better analysis",
+          };
+        } else if (uploadedCaptions < 7) {
+          return {
+            percentage: trainingQuality,
+            color: "info",
+            bgColor: "bg-info/10",
+            barColor: "bg-info",
+            textColor: "text-info",
+            icon: <TrendingUp className="w-5 h-5 text-info" />,
+            title: "Good Progress",
+            description: `${samplesRemaining} more for optimal results`,
+            action: "Ready to analyze - or add more samples",
+          };
+        } else {
+          return {
+            percentage: trainingQuality,
+            color: "primary",
+            bgColor: "bg-primary/10",
+            barColor: "bg-primary",
+            textColor: "text-primary",
+            icon: <Check className="w-5 h-5 text-primary" />,
+            title: "Ready to Analyze",
+            description: "Excellent sample size",
+            action: "Click 'Analyze Voice' to unlock insights",
+          };
+        }
+      }
+
+      // Analyzed with good samples
+      if (uploadedCaptions >= 7) {
+        return {
+          percentage: 100,
+          color: "success",
+          bgColor: "bg-success/10",
+          barColor: "bg-success",
+          textColor: "text-success",
+          icon: <CheckCircle2 className="w-5 h-5 text-success" />,
+          title: "Fully Trained",
+          description: "Voice is well-trained and ready",
+          action: "Your AI voice is generating great content",
+        };
+      }
+
+      // Analyzed but could use more samples
+      return {
+        percentage: Math.min(trainingQuality + 20, 100), // Bonus for being analyzed
+        color: "accent",
+        bgColor: "bg-accent/10",
+        barColor: "bg-accent",
+        textColor: "text-accent",
+        icon: <Lightbulb className="w-5 h-5 text-accent" />,
+        title: "Voice Active",
+        description: `Add ${samplesRemaining} more for better accuracy`,
+        action: "Voice analyzed - more samples will improve it",
+      };
     };
+
+    const voiceStrength = getVoiceStrength();
 
     // Generate dynamic recommendations based on actual data
     const getRecommendations = () => {
@@ -82,7 +174,7 @@ export const InsightsTab: React.FC<InsightsTabProps> = React.memo(
       }> = [];
 
       // Check if voice has been analyzed
-      if (!voiceInsights.tone) {
+      if (!voiceInsights || !voiceInsights.tone) {
         recommendations.push({
           icon: <Sparkles className="w-4 h-4 text-accent" />,
           title: "Analyze Your Voice",
@@ -113,7 +205,7 @@ export const InsightsTab: React.FC<InsightsTabProps> = React.memo(
       }
 
       // Check emoji usage
-      if (voiceInsights.emojiUsage) {
+      if (voiceInsights?.emojiUsage) {
         const emojiLower = voiceInsights.emojiUsage.toLowerCase();
         if (emojiLower.includes("none") || emojiLower.includes("minimal")) {
           recommendations.push({
@@ -143,7 +235,7 @@ export const InsightsTab: React.FC<InsightsTabProps> = React.memo(
       }
 
       // Check question frequency
-      if (voiceInsights.questionFrequency) {
+      if (voiceInsights?.questionFrequency) {
         const freqLower = voiceInsights.questionFrequency.toLowerCase();
         const hasPercentage = freqLower.match(/(\d+)%/);
 
@@ -180,7 +272,7 @@ export const InsightsTab: React.FC<InsightsTabProps> = React.memo(
       }
 
       // Check caption length
-      if (voiceInsights.avgLength) {
+      if (voiceInsights?.avgLength) {
         const lengthLower = voiceInsights.avgLength.toLowerCase();
         const hasNumbers = lengthLower.match(/(\d+)/);
 
@@ -214,7 +306,7 @@ export const InsightsTab: React.FC<InsightsTabProps> = React.memo(
       }
 
       // Check diversity of themes
-      if (voiceInsights.keyThemes && voiceInsights.keyThemes.length > 0) {
+      if (voiceInsights?.keyThemes && voiceInsights.keyThemes.length > 0) {
         if (voiceInsights.keyThemes.length === 1) {
           recommendations.push({
             icon: <Target className="w-4 h-4 text-primary" />,
@@ -235,7 +327,7 @@ export const InsightsTab: React.FC<InsightsTabProps> = React.memo(
       }
 
       // Training quality recommendation
-      if (uploadedCaptions >= 7 && voiceInsights.tone) {
+      if (uploadedCaptions >= 7 && voiceInsights?.tone) {
         recommendations.push({
           icon: <Check className="w-4 h-4 text-success" />,
           title: "Strong Voice Consistency",
@@ -250,6 +342,11 @@ export const InsightsTab: React.FC<InsightsTabProps> = React.memo(
     };
 
     const dynamicRecommendations = getRecommendations();
+
+    // Check if voice has been analyzed
+    const hasAnalysis =
+      voiceInsights &&
+      (voiceInsights.tone || voiceInsights.topPhrases?.length > 0);
 
     return (
       <div className="space-y-8">
@@ -271,203 +368,297 @@ export const InsightsTab: React.FC<InsightsTabProps> = React.memo(
               </div>
             </CardHeader>
             <CardContent>
-              {/* Overall Tone - Show if available from OpenAI */}
-              {voiceInsights.tone && (
-                <div className="mb-6 p-6 bg-primary/5 rounded-xl border border-primary/20">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-6 h-6 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <span className="text-xs">🎯</span>
-                    </div>
-                    <p className="text-sm font-medium text-text-head">
-                      Overall Tone
-                    </p>
-                  </div>
-                  <p className="text-lg font-semibold text-text-head">
-                    {voiceInsights.tone}
-                  </p>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Signature Phrases */}
-                <div className="p-6 bg-section rounded-xl border border-border">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-6 h-6 bg-accent/10 rounded-lg flex items-center justify-center">
-                      <span className="text-xs">💬</span>
-                    </div>
-                    <p className="text-sm font-medium text-text-head">
-                      Signature Phrases
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {voiceInsights.topPhrases?.map((phrase, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1 bg-accent/10 text-accent text-xs font-medium rounded-full hover:bg-accent/20 transition-colors cursor-default"
-                      >
-                        {phrase}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <VoiceStatCard
-                  icon="😊"
-                  title="Emoji Usage"
-                  value={voiceInsights.emojiUsage}
-                  subtitle="Consistent emoji style detected"
-                  variant="accent"
-                />
-
-                <VoiceStatCard
-                  icon="📏"
-                  title="Average Length"
-                  value={voiceInsights.avgLength}
-                  subtitle="Optimal for engagement"
-                  variant="primary"
-                />
-
-                <VoiceStatCard
-                  icon="❓"
-                  title="Question Frequency"
-                  value={voiceInsights.questionFrequency}
-                  subtitle="High engagement style"
-                  variant="info"
-                />
-              </div>
-
-              {/* CTA Style */}
-              <div className="mt-6 p-6 bg-section rounded-xl border border-border">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-6 h-6 bg-success/10 rounded-lg flex items-center justify-center">
-                    <span className="text-xs">📢</span>
-                  </div>
-                  <p className="text-sm font-medium text-text-head">
-                    Call-to-Action Style
-                  </p>
-                </div>
-                <p className="text-lg font-semibold text-text-head mb-2">
-                  {voiceInsights.ctaStyle}
-                </p>
-              </div>
-
-              {/* Key Themes - Show if available from OpenAI */}
-              {voiceInsights.keyThemes &&
-                voiceInsights.keyThemes.length > 0 && (
-                  <div className="mt-6 p-6 bg-section rounded-xl border border-border">
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-6 h-6 bg-info/10 rounded-lg flex items-center justify-center">
-                        <span className="text-xs">📚</span>
-                      </div>
-                      <p className="text-sm font-medium text-text-head">
-                        Key Themes
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {voiceInsights.keyThemes.map((theme, idx) => (
-                        <span
-                          key={idx}
-                          className="px-3 py-1 bg-info/10 text-info text-xs font-medium rounded-full"
-                        >
-                          {theme}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-              {/* Additional Insights Grid */}
-              {(voiceInsights.sentenceStructure ||
-                voiceInsights.vocabularyStyle ||
-                voiceInsights.uniqueCharacteristics) && (
-                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {voiceInsights.sentenceStructure && (
-                    <div className="p-6 bg-section rounded-xl border border-border">
+              {hasAnalysis ? (
+                <>
+                  {/* Overall Tone - Show if available from OpenAI */}
+                  {voiceInsights?.tone && (
+                    <div className="mb-6 p-6 bg-primary/5 rounded-xl border border-primary/20">
                       <div className="flex items-center gap-2 mb-3">
-                        <div className="w-6 h-6 bg-warning/10 rounded-lg flex items-center justify-center">
-                          <span className="text-xs">📝</span>
+                        <div className="w-6 h-6 bg-primary/10 rounded-lg flex items-center justify-center">
+                          <span className="text-xs">🎯</span>
                         </div>
                         <p className="text-sm font-medium text-text-head">
-                          Sentence Structure
+                          Overall Tone
                         </p>
                       </div>
-                      <p className="text-sm text-text-body">
-                        {voiceInsights.sentenceStructure}
+                      <p className="text-lg font-semibold text-text-head">
+                        {voiceInsights.tone}
                       </p>
                     </div>
                   )}
 
-                  {voiceInsights.vocabularyStyle && (
-                    <div className="p-6 bg-section rounded-xl border border-border">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Signature Phrases */}
+                    {voiceInsights?.topPhrases &&
+                      voiceInsights.topPhrases.length > 0 && (
+                        <div className="p-6 bg-section rounded-xl border border-border">
+                          <div className="flex items-center gap-2 mb-4">
+                            <div className="w-6 h-6 bg-accent/10 rounded-lg flex items-center justify-center">
+                              <span className="text-xs">💬</span>
+                            </div>
+                            <p className="text-sm font-medium text-text-head">
+                              Signature Phrases
+                            </p>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {voiceInsights.topPhrases.map((phrase, idx) => (
+                              <span
+                                key={idx}
+                                className="px-3 py-1 bg-accent/10 text-accent text-xs font-medium rounded-full hover:bg-accent/20 transition-colors cursor-default"
+                              >
+                                {phrase}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                    {voiceInsights?.emojiUsage && (
+                      <VoiceStatCard
+                        icon="😊"
+                        title="Emoji Usage"
+                        value={voiceInsights.emojiUsage}
+                        subtitle="Consistent emoji style detected"
+                        variant="accent"
+                      />
+                    )}
+
+                    {voiceInsights?.avgLength && (
+                      <VoiceStatCard
+                        icon="📏"
+                        title="Average Length"
+                        value={voiceInsights.avgLength}
+                        subtitle="Optimal for engagement"
+                        variant="primary"
+                      />
+                    )}
+
+                    {voiceInsights?.questionFrequency && (
+                      <VoiceStatCard
+                        icon="❓"
+                        title="Question Frequency"
+                        value={voiceInsights.questionFrequency}
+                        subtitle="High engagement style"
+                        variant="info"
+                      />
+                    )}
+                  </div>
+
+                  {/* CTA Style */}
+                  {voiceInsights?.ctaStyle && (
+                    <div className="mt-6 p-6 bg-section rounded-xl border border-border">
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="w-6 h-6 bg-success/10 rounded-lg flex items-center justify-center">
+                          <span className="text-xs">📢</span>
+                        </div>
+                        <p className="text-sm font-medium text-text-head">
+                          Call-to-Action Style
+                        </p>
+                      </div>
+                      <p className="text-lg font-semibold text-text-head mb-2">
+                        {voiceInsights.ctaStyle}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Key Themes - Show if available from OpenAI */}
+                  {voiceInsights?.keyThemes &&
+                    voiceInsights.keyThemes.length > 0 && (
+                      <div className="mt-6 p-6 bg-section rounded-xl border border-border">
+                        <div className="flex items-center gap-2 mb-4">
+                          <div className="w-6 h-6 bg-info/10 rounded-lg flex items-center justify-center">
+                            <span className="text-xs">📚</span>
+                          </div>
+                          <p className="text-sm font-medium text-text-head">
+                            Key Themes
+                          </p>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {voiceInsights.keyThemes.map((theme, idx) => (
+                            <span
+                              key={idx}
+                              className="px-3 py-1 bg-info/10 text-info text-xs font-medium rounded-full"
+                            >
+                              {theme}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                  {/* Additional Insights Grid */}
+                  {(voiceInsights?.sentenceStructure ||
+                    voiceInsights?.vocabularyStyle) && (
+                    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {voiceInsights?.sentenceStructure && (
+                        <div className="p-6 bg-section rounded-xl border border-border">
+                          <div className="flex items-center gap-2 mb-3">
+                            <div className="w-6 h-6 bg-warning/10 rounded-lg flex items-center justify-center">
+                              <span className="text-xs">📝</span>
+                            </div>
+                            <p className="text-sm font-medium text-text-head">
+                              Sentence Structure
+                            </p>
+                          </div>
+                          <p className="text-sm text-text-body">
+                            {voiceInsights.sentenceStructure}
+                          </p>
+                        </div>
+                      )}
+
+                      {voiceInsights?.vocabularyStyle && (
+                        <div className="p-6 bg-section rounded-xl border border-border">
+                          <div className="flex items-center gap-2 mb-3">
+                            <div className="w-6 h-6 bg-accent/10 rounded-lg flex items-center justify-center">
+                              <span className="text-xs">📖</span>
+                            </div>
+                            <p className="text-sm font-medium text-text-head">
+                              Vocabulary Style
+                            </p>
+                          </div>
+                          <p className="text-sm text-text-body">
+                            {voiceInsights.vocabularyStyle}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Unique Characteristics - Highlight Box */}
+                  {voiceInsights?.uniqueCharacteristics && (
+                    <div className="mt-6 p-6 bg-accent/5 rounded-xl border border-accent/20">
                       <div className="flex items-center gap-2 mb-3">
                         <div className="w-6 h-6 bg-accent/10 rounded-lg flex items-center justify-center">
-                          <span className="text-xs">📖</span>
+                          <Sparkles className="w-4 h-4 text-accent" />
                         </div>
                         <p className="text-sm font-medium text-text-head">
-                          Vocabulary Style
+                          What Makes Your Voice Unique
                         </p>
                       </div>
-                      <p className="text-sm text-text-body">
-                        {voiceInsights.vocabularyStyle}
+                      <p className="text-sm text-text-body leading-relaxed">
+                        {voiceInsights.uniqueCharacteristics}
                       </p>
                     </div>
                   )}
-                </div>
-              )}
-
-              {/* Unique Characteristics - Highlight Box */}
-              {voiceInsights.uniqueCharacteristics && (
-                <div className="mt-6 p-6 bg-accent/5 rounded-xl border border-accent/20">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-6 h-6 bg-accent/10 rounded-lg flex items-center justify-center">
-                      <Sparkles className="w-4 h-4 text-accent" />
-                    </div>
-                    <p className="text-sm font-medium text-text-head">
-                      What Makes Your Voice Unique
-                    </p>
+                </>
+              ) : (
+                // Empty State - No Analysis Yet
+                <div className="text-center py-16">
+                  <div className="w-20 h-20 bg-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <Sparkles className="w-10 h-10 text-accent" />
                   </div>
-                  <p className="text-sm text-text-body leading-relaxed">
-                    {voiceInsights.uniqueCharacteristics}
+                  <h3 className="text-xl font-semibold text-text-head mb-3">
+                    No Voice Analysis Yet
+                  </h3>
+                  <p className="text-text-body max-w-md mx-auto mb-6">
+                    Upload training samples and click the{" "}
+                    <span className="font-medium text-accent">
+                      "Analyze Voice"
+                    </span>{" "}
+                    button in the Training tab to discover your unique writing
+                    style.
                   </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <div className="flex items-center gap-2 text-sm text-hint">
+                      <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <span className="text-xs">1️⃣</span>
+                      </div>
+                      <span>
+                        Upload {MAX_SAMPLES - uploadedCaptions} samples
+                      </span>
+                    </div>
+                    <div className="hidden sm:block text-hint">→</div>
+                    <div className="flex items-center gap-2 text-sm text-hint">
+                      <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center">
+                        <span className="text-xs">2️⃣</span>
+                      </div>
+                      <span>Analyze your voice</span>
+                    </div>
+                    <div className="hidden sm:block text-hint">→</div>
+                    <div className="flex items-center gap-2 text-sm text-hint">
+                      <div className="w-8 h-8 bg-success/10 rounded-lg flex items-center justify-center">
+                        <span className="text-xs">3️⃣</span>
+                      </div>
+                      <span>View insights</span>
+                    </div>
+                  </div>
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {/* Voice Strength Indicator */}
+          {/* Voice Strength Indicator - Contextual */}
           <Card padding="none">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Target className="w-4 h-4 text-primary" />
+                <div
+                  className={`w-8 h-8 ${voiceStrength.bgColor} rounded-lg flex items-center justify-center`}
+                >
+                  {voiceStrength.icon}
                 </div>
                 Voice Strength
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center">
-                <div className="w-24 h-24 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl font-bold text-accent">
-                    {trainingQuality}%
+                {/* Circular Progress */}
+                <div
+                  className={`w-24 h-24 ${voiceStrength.bgColor} rounded-full flex items-center justify-center mx-auto mb-4 relative`}
+                >
+                  <span
+                    className={`text-2xl font-bold ${voiceStrength.textColor}`}
+                  >
+                    {voiceStrength.percentage}%
                   </span>
                 </div>
-                <p className="text-sm font-medium text-text-head mb-2">
-                  Training Quality
+
+                {/* Status Title */}
+                <p
+                  className={`text-sm font-medium ${voiceStrength.textColor} mb-2`}
+                >
+                  {voiceStrength.title}
                 </p>
+
+                {/* Description */}
                 <p className="text-xs text-text-body mb-4">
-                  {getQualityLabel()}
+                  {voiceStrength.description}
                 </p>
-                <div className="w-full bg-section rounded-full h-2 mb-2">
+
+                {/* Progress Bar */}
+                <div className="w-full bg-section rounded-full h-2 mb-3">
                   <div
-                    className="bg-accent h-2 rounded-full transition-all duration-300"
+                    className={`${voiceStrength.barColor} h-2 rounded-full transition-all duration-500`}
                     style={{
-                      width: `${Math.min(trainingQuality, 100)}%`,
+                      width: `${Math.min(voiceStrength.percentage, 100)}%`,
                     }}
                   ></div>
                 </div>
-                <p className="text-xs text-hint">
+
+                {/* Sample Count */}
+                <p className="text-xs text-hint mb-3">
                   {uploadedCaptions}/{MAX_SAMPLES} samples
                 </p>
+
+                {/* Action/Next Step */}
+                <div
+                  className={`p-3 rounded-lg border transition-colors ${
+                    voiceStrength.color === "error"
+                      ? "bg-error/5 border-error/20"
+                      : voiceStrength.color === "warning"
+                      ? "bg-warning/5 border-warning/20"
+                      : voiceStrength.color === "info"
+                      ? "bg-info/5 border-info/20"
+                      : voiceStrength.color === "primary"
+                      ? "bg-primary/5 border-primary/20"
+                      : voiceStrength.color === "success"
+                      ? "bg-success/5 border-success/20"
+                      : "bg-accent/5 border-accent/20"
+                  }`}
+                >
+                  <p className="text-xs text-text-body leading-relaxed">
+                    {voiceStrength.action}
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
