@@ -25,11 +25,6 @@ const BrandVoiceContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabValue>("training");
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(0);
-  const [stylePreferences, setStylePreferences] = useState<StylePreferences>({
-    useQuestions: true,
-    includeEmojis: true,
-    includeCTA: true,
-  });
 
   // Custom hooks
   const {
@@ -39,11 +34,13 @@ const BrandVoiceContent: React.FC = () => {
     selectedContentTypes,
     voiceInsights,
     voiceStrength,
+    stylePreferences,
     isLoading,
     setSelectedPlatformId,
     setSelectedToneId,
     setSelectedContentTypes,
     setVoiceStrength,
+    setStylePreferences,
     refreshVoiceInsights,
   } = useBrandVoiceData();
 
@@ -174,6 +171,15 @@ const BrandVoiceContent: React.FC = () => {
       saveOnboardingData({ voiceStrength: strength });
     },
     [saveOnboardingData]
+  );
+
+  // Style preferences handler
+  const handleStylePreferencesChange = useCallback(
+    (preferences: StylePreferences) => {
+      setStylePreferences(preferences);
+      saveOnboardingData({ stylePreferences: preferences });
+    },
+    [setStylePreferences, saveOnboardingData]
   );
 
   // Training handlers
@@ -393,7 +399,7 @@ const BrandVoiceContent: React.FC = () => {
             onContentTypeToggle={handleContentTypeToggle}
             onVoiceStrengthChange={handleVoiceStrengthChange}
             onVoiceStrengthChangeComplete={handleVoiceStrengthChangeComplete}
-            onStylePreferencesChange={setStylePreferences}
+            onStylePreferencesChange={handleStylePreferencesChange}
           />
         )}
 

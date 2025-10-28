@@ -1,11 +1,13 @@
 import { useCallback } from "react";
 import { useToast } from "../components/ui/Toast";
+import type { StylePreferences } from "../types/brand-voice";
 
 interface SaveOnboardingDataParams {
   platformId?: string;
   toneId?: string;
   contentTypeIds?: string[];
   voiceStrength?: number;
+  stylePreferences?: StylePreferences;
 }
 
 interface UseBrandVoiceActionsProps {
@@ -31,6 +33,7 @@ export function useBrandVoiceActions({
       toneId,
       contentTypeIds,
       voiceStrength: newVoiceStrength,
+      stylePreferences,
     }: SaveOnboardingDataParams = {}) => {
       try {
         // Only send fields that are explicitly provided to avoid overwriting other fields
@@ -39,6 +42,7 @@ export function useBrandVoiceActions({
           toneId?: string;
           contentTypeIds?: string[];
           voiceStrength?: number;
+          stylePreferences?: StylePreferences;
         } = {};
 
         if (platformId !== undefined) {
@@ -52,6 +56,9 @@ export function useBrandVoiceActions({
         }
         if (newVoiceStrength !== undefined) {
           onboardingData.voiceStrength = newVoiceStrength;
+        }
+        if (stylePreferences !== undefined) {
+          onboardingData.stylePreferences = stylePreferences;
         }
 
         const response = await fetch("/api/user/onboarding", {

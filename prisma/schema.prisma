@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,18 +9,16 @@ datasource db {
 }
 
 model User {
-  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email               String   @unique
+  id                  String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email               String         @unique
   name                String?
   image               String?
-  onboardingCompleted Boolean  @default(false)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-
-  // Relations
-  captions      Caption[]
-  subscriptions Subscription[]
-  voiceProfiles VoiceProfile[]
+  onboardingCompleted Boolean        @default(false)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  captions            Caption[]
+  subscriptions       Subscription[]
+  voiceProfiles       VoiceProfile[]
 
   @@map("users")
 }
@@ -31,16 +26,14 @@ model User {
 model Subscription {
   id                   String   @id @default(cuid())
   userId               String   @db.Uuid
-  plan                 String   // 'free', 'pro', 'enterprise'
-  status               String   // 'active', 'canceled', 'past_due'
+  plan                 String
+  status               String
   currentPeriodEnd     DateTime
   stripeCustomerId     String?
   stripeSubscriptionId String?
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("subscriptions")
 }
@@ -53,59 +46,52 @@ model Caption {
   voiceProfile String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("captions")
 }
 
 model VoiceProfile {
-  id               String   @id @default(cuid())
-  userId           String   @db.Uuid
+  id               String     @id @default(cuid())
+  userId           String     @db.Uuid
   name             String
   description      String
+  style            String
+  examples         String[]
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
   platformId       String?
   toneId           String?
-  style            String
-  contentTypeIds   String[] @default([]) // Array of content type IDs
-  examples         String[]
-  voiceStrength    Int      @default(75) // Voice strength percentage (0-100)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  // Relations
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  platform    Platform? @relation(fields: [platformId], references: [id])
-  tone        BrandTone? @relation(fields: [toneId], references: [id])
+  contentTypeIds   String[]   @default([])
+  voiceStrength    Int        @default(75)
+  stylePreferences Json?      @default("{\"includeCTA\": true, \"useQuestions\": true, \"includeEmojis\": true}")
+  platform         Platform?  @relation(fields: [platformId], references: [id], onUpdate: NoAction)
+  tone             BrandTone? @relation(fields: [toneId], references: [id], onUpdate: NoAction)
+  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("voice_profiles")
 }
 
 model Platform {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  network     String?  // Social network identifier for SocialIcon
-  description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
+  id            String         @id @default(cuid())
+  name          String         @unique
+  network       String?
+  description   String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now()) @updatedAt
   voiceProfiles VoiceProfile[]
 
   @@map("platforms")
 }
 
 model BrandTone {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  emoji       String
-  description String
-  example     String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
+  id            String         @id @default(cuid())
+  name          String         @unique
+  emoji         String
+  description   String
+  example       String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now()) @updatedAt
   voiceProfiles VoiceProfile[]
 
   @@map("brand_tones")
@@ -115,7 +101,7 @@ model ContentType {
   id        String   @id @default(cuid())
   name      String   @unique
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@map("content_types")
 }

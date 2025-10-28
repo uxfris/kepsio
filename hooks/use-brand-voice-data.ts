@@ -1,5 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import type { OnboardingOptions, VoiceInsights } from "../types/brand-voice";
+import type {
+  OnboardingOptions,
+  VoiceInsights,
+  StylePreferences,
+} from "../types/brand-voice";
 
 interface UseBrandVoiceDataReturn {
   onboardingOptions: OnboardingOptions;
@@ -8,12 +12,14 @@ interface UseBrandVoiceDataReturn {
   selectedContentTypes: string[];
   voiceInsights: VoiceInsights | null;
   voiceStrength: number;
+  stylePreferences: StylePreferences;
   isLoading: boolean;
   error: Error | null;
   setSelectedPlatformId: (id: string) => void;
   setSelectedToneId: (id: string) => void;
   setSelectedContentTypes: (types: string[]) => void;
   setVoiceStrength: (strength: number) => void;
+  setStylePreferences: (preferences: StylePreferences) => void;
   refreshVoiceInsights: () => Promise<void>;
 }
 
@@ -34,6 +40,11 @@ export function useBrandVoiceData(): UseBrandVoiceDataReturn {
     null
   );
   const [voiceStrength, setVoiceStrength] = useState(75);
+  const [stylePreferences, setStylePreferences] = useState<StylePreferences>({
+    useQuestions: true,
+    includeEmojis: true,
+    includeCTA: true,
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -58,6 +69,11 @@ export function useBrandVoiceData(): UseBrandVoiceDataReturn {
         let toneId = optionsData.brandTones[0]?.id || "";
         let contentTypeIds: string[] = [];
         let strength = 75;
+        let preferences: StylePreferences = {
+          useQuestions: true,
+          includeEmojis: true,
+          includeCTA: true,
+        };
 
         // Override with user data if available
         if (userDataResponse.ok) {
@@ -66,6 +82,7 @@ export function useBrandVoiceData(): UseBrandVoiceDataReturn {
           toneId = userData.toneId || toneId;
           contentTypeIds = userData.contentTypeIds || [];
           strength = userData.voiceStrength ?? 75;
+          preferences = userData.stylePreferences || preferences;
 
           // Parse voice insights if available
           if (userData.voiceInsights) {
@@ -85,6 +102,7 @@ export function useBrandVoiceData(): UseBrandVoiceDataReturn {
         setSelectedToneId(toneId);
         setSelectedContentTypes(contentTypeIds);
         setVoiceStrength(strength);
+        setStylePreferences(preferences);
       } catch (err) {
         setError(err instanceof Error ? err : new Error("Unknown error"));
         console.error("Error fetching brand voice data:", err);
@@ -129,12 +147,14 @@ export function useBrandVoiceData(): UseBrandVoiceDataReturn {
     selectedContentTypes,
     voiceInsights,
     voiceStrength,
+    stylePreferences,
     isLoading,
     error,
     setSelectedPlatformId,
     setSelectedToneId,
     setSelectedContentTypes,
     setVoiceStrength,
+    setStylePreferences,
     refreshVoiceInsights,
   };
 }

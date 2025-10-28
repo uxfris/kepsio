@@ -22,6 +22,7 @@ export async function GET() {
         contentTypeIds: true,
         style: true,
         voiceStrength: true,
+        stylePreferences: true,
       },
     });
 
@@ -31,6 +32,11 @@ export async function GET() {
       contentTypeIds: voiceProfile?.contentTypeIds || [],
       voiceInsights: voiceProfile?.style || null,
       voiceStrength: voiceProfile?.voiceStrength ?? 75,
+      stylePreferences: voiceProfile?.stylePreferences || {
+        useQuestions: true,
+        includeEmojis: true,
+        includeCTA: true,
+      },
     });
   } catch (error) {
     console.error("Error fetching onboarding data:", error);
@@ -75,6 +81,7 @@ export async function POST(request: Request) {
           toneId?: string | null;
           contentTypeIds?: string[];
           voiceStrength?: number;
+          stylePreferences?: any;
         } = {};
 
         if (onboardingData.platformId !== undefined) {
@@ -88,6 +95,9 @@ export async function POST(request: Request) {
         }
         if (onboardingData.voiceStrength !== undefined) {
           updateData.voiceStrength = onboardingData.voiceStrength;
+        }
+        if (onboardingData.stylePreferences !== undefined) {
+          updateData.stylePreferences = onboardingData.stylePreferences;
         }
 
         await prisma.voiceProfile.update({
@@ -107,6 +117,11 @@ export async function POST(request: Request) {
             contentTypeIds: onboardingData.contentTypeIds || [],
             examples: [],
             voiceStrength: onboardingData.voiceStrength ?? 75,
+            stylePreferences: onboardingData.stylePreferences || {
+              useQuestions: true,
+              includeEmojis: true,
+              includeCTA: true,
+            },
           },
         });
       }
