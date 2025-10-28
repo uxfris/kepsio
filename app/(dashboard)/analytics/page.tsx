@@ -305,7 +305,7 @@ function AnalyticsContent() {
         {/* Activity Chart & Platform Distribution */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Activity Over Time */}
-          <Card variant="outlined" className="lg:col-span-2">
+          <Card variant="outlined" className="lg:col-span-2" padding="sm">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
@@ -321,8 +321,30 @@ function AnalyticsContent() {
             </CardHeader>
             <CardContent>
               {isLoading ? (
-                <div className="h-48 flex items-center justify-center">
-                  <div className="text-hint">Loading...</div>
+                <div className="space-y-4">
+                  {/* Skeleton Chart */}
+                  <div className="flex items-end justify-between gap-2 h-40">
+                    {[...Array(7)].map((_, index) => {
+                      // Random heights for visual variety
+                      const heights = [60, 40, 80, 50, 70, 45, 65];
+                      return (
+                        <div
+                          key={index}
+                          className="flex-1 flex flex-col items-center gap-2"
+                        >
+                          <div className="w-full flex flex-col justify-end h-32">
+                            <div
+                              className="w-full bg-section rounded-t-lg animate-pulse"
+                              style={{
+                                height: `${heights[index]}%`,
+                              }}
+                            />
+                          </div>
+                          <div className="w-12 h-3 bg-section rounded animate-pulse" />
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               ) : analytics && analytics.activity.byDay.length > 0 ? (
                 <div className="space-y-4">
@@ -374,7 +396,7 @@ function AnalyticsContent() {
           </Card>
 
           {/* Platform Distribution */}
-          <Card variant="outlined">
+          <Card variant="outlined" padding="sm">
             <CardHeader>
               <div className="space-y-1">
                 <CardTitle className="flex items-center gap-2">
@@ -447,7 +469,7 @@ function AnalyticsContent() {
         </div>
 
         {/* Style Breakdown */}
-        <Card variant="outlined">
+        <Card variant="outlined" padding="sm">
           <CardHeader>
             <div className="space-y-1">
               <CardTitle className="flex items-center gap-2">

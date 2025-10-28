@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import ProBadge from "./ProBadge";
+import { useSubscription } from "@/hooks/use-subscription";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -39,6 +40,7 @@ const navigation = [
 export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
+  const { subscription } = useSubscription();
 
   // Check if we're on mobile
   useEffect(() => {
@@ -85,9 +87,11 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const MenuItem = ({
     item,
     isCollapsed,
+    showCrown,
   }: {
     item: any;
     isCollapsed: boolean;
+    showCrown: boolean;
   }) => {
     const isActive = pathname === item.href;
     const Icon = item.icon;
@@ -103,10 +107,10 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
       >
         <Icon className={`h-5 w-5 ${isCollapsed ? "" : "mr-3"} shrink-0`} />
         {!isCollapsed && <span className="truncate">{item.name}</span>}
-        {item.isPro && !isCollapsed && (
+        {item.isPro && showCrown && !isCollapsed && (
           <Crown className="h-3 w-3 ml-auto text-accent" />
         )}
-        {item.isPro && isCollapsed && (
+        {item.isPro && showCrown && isCollapsed && (
           <div className="absolute -top-1 -right-1">
             <Crown className="h-3 w-3 text-accent" />
           </div>
@@ -148,7 +152,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
           duration: 0.3,
           ease: [0.4, 0, 0.2, 1],
         }}
-        className={`min-h-screen fixed left-0 top-0 h-full bg-section border-r border-border z-50 flex flex-col group lg:fixed lg:top-0 lg:h-screen lg:translate-x-0 overflow-hidden`}
+        className={`min-h-screen fixed left-0 top-0 h-full bg-section border-r border-border z-50 flex flex-col group lg:fixed lg:top-0 lg:h-screen lg:translate-x-0 overflow-visible`}
       >
         {/* Header */}
         <div className="flex items-center py-3 px-5 bg-section">
@@ -194,7 +198,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                   </button>
 
                   {/* Tooltip */}
-                  <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-black text-white text-xs px-2 py-1 rounded shadow-lg opacity-0 group-hover/button:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                  <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-black text-white text-xs px-2 py-1 rounded shadow-lg opacity-0 group-hover/button:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-[9999]">
                     Toggle sidebar{" "}
                     <span className="text-gray-400 ml-1">⌘.</span>
                   </div>
@@ -213,7 +217,11 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                   <div className="h-px bg-border" />
                 </div>
               )}
-              <MenuItem item={item} isCollapsed={isMobile ? false : !isOpen} />
+              <MenuItem
+                item={item}
+                isCollapsed={isMobile ? false : !isOpen}
+                showCrown={!subscription || subscription.plan === "free"}
+              />
             </div>
           ))}
         </nav>
