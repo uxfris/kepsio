@@ -180,13 +180,13 @@ function buildSystemPrompt(voiceProfile: any, options: any): string {
       if (prefs.includeCTA) prompt += `\n- Include clear calls-to-action`;
     }
 
-      if (examples && examples.length > 0) {
-        prompt += `\n\nExample captions in the user's voice:\n${examples
-          .slice(0, 3)
-          .map((ex: string, i: number) => `${i + 1}. ${ex}`)
-          .join("\n")}`;
-        prompt += `\n\nMirror this tone, style, and voice in the generated captions.`;
-      }
+    if (examples && examples.length > 0) {
+      prompt += `\n\nExample captions in the user's voice:\n${examples
+        .slice(0, 3)
+        .map((ex: string, i: number) => `${i + 1}. ${ex}`)
+        .join("\n")}`;
+      prompt += `\n\nMirror this tone, style, and voice in the generated captions.`;
+    }
   }
 
   return prompt;
