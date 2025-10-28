@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   TrendingUp,
   Upload,
@@ -8,6 +8,7 @@ import {
   Edit3,
   Trash2,
   Sparkles,
+  MoreVertical,
 } from "lucide-react";
 import { Button } from "../ui/Button";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/Card";
@@ -54,7 +55,9 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
     const [deletingIndex, setDeletingIndex] = useState<number | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [animatedProgress, setAnimatedProgress] = useState(0);
+    const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const menuRef = useRef<HTMLDivElement>(null);
     const { addToast } = useToast();
 
     // Animate progress bar after loading finishes
@@ -68,6 +71,25 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
         return () => clearTimeout(timer);
       }
     }, [isLoadingSamples, uploadedCaptions]);
+
+    // Handle click outside menu
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (
+          menuRef.current &&
+          !menuRef.current.contains(event.target as Node)
+        ) {
+          setOpenMenuIndex(null);
+        }
+      };
+
+      if (openMenuIndex !== null) {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+          document.removeEventListener("mousedown", handleClickOutside);
+        };
+      }
+    }, [openMenuIndex]);
 
     const handleAddCaptions = async () => {
       setIsAdding(true);
@@ -200,8 +222,13 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
       fileInputRef.current?.click();
     };
 
+    const handleToggleMenu = (index: number) => {
+      setOpenMenuIndex(openMenuIndex === index ? null : index);
+    };
+
     const handleEditClick = (index: number) => {
       setEditingIndex(index);
+      setOpenMenuIndex(null);
     };
 
     const handleEditSave = async (text: string) => {
@@ -213,6 +240,7 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
 
     const handleDeleteClick = (index: number) => {
       setDeletingIndex(index);
+      setOpenMenuIndex(null);
     };
 
     const handleDeleteConfirm = async () => {
@@ -525,7 +553,9 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
                           <span>{sample.text.length} chars</span>
                         </div>
                       </div>
-                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+
+                      {/* Desktop: Hover buttons */}
+                      <div className="hidden lg:flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Button
                           variant="ghost"
                           size="icon"
@@ -544,6 +574,42 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
+                      </div>
+
+                      {/* Mobile/Tablet: Menu button */}
+                      <div className="relative lg:hidden">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleToggleMenu(index)}
+                          title="More options"
+                        >
+                          <MoreVertical className="w-4 h-4" />
+                        </Button>
+
+                        {/* Dropdown Menu */}
+                        {openMenuIndex === index && (
+                          <div
+                            ref={menuRef}
+                            className="absolute right-0 top-full mt-1 w-40 bg-background border border-border rounded-lg shadow-lg z-10 overflow-hidden"
+                          >
+                            <button
+                              onClick={() => handleEditClick(index)}
+                              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-text-head hover:bg-accent/10 transition-colors"
+                            >
+                              <Edit3 className="w-4 h-4 text-accent" />
+                              <span>Edit</span>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteClick(index)}
+                              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-error hover:bg-error/10 transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              <span>Delete</span>
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
