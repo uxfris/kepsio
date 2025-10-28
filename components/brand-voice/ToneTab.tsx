@@ -1,14 +1,31 @@
-import React from "react";
-import { Check, Sparkles, Target, FileText, TrendingUp } from "lucide-react";
+import React, { useState } from "react";
+import {
+  Check,
+  Sparkles,
+  Target,
+  FileText,
+  TrendingUp,
+  Wand2,
+  Zap,
+} from "lucide-react";
 import { SocialIcon } from "react-social-icons";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/Card";
 import { Slider } from "../ui/Slider";
 import { Switch } from "../ui/Switch";
+import { Button } from "../ui/Button";
+import { SegmentedControl } from "../ui/SegmentedControl";
 import { LoadingSpinner } from "./LoadingSpinner";
+import {
+  generateInstantPreview,
+  getVoiceStrengthLabel,
+  getVoiceStrengthDescription,
+} from "@/lib/utils/voice-preview";
 import type {
   OnboardingOptions,
   StylePreferences,
 } from "../../types/brand-voice";
+
+type PreviewMode = "instant" | "ai";
 
 interface ToneTabProps {
   onboardingOptions: OnboardingOptions;
@@ -42,22 +59,73 @@ export const ToneTab: React.FC<ToneTabProps> = React.memo(
     onVoiceStrengthChangeComplete,
     onStylePreferencesChange,
   }) => {
+    // State for preview mode toggle
+    const [previewMode, setPreviewMode] = useState<PreviewMode>("instant");
+
+    // State for AI preview
+    const [aiPreview, setAiPreview] = useState<string | null>(null);
+    const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+    const [aiError, setAiError] = useState<string | null>(null);
+
     const selectedTone = onboardingOptions.brandTones.find(
       (t) => t.id === selectedToneId
     );
 
-    const getVoiceStrengthLabel = (strength: number) => {
-      if (strength < 40) return "Creative & Varied";
-      if (strength < 70) return "Balanced Approach";
-      return "Strictly Your Voice";
-    };
+    const selectedPlatform = onboardingOptions.platforms.find(
+      (p) => p.id === selectedPlatformId
+    );
 
-    const getVoiceStrengthDescription = (strength: number) => {
-      if (strength < 40)
-        return "AI will be more creative and vary from your samples";
-      if (strength < 70)
-        return "Balanced mix of your voice and creative variations";
-      return "Captions will closely mirror your training samples";
+    const selectedContentType =
+      selectedContentTypes.length > 0
+        ? onboardingOptions.contentTypes.find(
+            (ct) => ct.id === selectedContentTypes[0]
+          )
+        : null;
+
+    // Generate instant preview using utility function
+    const instantPreview = generateInstantPreview({
+      toneName: selectedTone?.name || "Casual & Friendly",
+      platformName: selectedPlatform?.name || "Instagram",
+      contentTypeName: selectedContentType?.name,
+      voiceStrength,
+      stylePreferences,
+    });
+
+    // Handle AI preview generation
+    const handleGenerateAIPreview = async () => {
+      setIsGeneratingAI(true);
+      setAiError(null);
+
+      try {
+        const response = await fetch("/api/brand-voice/preview", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            platformName: selectedPlatform?.name || "Instagram",
+            toneName: selectedTone?.name || "Casual & Friendly",
+            contentTypeName: selectedContentType?.name || "General",
+            voiceStrength,
+            stylePreferences,
+          }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "Failed to generate preview");
+        }
+
+        const data = await response.json();
+        setAiPreview(data.preview);
+      } catch (error) {
+        console.error("Error generating AI preview:", error);
+        setAiError(
+          error instanceof Error
+            ? error.message
+            : "Failed to generate AI preview. Please try again."
+        );
+      } finally {
+        setIsGeneratingAI(false);
+      }
     };
 
     return (
@@ -374,55 +442,162 @@ export const ToneTab: React.FC<ToneTabProps> = React.memo(
             </p>
           </CardHeader>
           <CardContent>
-            <div className="p-6 bg-section rounded-lg border border-border">
-              <div className="flex items-start gap-3 mb-4">
-                <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center shrink-0">
-                  <span className="text-sm">{selectedTone?.emoji || "✨"}</span>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-text-head mb-1">
-                    Sample Caption Preview
-                  </p>
-                  <p className="text-xs text-text-body">
-                    Based on your {selectedTone?.name.toLowerCase() || "tone"}{" "}
-                    tone and {voiceStrength}% voice strength
-                  </p>
-                </div>
-              </div>
-              <div className="p-4 bg-surface rounded-lg border border-border">
-                <p className="text-sm text-text-body italic">
-                  "Excited to share something that's been on my mind lately!{" "}
-                  {stylePreferences.includeEmojis ? "✨" : ""}
-                  {stylePreferences.useQuestions
-                    ? " What do you think about this approach?"
-                    : ""}
-                  {stylePreferences.includeCTA
-                    ? " Let me know your thoughts in the comments below!"
-                    : ""}
-                  "
-                </p>
-              </div>
-              <div className="mt-4 flex items-center gap-2 text-xs text-hint flex-wrap">
-                <span>•</span>
-                <span>{selectedTone?.name.toLowerCase() || "tone"}</span>
-                <span>•</span>
-                <span>{voiceStrength}% voice strength</span>
-                <span>•</span>
-                <span>
-                  {stylePreferences.includeEmojis ? "With emojis" : "No emojis"}
-                </span>
-                <span>•</span>
-                <span>
-                  {stylePreferences.useQuestions
-                    ? "With questions"
-                    : "No questions"}
-                </span>
-                <span>•</span>
-                <span>
-                  {stylePreferences.includeCTA ? "With CTA" : "No CTA"}
-                </span>
-              </div>
+            {/* Preview Mode Toggle */}
+            <div className="mb-6">
+              <SegmentedControl
+                value={previewMode}
+                onChange={(value) => setPreviewMode(value as PreviewMode)}
+                options={[
+                  {
+                    value: "instant",
+                    label: "Instant Preview",
+                    icon: <Zap className="w-4 h-4" />,
+                  },
+                  {
+                    value: "ai",
+                    label: "AI Preview",
+                    icon: <Wand2 className="w-4 h-4" />,
+                  },
+                ]}
+              />
             </div>
+
+            {/* Instant Preview Mode */}
+            {previewMode === "instant" && (
+              <div className="p-6 bg-section rounded-lg border border-border">
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center shrink-0">
+                    <span className="text-lg">
+                      {selectedTone?.emoji || "✨"}
+                    </span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-text-head mb-1 flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-accent" />
+                      Instant Preview
+                    </p>
+                    <p className="text-xs text-text-body">
+                      {selectedPlatform?.name || "Platform"} •{" "}
+                      {selectedTone?.name || "Tone"} • {voiceStrength}% strength
+                    </p>
+                  </div>
+                  <div className="px-3 py-1 bg-accent/10 rounded-full">
+                    <span className="text-xs font-medium text-accent">
+                      {getVoiceStrengthLabel(voiceStrength)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-surface rounded-lg border border-border mb-4">
+                  <p className="text-sm text-text-body leading-relaxed whitespace-pre-line">
+                    {instantPreview}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
+                  <div className="flex items-center gap-1.5 text-xs text-text-body">
+                    <Sparkles className="w-3 h-3 text-accent" />
+                    <span>{selectedTone?.name || "Tone"}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-text-body">
+                    <Target className="w-3 h-3 text-primary" />
+                    <span>{selectedPlatform?.name || "Platform"}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-text-body">
+                    <FileText className="w-3 h-3 text-info" />
+                    <span>{selectedContentType?.name || "General"}</span>
+                  </div>
+                  {stylePreferences.includeEmojis && (
+                    <div className="flex items-center gap-1.5 text-xs text-accent">
+                      <Check className="w-3 h-3" />
+                      <span>Emojis</span>
+                    </div>
+                  )}
+                  {stylePreferences.useQuestions && (
+                    <div className="flex items-center gap-1.5 text-xs text-accent">
+                      <Check className="w-3 h-3" />
+                      <span>Questions</span>
+                    </div>
+                  )}
+                  {stylePreferences.includeCTA && (
+                    <div className="flex items-center gap-1.5 text-xs text-accent">
+                      <Check className="w-3 h-3" />
+                      <span>CTA</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-3 bg-info/5 border border-info/20 rounded-lg">
+                  <p className="text-xs text-info leading-relaxed">
+                    💡 <span className="font-medium">Instant:</span> This
+                    preview updates in real-time as you change settings. No API
+                    calls, no cost.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* AI Preview Mode */}
+            {previewMode === "ai" && (
+              <div className="p-6 bg-linear-to-br from-accent/5 to-primary/5 rounded-lg border-2 border-accent/20">
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="w-10 h-10 bg-linear-to-br from-accent to-primary rounded-lg flex items-center justify-center shrink-0">
+                    <Wand2 className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-text-head mb-1 flex items-center gap-2">
+                      <Wand2 className="w-4 h-4 text-accent" />
+                      AI-Powered Preview
+                    </p>
+                    <p className="text-xs text-text-body">
+                      Authentic preview using your training samples
+                    </p>
+                  </div>
+                </div>
+
+                {aiPreview && !isGeneratingAI && (
+                  <div className="p-4 bg-surface rounded-lg border border-accent/20 mb-4">
+                    <p className="text-sm text-text-body leading-relaxed whitespace-pre-line">
+                      {aiPreview}
+                    </p>
+                  </div>
+                )}
+
+                {isGeneratingAI && (
+                  <div className="p-6 bg-surface rounded-lg border border-accent/20 mb-4 flex items-center justify-center">
+                    <LoadingSpinner message="Generating AI preview..." />
+                  </div>
+                )}
+
+                {aiError && (
+                  <div className="p-4 bg-error/10 border border-error/20 rounded-lg mb-4">
+                    <p className="text-sm text-error">{aiError}</p>
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleGenerateAIPreview}
+                  disabled={isGeneratingAI}
+                  variant="primary"
+                  className="w-full mb-4"
+                >
+                  <Wand2 className="w-4 h-4 mr-2" />
+                  {isGeneratingAI
+                    ? "Generating..."
+                    : aiPreview
+                    ? "Regenerate AI Preview"
+                    : "Generate AI Preview"}
+                </Button>
+
+                <div className="p-3 bg-warning/5 border border-warning/20 rounded-lg">
+                  <p className="text-xs text-warning leading-relaxed">
+                    ⚡ <span className="font-medium">AI Preview:</span>{" "}
+                    Generates real captions using your training samples.
+                    Requires at least 3 uploaded samples.
+                  </p>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

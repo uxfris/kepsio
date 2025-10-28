@@ -4,6 +4,7 @@ import { cn } from "../../lib/utils/cn";
 export interface SegmentedControlOption {
   value: string;
   label: string;
+  icon?: React.ReactNode;
 }
 
 export interface SegmentedControlProps {
@@ -33,13 +34,14 @@ export function SegmentedControl({
             key={option.value}
             onClick={() => onChange(option.value)}
             className={cn(
-              "px-4 py-3 text-xs font-medium rounded-xl transition-all duration-200 focus:outline-none w-full",
+              "px-4 py-3 text-xs font-medium rounded-xl transition-all duration-200 focus:outline-none w-full flex items-center justify-center gap-2 whitespace-nowrap",
               isSelected
                 ? "bg-surface text-primary group-hover:bg-transparent hover:bg-surface"
                 : "text-secondary hover:text-primary hover:bg-surface"
             )}
           >
-            {option.label}
+            {option.icon && <span className="shrink-0">{option.icon}</span>}
+            <span className="truncate">{option.label}</span>
           </button>
         );
       })}
