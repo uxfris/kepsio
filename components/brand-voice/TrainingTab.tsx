@@ -269,30 +269,30 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
       .filter((line) => line.trim()).length;
 
     return (
-      <div className="space-y-8">
+      <div className="space-y-4 sm:space-y-6 lg:space-y-8">
         {/* Training Overview */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Progress Card */}
           <Card className="lg:col-span-2" padding="none">
             <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center">
-                      <TrendingUp className="w-4 h-4 text-accent" />
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-accent/10 rounded-lg flex items-center justify-center shrink-0">
+                      <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent" />
                     </div>
-                    Training Progress
+                    <span className="truncate">Training Progress</span>
                   </CardTitle>
-                  <p className="text-sm text-text-body mt-2">
+                  <p className="text-xs sm:text-sm text-text-body mt-1.5 sm:mt-2">
                     Upload your past captions to help the AI learn your unique
                     writing style
                   </p>
                 </div>
                 {isLoadingSamples ? (
-                  <div className="h-6 w-20 bg-hint/20 rounded-full animate-pulse"></div>
+                  <div className="h-5 w-16 sm:h-6 sm:w-20 bg-hint/20 rounded-full animate-pulse shrink-0"></div>
                 ) : (
-                  <div className="px-3 py-1 bg-accent/10 text-accent text-xs font-semibold rounded-full">
-                    {uploadedCaptions}/{MAX_SAMPLES} samples
+                  <div className="px-2 py-0.5 sm:px-3 sm:py-1 bg-accent/10 text-accent text-[10px] sm:text-xs font-semibold rounded-full whitespace-nowrap shrink-0">
+                    {uploadedCaptions}/{MAX_SAMPLES}
                   </div>
                 )}
               </div>
@@ -300,27 +300,27 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
             <CardContent>
               {isLoadingSamples ? (
                 // Loading Skeleton
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {/* Progress Bar Skeleton */}
                   <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="h-4 bg-hint/20 rounded w-32 animate-pulse"></div>
-                      <div className="h-4 bg-hint/20 rounded w-24 animate-pulse"></div>
+                    <div className="flex items-center justify-between mb-2 sm:mb-3">
+                      <div className="h-3 sm:h-4 bg-hint/20 rounded w-24 sm:w-32 animate-pulse"></div>
+                      <div className="h-3 sm:h-4 bg-hint/20 rounded w-20 sm:w-24 animate-pulse"></div>
                     </div>
                     <div className="w-full h-2 bg-hint/20 rounded-full animate-pulse"></div>
-                    <div className="flex justify-between text-xs text-hint mt-2">
-                      <div className="h-3 bg-hint/20 rounded w-20 animate-pulse"></div>
-                      <div className="h-3 bg-hint/20 rounded w-16 animate-pulse"></div>
-                      <div className="h-3 bg-hint/20 rounded w-20 animate-pulse"></div>
+                    <div className="flex justify-between text-[10px] sm:text-xs text-hint mt-1.5 sm:mt-2">
+                      <div className="h-2.5 sm:h-3 bg-hint/20 rounded w-16 sm:w-20 animate-pulse"></div>
+                      <div className="h-2.5 sm:h-3 bg-hint/20 rounded w-12 sm:w-16 animate-pulse"></div>
+                      <div className="h-2.5 sm:h-3 bg-hint/20 rounded w-16 sm:w-20 animate-pulse"></div>
                     </div>
                   </div>
                   {/* Status Alert Skeleton */}
-                  <div className="p-4 bg-hint/10 rounded-xl border border-hint/20">
-                    <div className="flex items-start gap-3">
-                      <div className="w-5 h-5 bg-hint/20 rounded animate-pulse shrink-0 mt-0.5"></div>
-                      <div className="flex-1 space-y-2">
-                        <div className="h-4 bg-hint/20 rounded w-3/4 animate-pulse"></div>
-                        <div className="h-3 bg-hint/20 rounded w-full animate-pulse"></div>
+                  <div className="p-3 sm:p-4 bg-hint/10 rounded-xl border border-hint/20">
+                    <div className="flex items-start gap-2 sm:gap-3">
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 bg-hint/20 rounded animate-pulse shrink-0 mt-0.5"></div>
+                      <div className="flex-1 space-y-1.5 sm:space-y-2">
+                        <div className="h-3 sm:h-4 bg-hint/20 rounded w-3/4 animate-pulse"></div>
+                        <div className="h-2.5 sm:h-3 bg-hint/20 rounded w-full animate-pulse"></div>
                       </div>
                     </div>
                   </div>
@@ -328,18 +328,18 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
               ) : (
                 // Actual Content
                 <>
-                  <div className="mb-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-text-head">
+                  <div className="mb-4 sm:mb-6">
+                    <div className="flex items-center justify-between mb-2 sm:mb-3">
+                      <span className="text-xs sm:text-sm font-medium text-text-head">
                         Training Progress
                       </span>
-                      <span className="text-sm text-text-body">
+                      <span className="text-xs sm:text-sm text-text-body">
                         {Math.round((uploadedCaptions / MAX_SAMPLES) * 100)}%
                         complete
                       </span>
                     </div>
                     <Progress value={animatedProgress} max={MAX_SAMPLES} />
-                    <div className="flex justify-between text-xs text-hint mt-2">
+                    <div className="flex justify-between text-[10px] sm:text-xs text-hint mt-1.5 sm:mt-2">
                       <span>Getting started</span>
                       <span>Good</span>
                       <span>Excellent</span>
@@ -354,15 +354,15 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
           {/* Training Tips Card */}
           <Card padding="none">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-primary" />
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                  <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
                 </div>
                 Training Tips
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="space-y-2">
+            <CardContent className="space-y-2 sm:space-y-3">
+              <div className="space-y-1.5 sm:space-y-2">
                 {[
                   "Upload diverse captions from different periods",
                   "Include your best-performing posts",
@@ -370,15 +370,17 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
                   "More samples = better voice accuracy",
                 ].map((tip, index) => (
                   <div key={index} className="flex gap-2">
-                    <span className="text-accent font-bold shrink-0">
+                    <span className="text-accent font-bold shrink-0 text-sm">
                       {index + 1}.
                     </span>
-                    <p className="text-text-body text-sm">{tip}</p>
+                    <p className="text-text-body text-xs sm:text-sm leading-relaxed">
+                      {tip}
+                    </p>
                   </div>
                 ))}
               </div>
-              <div className="pt-3 border-t border-border/50">
-                <p className="text-sm text-hint">
+              <div className="pt-2 sm:pt-3 border-t border-border/50">
+                <p className="text-xs sm:text-sm text-hint">
                   Pro tip: Aim for at least {MAX_SAMPLES} captions for optimal
                   results.
                 </p>
@@ -390,21 +392,21 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
         {/* Upload Section */}
         <Card padding="none">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center">
-                <Upload className="w-4 h-4 text-accent" />
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-accent/10 rounded-lg flex items-center justify-center shrink-0">
+                <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent" />
               </div>
               Add Training Content
             </CardTitle>
-            <p className="text-sm text-text-body">
+            <p className="text-xs sm:text-sm text-text-body mt-1.5 sm:mt-2">
               Upload your past captions or paste them directly to train the AI
             </p>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* File Upload Area */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium text-text-head">
+              <div className="space-y-3 sm:space-y-4">
+                <h4 className="text-xs sm:text-sm font-medium text-text-head">
                   Upload Files
                 </h4>
                 <input
@@ -419,23 +421,23 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                   onClick={handleChooseFiles}
-                  className={`border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer group ${
+                  className={`border-2 border-dashed rounded-xl p-6 sm:p-8 text-center transition-all cursor-pointer group ${
                     isDragging
                       ? "border-accent bg-accent/10"
                       : "border-border hover:border-accent hover:bg-accent/5"
                   } ${isUploading ? "opacity-50 pointer-events-none" : ""}`}
                 >
-                  <div className="w-16 h-16 bg-accent/10 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-accent/20 transition-colors">
-                    <Upload className="w-8 h-8 text-accent" />
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-accent/10 rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:bg-accent/20 transition-colors">
+                    <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-accent" />
                   </div>
-                  <p className="text-text-head font-medium mb-2">
+                  <p className="text-text-head font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
                     {isUploading
                       ? "Uploading..."
                       : isDragging
                       ? "Drop your file here"
                       : "Drop your captions here"}
                   </p>
-                  <p className="text-sm text-text-body mb-4">
+                  <p className="text-xs sm:text-sm text-text-body mb-3 sm:mb-4">
                     Supports .txt and .csv files (max 5MB)
                   </p>
                   <Button
@@ -453,8 +455,8 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
               </div>
 
               {/* Manual Input Area */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium text-text-head">
+              <div className="space-y-3 sm:space-y-4">
+                <h4 className="text-xs sm:text-sm font-medium text-text-head">
                   Paste Directly
                 </h4>
                 <div>
@@ -462,10 +464,10 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
                     placeholder="Paste one or more captions here (one per line)..."
                     value={pastedCaptions}
                     onChange={(e) => setPastedCaptions(e.target.value)}
-                    className="mb-4"
+                    className="mb-3 sm:mb-4"
                     rows={8}
                   />
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                     <div className="text-xs text-hint">
                       {captionCount} captions ready
                     </div>
@@ -476,6 +478,7 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
                       disabled={!pastedCaptions.trim() || isAdding}
                       loading={isAdding}
                       leftIcon={<Plus className="w-4 h-4" />}
+                      className="w-full sm:w-auto"
                     >
                       {isAdding ? "Adding..." : "Add Captions"}
                     </Button>
@@ -490,64 +493,59 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
         <Card padding="none">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <FileText className="w-4 h-4 text-primary" />
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                  <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
                 </div>
-                Training Samples ({uploadedCaptions})
+                <span className="truncate">
+                  Training Samples ({uploadedCaptions})
+                </span>
               </CardTitle>
             </div>
           </CardHeader>
           <CardContent>
             {isLoadingSamples ? (
               // Loading Skeleton
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {[1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className="flex items-start gap-4 p-4 bg-section rounded-xl border border-border animate-pulse"
+                    className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-section rounded-xl border border-border animate-pulse"
                   >
-                    <div className="w-8 h-8 bg-hint/20 rounded-lg shrink-0 mt-1"></div>
-                    <div className="flex-1 min-w-0 space-y-3">
-                      <div className="h-4 bg-hint/20 rounded w-3/4"></div>
-                      <div className="h-4 bg-hint/20 rounded w-1/2"></div>
-                      <div className="flex items-center gap-3">
-                        <div className="h-6 bg-hint/20 rounded w-20"></div>
-                        <div className="h-3 bg-hint/20 rounded-full w-1"></div>
-                        <div className="h-6 bg-hint/20 rounded w-24"></div>
-                        <div className="h-3 bg-hint/20 rounded-full w-1"></div>
-                        <div className="h-6 bg-hint/20 rounded w-16"></div>
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-hint/20 rounded-lg shrink-0 mt-1"></div>
+                    <div className="flex-1 min-w-0 space-y-2 sm:space-y-3">
+                      <div className="h-3 sm:h-4 bg-hint/20 rounded w-3/4"></div>
+                      <div className="h-3 sm:h-4 bg-hint/20 rounded w-1/2"></div>
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="h-5 sm:h-6 bg-hint/20 rounded w-16 sm:w-20"></div>
+                        <div className="h-2.5 sm:h-3 bg-hint/20 rounded-full w-1"></div>
+                        <div className="h-5 sm:h-6 bg-hint/20 rounded w-12 sm:w-16"></div>
                       </div>
                     </div>
-                    <div className="flex gap-1">
-                      <div className="h-8 w-8 bg-hint/20 rounded"></div>
-                      <div className="h-8 w-8 bg-hint/20 rounded"></div>
+                    <div className="flex gap-1 shrink-0">
+                      <div className="h-7 w-7 sm:h-8 sm:w-8 bg-hint/20 rounded"></div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : uploadedCaptions > 0 ? (
               <>
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {trainingSamples.map((sample, index) => (
                     <div
                       key={index}
-                      className="group flex items-start gap-4 p-4 bg-section rounded-xl border border-border hover:border-accent/30 hover:bg-accent/5 transition-all"
+                      className="group flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-section rounded-xl border border-border hover:border-accent/30 hover:bg-accent/5 transition-all"
                     >
-                      <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center shrink-0 mt-1">
-                        <span className="text-xs font-semibold text-accent">
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 bg-accent/10 rounded-lg flex items-center justify-center shrink-0 mt-0.5 sm:mt-1">
+                        <span className="text-[10px] sm:text-xs font-semibold text-accent">
                           {index + 1}
                         </span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm text-text-body mb-2 line-clamp-2">
+                        <p className="text-xs sm:text-sm text-text-body mb-1.5 sm:mb-2 line-clamp-2 leading-relaxed">
                           {sample.text}
                         </p>
-                        <div className="flex items-center gap-3 text-xs text-hint">
-                          <span className="capitalize bg-chip-bg px-2 py-1 rounded-md">
-                            {sample.platform}
-                          </span>
-                          <span>•</span>
+                        <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-hint">
                           <span>{sample.date}</span>
                           <span>•</span>
                           <span>{sample.text.length} chars</span>
@@ -555,7 +553,7 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
                       </div>
 
                       {/* Desktop: Hover buttons */}
-                      <div className="hidden lg:flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="hidden lg:flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                         <Button
                           variant="ghost"
                           size="icon"
@@ -577,35 +575,35 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
                       </div>
 
                       {/* Mobile/Tablet: Menu button */}
-                      <div className="relative lg:hidden">
+                      <div className="relative lg:hidden shrink-0">
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8"
+                          className="h-7 w-7 sm:h-8 sm:w-8"
                           onClick={() => handleToggleMenu(index)}
                           title="More options"
                         >
-                          <MoreVertical className="w-4 h-4" />
+                          <MoreVertical className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         </Button>
 
                         {/* Dropdown Menu */}
                         {openMenuIndex === index && (
                           <div
                             ref={menuRef}
-                            className="absolute right-0 top-full mt-1 w-40 bg-background border border-border rounded-lg shadow-lg z-10 overflow-hidden"
+                            className="absolute right-0 top-full mt-1 w-36 sm:w-40 bg-background border border-border rounded-lg shadow-lg z-10 overflow-hidden"
                           >
                             <button
                               onClick={() => handleEditClick(index)}
-                              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-text-head hover:bg-accent/10 transition-colors"
+                              className="w-full flex items-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-text-head hover:bg-accent/10 transition-colors"
                             >
-                              <Edit3 className="w-4 h-4 text-accent" />
+                              <Edit3 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent" />
                               <span>Edit</span>
                             </button>
                             <button
                               onClick={() => handleDeleteClick(index)}
-                              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-error hover:bg-error/10 transition-colors"
+                              className="w-full flex items-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-error hover:bg-error/10 transition-colors"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                               <span>Delete</span>
                             </button>
                           </div>
@@ -616,17 +614,17 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
                 </div>
 
                 {uploadedCaptions >= MIN_SAMPLES_FOR_TRAINING && (
-                  <div className="mt-6 p-4 bg-accent/5 border border-accent/20 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center">
-                          <Wand2 className="w-4 h-4 text-accent" />
+                  <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-accent/5 border border-accent/20 rounded-lg">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                      <div className="flex items-start sm:items-center gap-2.5 sm:gap-3">
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 bg-accent/10 rounded-lg flex items-center justify-center shrink-0">
+                          <Wand2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-text-head">
+                          <p className="text-xs sm:text-sm font-medium text-text-head">
                             Ready to analyze your voice
                           </p>
-                          <p className="text-xs text-text-body">
+                          <p className="text-[10px] sm:text-xs text-text-body mt-0.5">
                             You have enough samples to train your brand voice
                           </p>
                         </div>
@@ -637,6 +635,7 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
                         variant="accent"
                         size="md"
                         leftIcon={<Wand2 className="w-4 h-4" />}
+                        className="w-full sm:w-auto"
                       >
                         {isAnalyzing ? "Analyzing..." : "Analyze Voice"}
                       </Button>
@@ -645,22 +644,23 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
                 )}
               </>
             ) : (
-              <div className="text-center py-12">
-                <div className="w-16 h-16 bg-hint/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <FileText className="w-8 h-8 text-hint" />
+              <div className="text-center py-8 sm:py-12 px-4">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-hint/10 rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                  <FileText className="w-7 h-7 sm:w-8 sm:h-8 text-hint" />
                 </div>
-                <h3 className="text-lg font-medium text-text-head mb-2">
+                <h3 className="text-base sm:text-lg font-medium text-text-head mb-1.5 sm:mb-2">
                   No training samples yet
                 </h3>
-                <p className="text-text-body mb-6 max-w-md mx-auto">
+                <p className="text-xs sm:text-sm text-text-body mb-4 sm:mb-6 max-w-md mx-auto">
                   Upload your past captions to help the AI learn your unique
                   writing style and voice.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center max-w-sm sm:max-w-none mx-auto">
                   <Button
                     variant="accent"
                     leftIcon={<Plus className="w-4 h-4" />}
                     onClick={onShowOnboarding}
+                    className="w-full sm:w-auto"
                   >
                     Start Setup Guide
                   </Button>
@@ -669,6 +669,7 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
                     leftIcon={<Upload className="w-4 h-4" />}
                     onClick={handleChooseFiles}
                     disabled={isUploading}
+                    className="w-full sm:w-auto"
                   >
                     {isUploading ? "Uploading..." : "Upload Files"}
                   </Button>
