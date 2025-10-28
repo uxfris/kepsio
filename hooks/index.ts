@@ -1,6 +1,7 @@
 export { useCaptionInput } from "./useCaptionInput";
 export { useCaptionGeneration } from "./useCaptionGeneration";
 export { useSubscription } from "./use-subscription";
+export { useUsage } from "../contexts/UsageContext";
 export { useUserUsage } from "./use-user-usage";
 export { usePaywall } from "./use-paywall";
 export { usePricing } from "./use-pricing";

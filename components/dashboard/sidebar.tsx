@@ -40,7 +40,7 @@ const navigation = [
 export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
-  const { subscription } = useSubscription();
+  const { isFree } = useSubscription();
 
   // Check if we're on mobile
   useEffect(() => {
@@ -220,7 +220,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
               <MenuItem
                 item={item}
                 isCollapsed={isMobile ? false : !isOpen}
-                showCrown={!subscription || subscription.plan === "free"}
+                showCrown={isFree}
               />
             </div>
           ))}

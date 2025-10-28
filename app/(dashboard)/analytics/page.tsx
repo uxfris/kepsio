@@ -68,10 +68,7 @@ const styleConfig: Record<string, { color: string; bgColor: string }> = {
 };
 
 function AnalyticsContent() {
-  const { subscription, isLoading: subLoading } = useSubscription();
-
-  // Check if user is on free plan
-  const isFree = subscription?.plan === "free";
+  const { isFree, isLoading: subLoading } = useSubscription();
 
   // Only fetch analytics if user is NOT on free plan
   const shouldFetchAnalytics = !subLoading && !isFree;

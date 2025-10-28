@@ -15,8 +15,9 @@ export interface Subscription {
   id: string;
   userId: string;
   plan: "free" | "pro" | "enterprise";
-  status: "active" | "canceled" | "past_due";
+  status: "active" | "canceled" | "past_due" | "trialing";
   currentPeriodEnd: Date;
+  cancelAtPeriodEnd: boolean;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
 }
