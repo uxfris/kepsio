@@ -76,22 +76,6 @@ function AnalyticsContent() {
     enabled: shouldFetchAnalytics,
   });
 
-  // Prevent body scroll when paywall is shown
-  useEffect(() => {
-    if (isFree && !subLoading) {
-      // Lock scroll
-      document.body.style.overflow = "hidden";
-    } else {
-      // Unlock scroll
-      document.body.style.overflow = "unset";
-    }
-
-    // Cleanup on unmount
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isFree, subLoading]);
-
   if (error) {
     return (
       <div className="min-h-screen bg-section flex items-center justify-center">
@@ -111,10 +95,124 @@ function AnalyticsContent() {
     ? Math.max(...analytics.activity.byDay.map((d) => d.count), 1)
     : 1;
 
+  if (isFree && !subLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center  overflow-hidden">
+        <div className="py-8 px-4 w-full flex items-center justify-center">
+          <Card
+            variant="outlined"
+            className="max-w-2xl w-full shadow-2xl border-2 border-accent/20 bg-surface"
+          >
+            <CardContent padding="lg">
+              <div className="text-center space-y-6">
+                {/* Icon */}
+                <div className="flex justify-center">
+                  <div className="relative">
+                    <div className="w-20 h-20 bg-linear-to-br from-accent to-accent-hover rounded-2xl flex items-center justify-center shadow-lg">
+                      <BarChart3 className="w-10 h-10 text-white" />
+                    </div>
+                    <div className="absolute -top-1 -right-1 w-8 h-8 bg-linear-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-md">
+                      <Lock className="w-4 h-4 text-white" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Headline */}
+                <div className="space-y-2">
+                  <h2 className="text-3xl font-bold text-primary">
+                    Unlock Advanced Analytics
+                  </h2>
+                  <p className="text-lg text-text-body max-w-md mx-auto">
+                    Upgrade to Pro to access detailed insights, performance
+                    tracking, and data-driven recommendations
+                  </p>
+                </div>
+
+                {/* Features */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left max-w-lg mx-auto py-4">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-semibold text-primary">
+                        Activity Trends
+                      </p>
+                      <p className="text-xs text-hint">
+                        Track your content performance over time
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-semibold text-primary">
+                        Platform Insights
+                      </p>
+                      <p className="text-xs text-hint">
+                        See which platforms perform best
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-semibold text-primary">
+                        Style Analytics
+                      </p>
+                      <p className="text-xs text-hint">
+                        Understand your content style preferences
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-semibold text-primary">
+                        Time Tracking
+                      </p>
+                      <p className="text-xs text-hint">
+                        See how much time you've saved
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+                  <Link href="/upgrade" className="w-full sm:w-auto">
+                    <Button
+                      variant="primary"
+                      size="lg"
+                      leftIcon={<Crown className="w-5 h-5" />}
+                      className="w-full shadow-lg hover:shadow-xl transition-all duration-200"
+                    >
+                      Upgrade to Pro - $19/month
+                    </Button>
+                  </Link>
+                  <Link href="/pricing" className="w-full sm:w-auto">
+                    <Button variant="outline" size="lg" className="w-full">
+                      View All Plans
+                    </Button>
+                  </Link>
+                </div>
+
+                {/* Small note */}
+                <p className="text-xs text-hint">
+                  No credit card required • Cancel anytime
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-section relative">
       {/* Content wrapper with conditional blur */}
-      <div className={isFree ? "blur-sm pointer-events-none" : ""}>
+      <div
+        className={`relative ${isFree ? "blur-sm pointer-events-none" : ""}`}
+      >
         {/* Header */}
         <Card
           variant="outlined"
@@ -582,117 +680,6 @@ function AnalyticsContent() {
           </Card>
         </div>
       </div>
-
-      {/* Paywall Overlay for Free Users */}
-      {isFree && !subLoading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-section/80 backdrop-blur-md overflow-hidden">
-          <div className="max-h-screen overflow-y-auto py-8 px-4 w-full flex items-center justify-center">
-            <Card
-              variant="outlined"
-              className="max-w-2xl w-full shadow-2xl border-2 border-accent/20 bg-surface"
-            >
-              <CardContent padding="lg">
-                <div className="text-center space-y-6">
-                  {/* Icon */}
-                  <div className="flex justify-center">
-                    <div className="relative">
-                      <div className="w-20 h-20 bg-linear-to-br from-accent to-accent-hover rounded-2xl flex items-center justify-center shadow-lg">
-                        <BarChart3 className="w-10 h-10 text-white" />
-                      </div>
-                      <div className="absolute -top-1 -right-1 w-8 h-8 bg-linear-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-md">
-                        <Lock className="w-4 h-4 text-white" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Headline */}
-                  <div className="space-y-2">
-                    <h2 className="text-3xl font-bold text-primary">
-                      Unlock Advanced Analytics
-                    </h2>
-                    <p className="text-lg text-text-body max-w-md mx-auto">
-                      Upgrade to Pro to access detailed insights, performance
-                      tracking, and data-driven recommendations
-                    </p>
-                  </div>
-
-                  {/* Features */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left max-w-lg mx-auto py-4">
-                    <div className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-semibold text-primary">
-                          Activity Trends
-                        </p>
-                        <p className="text-xs text-hint">
-                          Track your content performance over time
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-semibold text-primary">
-                          Platform Insights
-                        </p>
-                        <p className="text-xs text-hint">
-                          See which platforms perform best
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-semibold text-primary">
-                          Style Analytics
-                        </p>
-                        <p className="text-xs text-hint">
-                          Understand your content style preferences
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-semibold text-primary">
-                          Time Tracking
-                        </p>
-                        <p className="text-xs text-hint">
-                          See how much time you've saved
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* CTA Buttons */}
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
-                    <Link href="/upgrade" className="w-full sm:w-auto">
-                      <Button
-                        variant="primary"
-                        size="lg"
-                        leftIcon={<Crown className="w-5 h-5" />}
-                        className="w-full shadow-lg hover:shadow-xl transition-all duration-200"
-                      >
-                        Upgrade to Pro - $19/month
-                      </Button>
-                    </Link>
-                    <Link href="/pricing" className="w-full sm:w-auto">
-                      <Button variant="outline" size="lg" className="w-full">
-                        View All Plans
-                      </Button>
-                    </Link>
-                  </div>
-
-                  {/* Small note */}
-                  <p className="text-xs text-hint">
-                    No credit card required • Cancel anytime
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
