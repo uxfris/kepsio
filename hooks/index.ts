@@ -5,3 +5,4 @@ export { useUserUsage } from "./use-user-usage";
 export { usePaywall } from "./use-paywall";
 export { usePricing } from "./use-pricing";
 export { useTrainingSamples } from "./use-training-samples";
+export { useAnalytics } from "./use-analytics";

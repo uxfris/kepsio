@@ -25,15 +25,9 @@ import {
   StatCardSkeleton,
 } from "../../../components/ui/Skeleton";
 import { dataCache, CACHE_KEYS, CACHE_TTL } from "../../../lib/utils/cache";
-
-// Mock data - in real app this would come from API/hooks
-const mockUser = {
-  name: "Sarah",
-  captionsCreated: 4,
-  captionsRemaining: 6,
-  totalCredits: 10,
-  timeSaved: 2.5,
-};
+import { useUserUsage } from "../../../hooks/use-user-usage";
+import { useSubscription } from "../../../hooks/use-subscription";
+import { createClient } from "../../../lib/supabase/client";
 
 function DashboardContent() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
@@ -41,6 +35,69 @@ function DashboardContent() {
   const [recentCaptions, setRecentCaptions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [savingCaptionId, setSavingCaptionId] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string>("there");
+  const [totalCaptions, setTotalCaptions] = useState(0);
+  const [savedCaptions, setSavedCaptions] = useState(0);
+  const [timeSavedHours, setTimeSavedHours] = useState(0);
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  // Fetch real user data
+  const { usage, isLoading: usageLoading } = useUserUsage();
+  const { subscription, isLoading: subscriptionLoading } = useSubscription();
+
+  // Get user's first name from Supabase
+  useEffect(() => {
+    const fetchUserName = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        // Try to get name from user metadata or email
+        const fullName =
+          user.user_metadata?.full_name || user.user_metadata?.name;
+        if (fullName) {
+          // Extract first name
+          const firstName = fullName.split(" ")[0];
+          setUserName(firstName);
+        } else if (user.email) {
+          // Use part of email as fallback
+          const emailName = user.email.split("@")[0];
+          setUserName(emailName.charAt(0).toUpperCase() + emailName.slice(1));
+        }
+      }
+    };
+
+    fetchUserName();
+  }, []);
+
+  // Fetch dashboard stats
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch("/api/analytics");
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.analytics?.overview) {
+            setTotalCaptions(data.analytics.overview.totalCaptions || 0);
+            setSavedCaptions(data.analytics.overview.savedCaptions || 0);
+            setTimeSavedHours(data.analytics.overview.timeSavedHours || 0);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  // Calculate contextual stats
+  const captionsCreated = usage?.captionsUsed || 0;
+  const captionsLimit = usage?.captionsLimit || 10;
 
   // Fetch recent captions with caching
   const fetchCaptions = async (forceRefresh = false) => {
@@ -155,7 +212,11 @@ function DashboardContent() {
   };
 
   const progressPercentage =
-    (mockUser.captionsCreated / mockUser.totalCredits) * 100;
+    captionsLimit > 0 ? (captionsCreated / captionsLimit) * 100 : 0;
+
+  // Combined loading state for stats cards
+  const cardsLoading =
+    isLoading || usageLoading || subscriptionLoading || statsLoading;
 
   return (
     <div className="min-h-screen bg-section">
@@ -170,7 +231,7 @@ function DashboardContent() {
             <div className="space-y-1">
               <h1 className="text-xl sm:text-2xl font-semibold text-primary tracking-tight flex items-center gap-2">
                 <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-accent" />
-                Hey {mockUser.name}, ready to create? 👋
+                Hey {userName}, ready to create? 👋
               </h1>
               <p className="text-sm font-medium text-text-body">
                 Generate engaging captions that match your unique voice
@@ -195,14 +256,16 @@ function DashboardContent() {
       {/* Dashboard Content */}
       <div className="px-6 py-6">
         {/* Quick Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {cardsLoading ? (
             <>
+              <StatCardSkeleton />
               <StatCardSkeleton />
               <StatCardSkeleton />
             </>
           ) : (
             <>
+              {/* Pro/Enterprise: Show Total Captions Generated */}
               <Card
                 variant="outlined"
                 className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
@@ -215,23 +278,20 @@ function DashboardContent() {
                       </div>
                       <div>
                         <h3 className="text-sm font-semibold text-primary">
-                          Captions Created
+                          Total Captions
                         </h3>
-                        <p className="text-xs text-hint">This month</p>
+                        <p className="text-xs text-hint">All time</p>
                       </div>
                     </div>
                     <div className="flex items-baseline gap-2">
                       <span className="text-3xl font-bold text-primary">
-                        {mockUser.captionsCreated}
+                        {totalCaptions}
                       </span>
-                      <span className="text-sm text-hint">
-                        of {mockUser.totalCredits}
-                      </span>
+                      <span className="text-sm text-hint">generated</span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-
               <Card
                 variant="outlined"
                 className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
@@ -246,14 +306,41 @@ function DashboardContent() {
                         <h3 className="text-sm font-semibold text-primary">
                           Time Saved
                         </h3>
-                        <p className="text-xs text-hint">This month</p>
+                        <p className="text-xs text-hint">All time</p>
                       </div>
                     </div>
                     <div className="flex items-baseline gap-2">
                       <span className="text-3xl font-bold text-primary">
-                        {mockUser.timeSaved}
+                        {timeSavedHours}
                       </span>
                       <span className="text-sm text-hint">hours</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              {/* Pro/Enterprise: Show Saved to Library */}
+              <Card
+                variant="outlined"
+                className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
+              >
+                <CardContent padding="none">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                        <Bookmark className="w-6 h-6 text-green-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-semibold text-primary">
+                          Saved to Library
+                        </h3>
+                        <p className="text-xs text-hint">Your favorites</p>
+                      </div>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold text-primary">
+                        {savedCaptions}
+                      </span>
+                      <span className="text-sm text-hint">captions</span>
                     </div>
                   </div>
                 </CardContent>
@@ -335,35 +422,37 @@ function DashboardContent() {
         </div>
 
         {/* Upgrade Prompt */}
-        <Card className="bg-linear-to-r from-accent to-accent/80 border-accent/20 overflow-hidden">
-          <CardContent padding="lg">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Crown className="w-5 h-5 text-white" />
-                  <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">
-                    Ready to unlock unlimited captions?
-                  </h3>
+        {subscription?.plan === "free" && (
+          <Card className="bg-linear-to-r from-accent to-accent/80 border-accent/20 overflow-hidden">
+            <CardContent padding="lg">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Crown className="w-5 h-5 text-white" />
+                    <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">
+                      Ready to unlock unlimited captions?
+                    </h3>
+                  </div>
+                  <p className="text-white/90 text-sm font-medium">
+                    Get 10 variations per generation, advanced voice cloning,
+                    and detailed analytics
+                  </p>
                 </div>
-                <p className="text-white/90 text-sm font-medium">
-                  Get 10 variations per generation, advanced voice cloning, and
-                  detailed analytics
-                </p>
+                <div className="flex items-center gap-3 shrink-0">
+                  <Link href="/upgrade">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="bg-white hover:bg-gray-50 text-accent border-white font-semibold shadow-lg transition-all duration-200 hover:shadow-xl w-full sm:w-auto"
+                    >
+                      Upgrade to Pro
+                    </Button>
+                  </Link>
+                </div>
               </div>
-              <div className="flex items-center gap-3 shrink-0">
-                <Link href="/upgrade">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="bg-white hover:bg-gray-50 text-accent border-white font-semibold shadow-lg transition-all duration-200 hover:shadow-xl w-full sm:w-auto"
-                  >
-                    Upgrade to Pro
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
