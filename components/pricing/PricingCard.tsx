@@ -19,11 +19,22 @@ export interface PricingCardProps {
   onUpgrade: (planId: string) => void;
   formatPrice: (price: number) => number;
   getAnnualSavings?: (monthlyPrice: number) => number;
+  isProcessing?: boolean;
+  currentPlan?: string;
 }
 
 const PricingCard = memo<PricingCardProps>(
-  ({ plan, billingCycle, onUpgrade, formatPrice, getAnnualSavings }) => {
+  ({
+    plan,
+    billingCycle,
+    onUpgrade,
+    formatPrice,
+    getAnnualSavings,
+    isProcessing = false,
+    currentPlan,
+  }) => {
     const Icon = plan.icon;
+    const isCurrentPlan = currentPlan === plan.id;
 
     return (
       <Card
@@ -78,8 +89,13 @@ const PricingCard = memo<PricingCardProps>(
             variant={plan.buttonVariant}
             size="md"
             className="w-full mb-8"
+            disabled={isProcessing || isCurrentPlan}
           >
-            {plan.buttonText}
+            {isCurrentPlan
+              ? "Current Plan"
+              : isProcessing
+              ? "Processing..."
+              : plan.buttonText}
           </Button>
 
           {/* Divider */}

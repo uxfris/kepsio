@@ -19,21 +19,79 @@ import {
   FAQ_ITEMS,
   PRICING_CONFIG,
 } from "../../../lib/constants/pricing";
+import { useToast } from "../../../components/ui/Toast";
 
 export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("annual");
+  const [isProcessing, setIsProcessing] = useState(false);
   const { subscription, isLoading } = useSubscription();
   const router = useRouter();
+  const { showToast } = useToast();
 
   const { formatPrice, getAnnualSavings } = usePricing({
     billingCycle,
     annualDiscountPercentage: PRICING_CONFIG.annualDiscountPercentage,
   });
 
-  const handleUpgrade = useCallback((planId: string) => {
-    // TODO: Implement upgrade logic
-    console.log(`Upgrading to ${planId}`);
-  }, []);
+  const handleUpgrade = useCallback(
+    async (planId: string) => {
+      // Handle free plan
+      if (planId === "free") {
+        router.push("/dashboard");
+        return;
+      }
+
+      // Handle enterprise - contact sales
+      if (planId === "enterprise") {
+        window.open(
+          "mailto:sales@kepsio.com?subject=Enterprise Plan Inquiry",
+          "_blank"
+        );
+        return;
+      }
+
+      // Handle Pro plan upgrade
+      if (planId === "pro") {
+        setIsProcessing(true);
+
+        try {
+          const response = await fetch("/api/billing/create-checkout", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              planId,
+              billingCycle,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || "Failed to create checkout session");
+          }
+
+          // Redirect to Stripe Checkout
+          if (data.url) {
+            window.location.href = data.url;
+          } else {
+            throw new Error("No checkout URL received");
+          }
+        } catch (error) {
+          console.error("Checkout error:", error);
+          showToast(
+            error instanceof Error
+              ? error.message
+              : "Failed to start checkout process. Please try again.",
+            "error"
+          );
+          setIsProcessing(false);
+        }
+      }
+    },
+    [billingCycle, router, showToast]
+  );
 
   const handleBillingCycleChange = useCallback((value: string) => {
     setBillingCycle(value as BillingCycle);
@@ -85,6 +143,8 @@ export default function PricingPage() {
                 onUpgrade={handleUpgrade}
                 formatPrice={formatPrice}
                 getAnnualSavings={getAnnualSavings}
+                isProcessing={isProcessing}
+                currentPlan={subscription?.plan}
               />
             ))}
           </section>

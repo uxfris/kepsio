@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Sora, Manrope, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import Providers from "./providers";
 
 const sora = Sora({
   variable: "--font-sora",
@@ -32,7 +33,7 @@ export default function RootLayout({
       <body
         className={`${manrope.variable} ${sora.variable} ${jetbrainsMono.variable} font-sans antialiased`}
       >
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

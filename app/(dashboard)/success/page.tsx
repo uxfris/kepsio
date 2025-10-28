@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   CheckCircle,
   Sparkles,
@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
 import { Card, CardContent } from "../../../components/ui/Card";
+import { useSubscription } from "../../../hooks/use-subscription";
 
 // Confetti Animation Component
 const ConfettiAnimation = () => {
@@ -100,8 +101,23 @@ const ConfettiAnimation = () => {
 
 export default function PostUpgradeSuccessPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { subscription, refetch } = useSubscription();
   const [countdown, setCountdown] = useState(5);
   const [showConfetti, setShowConfetti] = useState(true);
+
+  const sessionId = searchParams.get("session_id");
+
+  // Refetch subscription when coming from successful checkout
+  useEffect(() => {
+    if (sessionId) {
+      // Wait a moment for webhook to process, then refetch
+      const timer = setTimeout(() => {
+        refetch();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [sessionId, refetch]);
 
   // Auto-redirect countdown
   useEffect(() => {
@@ -164,7 +180,8 @@ export default function PostUpgradeSuccessPage() {
           </div>
 
           <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
-            Welcome to Pro, <span className="text-accent">[Name]</span>! 🚀
+            Welcome to{" "}
+            {subscription?.plan === "enterprise" ? "Enterprise" : "Pro"}! 🚀
           </h1>
 
           <p className="text-xl text-text-body max-w-2xl mx-auto">

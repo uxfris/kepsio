@@ -10,6 +10,10 @@ export interface SubscriptionPlan {
   buttonText: string;
   buttonVariant: "primary" | "outline";
   isPopular?: boolean;
+  stripePriceIds?: {
+    monthly?: string;
+    annual?: string;
+  };
   limits: {
     captionsPerMonth: number; // Number of generation requests per month (each generates ~5 captions)
     variationsPerGeneration: number;

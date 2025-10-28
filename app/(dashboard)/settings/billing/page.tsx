@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Zap,
   Check,
@@ -12,6 +12,7 @@ import {
   BarChart3,
   Headphones,
   Download,
+  Settings,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -22,21 +23,63 @@ import {
   CardHeader,
   CardTitle,
 } from "../../../../components/ui/Card";
+import { useSubscription } from "../../../../hooks/use-subscription";
+import { useUserUsage } from "../../../../hooks/use-user-usage";
+import { useToast } from "../../../../components/ui/Toast";
+import { subscriptionPlans } from "../../../../config/plans";
 
 const BillingSettingsContent = () => {
   const router = useRouter();
+  const { subscription, isLoading: subscriptionLoading } = useSubscription();
+  const { usage, isLoading: usageLoading } = useUserUsage();
+  const { showToast } = useToast();
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  // Billing Info
-  const planType = "Free";
-  const captionsRemaining = 6;
-  const monthlyLimit = 10;
-  const daysUntilReset = 8;
+  const isPaidPlan =
+    subscription?.plan === "pro" || subscription?.plan === "enterprise";
 
   const handleUpgrade = () => {
-    // TODO: Implement actual upgrade logic with Stripe
-    // For now, redirect to success page for testing
-    router.push("/success");
+    router.push("/upgrade");
   };
+
+  const handleManageSubscription = async () => {
+    setIsProcessing(true);
+    try {
+      const response = await fetch("/api/billing/portal", {
+        method: "POST",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to open customer portal");
+      }
+
+      // Redirect to Stripe Customer Portal
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No portal URL received");
+      }
+    } catch (error) {
+      console.error("Portal error:", error);
+      showToast(
+        error instanceof Error
+          ? error.message
+          : "Failed to access billing portal. Please try again.",
+        "error"
+      );
+      setIsProcessing(false);
+    }
+  };
+
+  const currentPlan = subscriptionPlans[subscription?.plan || "free"];
+  const daysUntilReset = subscription?.currentPeriodEnd
+    ? Math.ceil(
+        (new Date(subscription.currentPeriodEnd).getTime() - Date.now()) /
+          (1000 * 60 * 60 * 24)
+      )
+    : 0;
 
   const proFeatures = [
     { icon: Zap, text: "Unlimited caption generation" },
@@ -70,11 +113,11 @@ const BillingSettingsContent = () => {
                 Current Plan
               </CardTitle>
               <p className="text-sm text-hint mt-1">
-                You're currently on the Free plan
+                You're currently on the {currentPlan?.name || "Free"} plan
               </p>
             </div>
-            <span className="px-3 py-1 bg-chip-bg text-text-body rounded-full text-sm font-medium">
-              {planType}
+            <span className="px-3 py-1 bg-chip-bg text-text-body rounded-full text-sm font-medium capitalize">
+              {subscription?.plan || "Free"}
             </span>
           </div>
         </CardHeader>
@@ -83,10 +126,14 @@ const BillingSettingsContent = () => {
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div className="p-4 bg-section-light rounded-xl border border-border">
               <p className="text-xs text-hint mb-2 font-medium">
-                Captions Remaining
+                {isPaidPlan ? "Generations Used" : "Captions Remaining"}
               </p>
               <p className="text-2xl font-display font-bold text-primary">
-                {captionsRemaining}
+                {usageLoading
+                  ? "..."
+                  : isPaidPlan
+                  ? usage?.generationsUsed || 0
+                  : usage?.generationsLeft || 0}
               </p>
             </div>
             <div className="p-4 bg-section-light rounded-xl border border-border">
@@ -94,7 +141,9 @@ const BillingSettingsContent = () => {
                 Monthly Limit
               </p>
               <p className="text-2xl font-display font-bold text-primary">
-                {monthlyLimit}
+                {currentPlan?.limits.captionsPerMonth === -1
+                  ? "∞"
+                  : currentPlan?.limits.captionsPerMonth || 0}
               </p>
             </div>
             <div className="p-4 bg-section-light rounded-xl border border-border">
@@ -105,100 +154,95 @@ const BillingSettingsContent = () => {
             </div>
           </div>
 
-          {/* Progress Bar */}
-          <div className="mb-6">
-            <div className="flex justify-between text-xs text-hint mb-2">
-              <span>Usage this month</span>
-              <span>
-                {monthlyLimit - captionsRemaining}/{monthlyLimit}
-              </span>
-            </div>
-            <div className="w-full bg-section-light rounded-full h-2">
-              <div
-                className="bg-accent h-2 rounded-full transition-all duration-300"
-                style={{
-                  width: `${
-                    ((monthlyLimit - captionsRemaining) / monthlyLimit) * 100
-                  }%`,
-                }}
-              />
-            </div>
-          </div>
-
-          <Button
-            onClick={handleUpgrade}
-            className="w-full"
-            size="lg"
-            leftIcon={<Zap className="w-5 h-5" />}
-          >
-            Upgrade to Pro - $19/month
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Pro Plan Features */}
-      <Card
-        padding="none"
-        variant="outlined"
-        className="bg-accent/5 border-accent/20 overflow-hidden"
-      >
-        <CardHeader
-          padding="lg"
-          className="border-b border-accent/20 mb-4 pb-4"
-        >
-          <CardTitle className="text-base font-semibold text-primary">
-            Why upgrade to Pro?
-          </CardTitle>
-        </CardHeader>
-        <CardContent padding="lg" className="mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {proFeatures.map((feature, idx) => {
-              const Icon = feature.icon;
-              return (
+          {/* Progress Bar - Only show for free plan */}
+          {!isPaidPlan && (
+            <div className="mb-6">
+              <div className="flex justify-between text-xs text-hint mb-2">
+                <span>Usage this month</span>
+                <span>
+                  {(usage?.generationsLimit || 0) -
+                    (usage?.generationsLeft || 0)}
+                  /{usage?.generationsLimit || 0}
+                </span>
+              </div>
+              <div className="w-full bg-section-light rounded-full h-2">
                 <div
-                  key={idx}
-                  className="flex items-center gap-3 p-3 rounded-lg bg-white/50"
-                >
-                  <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center shrink-0">
-                    <Icon className="w-4 h-4 text-accent" />
-                  </div>
-                  <span className="text-sm text-text-body font-medium">
-                    {feature.text}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+                  className="bg-accent h-2 rounded-full transition-all duration-300"
+                  style={{
+                    width: `${
+                      (((usage?.generationsLimit || 0) -
+                        (usage?.generationsLeft || 0)) /
+                        (usage?.generationsLimit || 1)) *
+                      100
+                    }%`,
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Action Button */}
+          {isPaidPlan ? (
+            <Button
+              onClick={handleManageSubscription}
+              className="w-full"
+              size="lg"
+              variant="outline"
+              leftIcon={<Settings className="w-5 h-5" />}
+              disabled={isProcessing}
+            >
+              {isProcessing ? "Opening Portal..." : "Manage Subscription"}
+            </Button>
+          ) : (
+            <Button
+              onClick={handleUpgrade}
+              className="w-full"
+              size="lg"
+              leftIcon={<Zap className="w-5 h-5" />}
+            >
+              Upgrade to Pro - $19/month
+            </Button>
+          )}
         </CardContent>
       </Card>
 
-      {/* Test Success Page Link */}
-      <Card
-        variant="outlined"
-        className="border-dashed border-border bg-section-light/50"
-      >
-        <CardContent padding="none" className="mt-4">
-          <div className="text-center">
-            <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <ExternalLink className="w-6 h-6 text-accent" />
+      {/* Pro Plan Features - Only show for free users */}
+      {!isPaidPlan && (
+        <Card
+          padding="none"
+          variant="outlined"
+          className="bg-accent/5 border-accent/20 overflow-hidden"
+        >
+          <CardHeader
+            padding="lg"
+            className="border-b border-accent/20 mb-4 pb-4"
+          >
+            <CardTitle className="text-base font-semibold text-primary">
+              Why upgrade to Pro?
+            </CardTitle>
+          </CardHeader>
+          <CardContent padding="lg" className="mt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {proFeatures.map((feature, idx) => {
+                const Icon = feature.icon;
+                return (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-3 p-3 rounded-lg bg-white/50"
+                  >
+                    <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center shrink-0">
+                      <Icon className="w-4 h-4 text-accent" />
+                    </div>
+                    <span className="text-sm text-text-body font-medium">
+                      {feature.text}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
-            <h3 className="text-base font-semibold text-primary mb-2">
-              Test Success Page
-            </h3>
-            <p className="text-sm text-text-body mb-4">
-              Click below to preview the Post-Upgrade Success page
-            </p>
-            <Button
-              onClick={() => router.push("/success")}
-              variant="outline"
-              size="md"
-              rightIcon={<ExternalLink className="w-4 h-4" />}
-            >
-              View Success Page
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
