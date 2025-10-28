@@ -9,6 +9,7 @@ export interface CreateCaptionInput {
   platform?: string;
   style?: string;
   metadata?: any;
+  generationBatchId?: string;
 }
 
 export async function createCaption(input: CreateCaptionInput) {
@@ -21,6 +22,7 @@ export async function createCaption(input: CreateCaptionInput) {
       platform: input.platform,
       style: input.style,
       metadata: input.metadata,
+      generationBatchId: input.generationBatchId,
     },
   });
 }
@@ -35,6 +37,7 @@ export async function createMultipleCaptions(inputs: CreateCaptionInput[]) {
       platform: input.platform,
       style: input.style,
       metadata: input.metadata,
+      generationBatchId: input.generationBatchId,
     })),
   });
 }

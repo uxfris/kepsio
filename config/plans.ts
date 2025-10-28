@@ -11,7 +11,7 @@ export interface SubscriptionPlan {
   buttonVariant: "primary" | "outline";
   isPopular?: boolean;
   limits: {
-    captionsPerMonth: number;
+    captionsPerMonth: number; // Number of generation requests per month (each generates ~5 captions)
     variationsPerGeneration: number;
     voiceProfiles: number;
     teamSeats?: number;
@@ -25,7 +25,7 @@ export const subscriptionPlans: Record<string, SubscriptionPlan> = {
     description: "Perfect for getting started",
     price: 0,
     features: [
-      "10 captions per month",
+      "10 generations per month (~50 captions)",
       "5 variations per generation",
       "Basic voice training",
       "All platform presets",
@@ -34,7 +34,7 @@ export const subscriptionPlans: Record<string, SubscriptionPlan> = {
     buttonText: "Get Started",
     buttonVariant: "outline",
     limits: {
-      captionsPerMonth: 10,
+      captionsPerMonth: 10, // 10 generation requests
       variationsPerGeneration: 5,
       voiceProfiles: 1,
     },
@@ -45,7 +45,7 @@ export const subscriptionPlans: Record<string, SubscriptionPlan> = {
     description: "For serious creators & agencies",
     price: 19,
     features: [
-      "Unlimited captions",
+      "Unlimited generations",
       "10 variations per generation",
       "Advanced voice cloning",
       "Analytics & insights",
@@ -58,7 +58,7 @@ export const subscriptionPlans: Record<string, SubscriptionPlan> = {
     buttonVariant: "primary",
     isPopular: true,
     limits: {
-      captionsPerMonth: -1, // unlimited
+      captionsPerMonth: -1, // unlimited generations
       variationsPerGeneration: 10,
       voiceProfiles: 5,
       teamSeats: 3,

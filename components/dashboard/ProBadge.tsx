@@ -30,9 +30,11 @@ export default function ProBadge({ isCollapsed }: ProBadgeProps) {
   const isPro = currentPlan === "pro" || currentPlan === "enterprise";
 
   const captionsUsed = usage?.captionsUsed || 0;
-  const captionsLimit = planConfig.limits.captionsPerMonth;
+  const captionsLimit = planConfig?.limits?.captionsPerMonth || 10;
   const usagePercentage =
-    captionsLimit === -1 ? 0 : (captionsUsed / captionsLimit) * 100;
+    captionsLimit === -1
+      ? 0
+      : Math.min(100, (captionsUsed / captionsLimit) * 100);
 
   const getPlanIcon = () => {
     if (currentPlan === "enterprise")
@@ -104,7 +106,7 @@ export default function ProBadge({ isCollapsed }: ProBadgeProps) {
               <>
                 <span className="text-2xl font-bold text-primary">∞</span>
                 <span className="text-xs text-text-body ml-1">
-                  Unlimited captions
+                  Unlimited generations
                 </span>
               </>
             ) : (
@@ -114,7 +116,7 @@ export default function ProBadge({ isCollapsed }: ProBadgeProps) {
                 </span>
                 <span className="text-xs text-text-body">
                   {" "}
-                  / {captionsLimit} left
+                  / {captionsLimit} generations left
                 </span>
               </>
             )}
@@ -123,10 +125,11 @@ export default function ProBadge({ isCollapsed }: ProBadgeProps) {
           {captionsLimit !== -1 && (
             <div className="flex-1 bg-border rounded-full h-2 overflow-hidden mt-1">
               <motion.div
+                key={`progress-${captionsUsed}-${captionsLimit}`}
                 initial={{ width: 0 }}
                 animate={{ width: `${usagePercentage}%` }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="h-full bg-linear-to-r from-primary to-accent rounded-full transition-all duration-300 ease-out"
+                className="h-full bg-gradient-to-r from-primary to-accent rounded-full"
               />
             </div>
           )}

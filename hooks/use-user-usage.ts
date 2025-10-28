@@ -15,9 +15,14 @@ export function useUserUsage() {
     fetchUsage();
   }, []);
 
-  const fetchUsage = async () => {
+  const fetchUsage = async (showLoading = true) => {
     try {
-      const response = await fetch("/api/user/usage");
+      if (showLoading) {
+        setIsLoading(true);
+      }
+
+      // Add timestamp to prevent caching
+      const response = await fetch(`/api/user/usage?t=${Date.now()}`);
       const data = await response.json();
 
       if (!response.ok) {
@@ -25,6 +30,7 @@ export function useUserUsage() {
       }
 
       setUsage(data.usage);
+      setError(null);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "An error occurred";
@@ -38,6 +44,6 @@ export function useUserUsage() {
     usage,
     isLoading,
     error,
-    refetch: fetchUsage,
+    refetch: () => fetchUsage(false), // Don't show loading spinner on refetch
   };
 }

@@ -31,46 +31,47 @@ export async function POST(request: NextRequest) {
     }
 
     // Check subscription and usage limits
-    const subscription = await prisma.subscription.findFirst({
+    let subscription = await prisma.subscription.findFirst({
       where: { userId: user.id },
       orderBy: { createdAt: "desc" },
     });
 
+    // Check if billing period has ended and reset if needed
+    const now = new Date();
+    if (subscription && now > subscription.currentPeriodEnd) {
+      // Reset counter and move to next period
+      const nextPeriodEnd = new Date(subscription.currentPeriodEnd);
+      nextPeriodEnd.setDate(nextPeriodEnd.getDate() + 30);
+
+      subscription = await prisma.subscription.update({
+        where: { id: subscription.id },
+        data: {
+          generationsUsed: 0,
+          currentPeriodEnd: nextPeriodEnd,
+        },
+      });
+    }
+
     const plan = subscription?.plan || "free";
     const planConfig =
       subscriptionPlans[plan as keyof typeof subscriptionPlans];
-    const captionsLimit = planConfig?.limits.captionsPerMonth || 10;
+    const generationsLimit = planConfig?.limits.captionsPerMonth || 10;
 
     // For unlimited plans, skip the limit check
-    if (captionsLimit !== -1) {
-      // Calculate current usage
-      const currentPeriodEnd =
-        subscription?.currentPeriodEnd ||
-        new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-      const periodStart = new Date(currentPeriodEnd);
-      periodStart.setDate(periodStart.getDate() - 30);
-
-      const captionsUsed = await prisma.caption.count({
-        where: {
-          userId: user.id,
-          createdAt: {
-            gte: periodStart,
-            lte: currentPeriodEnd,
-          },
-        },
-      });
+    if (generationsLimit !== -1) {
+      const generationsUsed = subscription?.generationsUsed || 0;
+      const currentPeriodEnd = subscription?.currentPeriodEnd || new Date();
 
       // Check if user has exceeded their limit
-      if (captionsUsed >= captionsLimit) {
+      if (generationsUsed >= generationsLimit) {
         return NextResponse.json(
           {
             error: "Usage limit exceeded",
-            message:
-              "You've reached your caption generation limit for this period",
+            message: "You've reached your generation limit for this period",
             limitReached: true,
             usage: {
-              used: captionsUsed,
-              limit: captionsLimit,
+              used: generationsUsed,
+              limit: generationsLimit,
               resetDate: currentPeriodEnd,
             },
           },
@@ -172,6 +173,11 @@ export async function POST(request: NextRequest) {
     // Determine platform
     const platform = voiceProfile?.platform?.name?.toLowerCase() || "instagram";
 
+    // Generate a unique batch ID for this generation request
+    const generationBatchId = `gen_${Date.now()}_${Math.random()
+      .toString(36)
+      .substring(7)}`;
+
     // Save captions to database with metadata
     const captionInputs = captions.map((caption, index) => {
       const style = determineCaptionStyle(caption, index);
@@ -190,10 +196,23 @@ export async function POST(request: NextRequest) {
         platform,
         style,
         metadata,
+        generationBatchId, // Group all captions from this request
       };
     });
 
     await createMultipleCaptions(captionInputs);
+
+    // Increment generation counter
+    if (subscription) {
+      await prisma.subscription.update({
+        where: { id: subscription.id },
+        data: {
+          generationsUsed: {
+            increment: 1,
+          },
+        },
+      });
+    }
 
     // Fetch the saved captions to get their IDs
     const captionsWithIds = await getUserCaptions(user.id, captions.length);

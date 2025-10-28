@@ -17,7 +17,7 @@ export async function GET() {
     }
 
     // Fetch the user's subscription
-    const subscription = await prisma.subscription.findFirst({
+    let subscription = await prisma.subscription.findFirst({
       where: {
         userId: user.id,
       },
@@ -28,37 +28,50 @@ export async function GET() {
 
     // Default to free plan if no subscription found
     const plan = subscription?.plan || "free";
-    const currentPeriodEnd =
+    let currentPeriodEnd =
       subscription?.currentPeriodEnd ||
       new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
-    // Calculate the start of the current billing period
-    const periodStart = new Date(currentPeriodEnd);
-    periodStart.setDate(periodStart.getDate() - 30);
+    // Check if billing period has ended and reset if needed
+    const now = new Date();
+    if (subscription && now > currentPeriodEnd) {
+      // Reset counter and move to next period
+      const nextPeriodEnd = new Date(currentPeriodEnd);
+      nextPeriodEnd.setDate(nextPeriodEnd.getDate() + 30);
 
-    // Count captions generated in the current period
-    const captionsUsed = await prisma.caption.count({
-      where: {
-        userId: user.id,
-        createdAt: {
-          gte: periodStart,
-          lte: currentPeriodEnd,
+      subscription = await prisma.subscription.update({
+        where: { id: subscription.id },
+        data: {
+          generationsUsed: 0,
+          currentPeriodEnd: nextPeriodEnd,
         },
-      },
-    });
+      });
+
+      currentPeriodEnd = nextPeriodEnd;
+    }
+
+    // Get usage directly from subscription table
+    const generationsUsed = subscription?.generationsUsed || 0;
 
     // Get the limit from the plan configuration
     const planConfig =
       subscriptionPlans[plan as keyof typeof subscriptionPlans];
-    const captionsLimit = planConfig?.limits.captionsPerMonth || 10;
+    const generationsLimit = planConfig?.limits.captionsPerMonth || 10;
 
-    return NextResponse.json({
-      usage: {
-        captionsUsed,
-        captionsLimit,
-        resetDate: currentPeriodEnd,
+    return NextResponse.json(
+      {
+        usage: {
+          captionsUsed: generationsUsed, // Direct counter from subscriptions table
+          captionsLimit: generationsLimit,
+          resetDate: currentPeriodEnd,
+        },
       },
-    });
+      {
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error fetching usage:", error);
     return NextResponse.json(

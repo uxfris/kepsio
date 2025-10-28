@@ -118,7 +118,7 @@ export default function CaptionInputPage() {
       setCaptionIds(result.captionIds);
       setSavedStates(result.savedStates);
 
-      // Refetch usage data to update the UI
+      // Refetch usage data to update UI
       refetchUsage();
 
       // Complete loading
@@ -287,7 +287,7 @@ export default function CaptionInputPage() {
       setCaptionIds(result.captionIds);
       setSavedStates(result.savedStates);
 
-      // Refetch usage data to update the UI
+      // Refetch usage data to update UI
       refetchUsage();
 
       updateState({
@@ -459,8 +459,8 @@ export default function CaptionInputPage() {
                           )}/${usage.captionsLimit}`}
                     </span>{" "}
                     {subscription?.plan === "free"
-                      ? "free captions left"
-                      : "captions left this month"}
+                      ? "free generations left"
+                      : "generations left this month"}
                   </span>
                   {usage.captionsUsed >= usage.captionsLimit &&
                     usage.captionsLimit !== -1 && (
@@ -474,7 +474,7 @@ export default function CaptionInputPage() {
               ) : (
                 <span className="text-sm text-secondary">
                   <span className="font-semibold text-accent">10/10</span> free
-                  captions left
+                  generations left
                 </span>
               )}
             </div>
