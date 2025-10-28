@@ -7,13 +7,10 @@ import {
   Grid3x3,
   List,
   Edit2,
-  Trash2,
   Download,
   Check,
-  X,
   BookMarked,
   BookmarkCheck,
-  Calendar,
   Copy,
 } from "lucide-react";
 import { SocialIcon } from "react-social-icons";
@@ -109,7 +106,6 @@ const savedCaptions = [
 
 export default function LibraryPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [selectedCaptions, setSelectedCaptions] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
@@ -195,20 +191,6 @@ export default function LibraryPage() {
   };
 
   // Event handlers
-  const handleSelectCaption = (id: string) => {
-    setSelectedCaptions((prev) =>
-      prev.includes(id) ? prev.filter((cid) => cid !== id) : [...prev, id]
-    );
-  };
-
-  const handleSelectAll = () => {
-    if (selectedCaptions.length === filteredCaptions.length) {
-      setSelectedCaptions([]);
-    } else {
-      setSelectedCaptions(filteredCaptions.map((caption) => caption.id));
-    }
-  };
-
   const handleCopy = async (text: string, index: number) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -224,13 +206,6 @@ export default function LibraryPage() {
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2000);
     }
-  };
-
-  const handleDelete = () => {
-    setToastMessage(`${selectedCaptions.length} caption(s) deleted`);
-    setShowToast(true);
-    setSelectedCaptions([]);
-    setTimeout(() => setShowToast(false), 2000);
   };
 
   const togglePlatformFilter = (platform: string) => {
@@ -465,42 +440,6 @@ export default function LibraryPage() {
           </div>
         </div>
 
-        {/* Bulk Actions Bar - Shows when items selected */}
-        {selectedCaptions.length > 0 && (
-          <div className="bg-accent/5 border-b border-accent/20 px-6 py-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-accent">
-                {selectedCaptions.length} caption
-                {selectedCaptions.length > 1 ? "s" : ""} selected
-              </span>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  leftIcon={<Download className="w-4 h-4" />}
-                >
-                  Export
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  leftIcon={<Trash2 className="w-4 h-4" />}
-                  onClick={handleDelete}
-                  className="hover:bg-error/10 hover:border-error/30 hover:text-error"
-                >
-                  Delete
-                </Button>
-                <button
-                  onClick={() => setSelectedCaptions([])}
-                  className="p-1.5 hover:bg-surface rounded-lg transition-colors"
-                >
-                  <X className="w-4 h-4 text-hint" />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Content Area */}
         <div className="px-6 py-6">
           {/* Summary Stats */}
@@ -572,36 +511,10 @@ export default function LibraryPage() {
             </Card>
           ) : (
             <>
-              {/* Select All */}
-              <div className="mb-4">
-                <label className="flex items-center gap-2 text-sm text-text-body cursor-pointer relative">
-                  <input
-                    type="checkbox"
-                    checked={
-                      selectedCaptions.length === filteredCaptions.length
-                    }
-                    onChange={handleSelectAll}
-                    className="peer h-4 w-4 appearance-none rounded border border-border checked:bg-accent cursor-pointer transition"
-                  />
-                  <Check className="pointer-events-none absolute left-[2px] h-3 w-3 text-white opacity-0 peer-checked:opacity-100 transition" />
-                  <span>Select all ({filteredCaptions.length} captions)</span>
-                </label>
-              </div>
-
               {viewMode === "grid" ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredCaptions.map((caption, index) => (
-                    <div key={caption.id} className="relative">
-                      {/* Selection Checkbox */}
-                      <label className="absolute top-4 right-4 z-10 flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={selectedCaptions.includes(caption.id)}
-                          onChange={() => handleSelectCaption(caption.id)}
-                          className="peer h-4 w-4 appearance-none rounded border border-border checked:bg-accent cursor-pointer transition"
-                        />
-                        <Check className="pointer-events-none absolute left-[2px] top-[2px] h-3 w-3 text-white opacity-0 peer-checked:opacity-100 transition" />
-                      </label>
+                    <div key={caption.id}>
                       <CaptionCard
                         id={caption.id}
                         caption={caption.content}
@@ -641,55 +554,44 @@ export default function LibraryPage() {
               ) : (
                 <div className="space-y-3">
                   {filteredCaptions.map((caption, index) => (
-                    <div key={caption.id} className="flex items-center gap-4">
-                      <label className="relative flex items-center cursor-pointer shrink-0">
-                        <input
-                          type="checkbox"
-                          checked={selectedCaptions.includes(caption.id)}
-                          onChange={() => handleSelectCaption(caption.id)}
-                          className="peer h-4 w-4 appearance-none rounded border border-border checked:bg-accent cursor-pointer transition"
-                        />
-                        <Check className="pointer-events-none absolute left-[2px] top-[2px] h-3 w-3 text-white opacity-0 peer-checked:opacity-100 transition" />
-                      </label>
-                      <div className="flex-1">
-                        <CaptionCard
-                          id={caption.id}
-                          caption={caption.content}
-                          platform={caption.platform as any}
-                          style={caption.style}
-                          date={new Date(caption.savedDate).toLocaleDateString(
-                            "en-US",
-                            { month: "short", day: "numeric" }
-                          )}
-                          variant="list"
-                          actions={[
-                            {
-                              icon: <Copy className="w-4 h-4" />,
-                              label: "Copy",
-                              onClick: () => handleCopy(caption.content, index),
-                              className: `p-2 rounded transition-colors ${
-                                copiedIndex === index
-                                  ? "bg-accent/10 text-accent"
-                                  : "hover:bg-accent/5 text-hint hover:text-accent"
-                              }`,
-                            },
-                            {
-                              icon: <Edit2 className="w-4 h-4" />,
-                              label: "Edit",
-                              onClick: () => handleEditCaption(index),
-                              className:
-                                "p-2 hover:bg-accent/5 text-hint hover:text-accent rounded transition-colors",
-                            },
-                            {
-                              icon: <Trash2 className="w-4 h-4" />,
-                              label: "Delete",
-                              onClick: () => {},
-                              className:
-                                "p-2 hover:bg-error/10 text-hint hover:text-error rounded transition-colors",
-                            },
-                          ]}
-                        />
-                      </div>
+                    <div key={caption.id}>
+                      <CaptionCard
+                        id={caption.id}
+                        caption={caption.content}
+                        platform={caption.platform as any}
+                        style={caption.style}
+                        date={new Date(caption.savedDate).toLocaleDateString(
+                          "en-US",
+                          { month: "short", day: "numeric" }
+                        )}
+                        variant="list"
+                        actions={[
+                          {
+                            icon: <Copy className="w-4 h-4" />,
+                            label: "Copy",
+                            onClick: () => handleCopy(caption.content, index),
+                            className: `p-2 rounded transition-colors ${
+                              copiedIndex === index
+                                ? "bg-accent/10 text-accent"
+                                : "hover:bg-accent/5 text-hint hover:text-accent"
+                            }`,
+                          },
+                          {
+                            icon: <Edit2 className="w-4 h-4" />,
+                            label: "Edit",
+                            onClick: () => handleEditCaption(index),
+                            className:
+                              "p-2 hover:bg-accent/5 text-hint hover:text-accent rounded transition-colors",
+                          },
+                          {
+                            icon: <BookmarkCheck className="w-4 h-4" />,
+                            label: "Unsave",
+                            onClick: () => {},
+                            className:
+                              "p-2 hover:bg-error/10 text-hint hover:text-error rounded transition-colors",
+                          },
+                        ]}
+                      />
                     </div>
                   ))}
                 </div>
