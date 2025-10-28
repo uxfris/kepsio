@@ -70,6 +70,50 @@ const BrandVoiceContent: React.FC = () => {
     [onboardingOptions.brandTones, selectedToneId]
   );
 
+  // Get contextual voice status
+  const voiceStatus = useMemo(() => {
+    const isAnalyzed =
+      voiceInsights &&
+      (voiceInsights.tone || voiceInsights.topPhrases?.length > 0);
+
+    if (uploadedCaptions === 0) {
+      return {
+        color: "bg-hint",
+        text: "Not Started",
+        description: "No training samples yet",
+      };
+    }
+
+    if (!isAnalyzed) {
+      if (uploadedCaptions < 3) {
+        return {
+          color: "bg-warning",
+          text: "Training Started",
+          description: "Add more samples",
+        };
+      } else if (uploadedCaptions < 7) {
+        return {
+          color: "bg-info",
+          text: "In Progress",
+          description: "Ready to analyze",
+        };
+      } else {
+        return {
+          color: "bg-primary",
+          text: "Ready",
+          description: "Click Analyze Voice",
+        };
+      }
+    }
+
+    // Voice is analyzed
+    return {
+      color: "bg-success",
+      text: "Voice Active",
+      description: "AI trained",
+    };
+  }, [uploadedCaptions, voiceInsights]);
+
   // Onboarding handlers
   const handleOnboardingNext = useCallback(() => {
     if (onboardingStep < 3) {
@@ -176,10 +220,15 @@ const BrandVoiceContent: React.FC = () => {
 
               {/* Quick Stats */}
               <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-success rounded-full"></div>
+                <div
+                  className="flex items-center gap-2 group cursor-help"
+                  title={voiceStatus.description}
+                >
+                  <div
+                    className={`w-2 h-2 ${voiceStatus.color} rounded-full transition-colors`}
+                  ></div>
                   <span className="text-sm font-medium text-text-body">
-                    Voice Active
+                    {voiceStatus.text}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
