@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";
+"use client";
+
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 interface UsageStats {
   captionsUsed: number;
@@ -6,14 +8,20 @@ interface UsageStats {
   resetDate: Date;
 }
 
-export function useUserUsage() {
+interface UsageContextType {
+  usage: UsageStats | null;
+  isLoading: boolean;
+  error: string | null;
+  refetch: () => void;
+  incrementUsage: () => void;
+}
+
+const UsageContext = createContext<UsageContextType | undefined>(undefined);
+
+export function UsageProvider({ children }: { children: React.ReactNode }) {
   const [usage, setUsage] = useState<UsageStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchUsage();
-  }, []);
 
   const fetchUsage = async (showLoading = true) => {
     try {
@@ -51,11 +59,29 @@ export function useUserUsage() {
     });
   };
 
-  return {
-    usage,
-    isLoading,
-    error,
-    refetch: () => fetchUsage(false), // Don't show loading spinner on refetch
-    incrementUsage, // For optimistic updates
-  };
+  useEffect(() => {
+    fetchUsage();
+  }, []);
+
+  return (
+    <UsageContext.Provider
+      value={{
+        usage,
+        isLoading,
+        error,
+        refetch: () => fetchUsage(false),
+        incrementUsage,
+      }}
+    >
+      {children}
+    </UsageContext.Provider>
+  );
+}
+
+export function useUsage() {
+  const context = useContext(UsageContext);
+  if (context === undefined) {
+    throw new Error("useUsage must be used within a UsageProvider");
+  }
+  return context;
 }

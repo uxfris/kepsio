@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Zap, Crown, Star } from "lucide-react";
-import { useUserUsage } from "@/hooks/use-user-usage";
+import { useUsage } from "../../contexts/UsageContext";
 import { useSubscription } from "@/hooks/use-subscription";
 import { subscriptionPlans } from "../../config/plans";
 import Link from "next/link";
@@ -12,7 +12,7 @@ interface ProBadgeProps {
 }
 
 export default function ProBadge({ isCollapsed }: ProBadgeProps) {
-  const { usage, isLoading: usageLoading } = useUserUsage();
+  const { usage, isLoading: usageLoading } = useUsage();
   const { subscription, isLoading: subscriptionLoading } = useSubscription();
 
   if (subscriptionLoading || usageLoading) {
@@ -31,10 +31,11 @@ export default function ProBadge({ isCollapsed }: ProBadgeProps) {
 
   const captionsUsed = usage?.captionsUsed || 0;
   const captionsLimit = planConfig?.limits?.captionsPerMonth || 10;
-  const usagePercentage =
+  // Calculate remaining percentage (starts at 100%, decreases as usage increases)
+  const remainingPercentage =
     captionsLimit === -1
-      ? 0
-      : Math.min(100, (captionsUsed / captionsLimit) * 100);
+      ? 100
+      : Math.max(0, 100 - (captionsUsed / captionsLimit) * 100);
 
   const getPlanIcon = () => {
     if (currentPlan === "enterprise")
@@ -126,10 +127,10 @@ export default function ProBadge({ isCollapsed }: ProBadgeProps) {
             <div className="flex-1 bg-border rounded-full h-2 overflow-hidden mt-1">
               <motion.div
                 key={`progress-${captionsUsed}-${captionsLimit}`}
-                initial={{ width: 0 }}
-                animate={{ width: `${usagePercentage}%` }}
+                initial={{ width: "100%" }}
+                animate={{ width: `${remainingPercentage}%` }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="h-full bg-gradient-to-r from-primary to-accent rounded-full"
+                className="h-full bg-linear-to-r from-primary to-accent rounded-full"
               />
             </div>
           )}

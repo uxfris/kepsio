@@ -110,9 +110,8 @@ export const useCaptionGeneration = () => {
         throw new Error(errorData.error || "Failed to generate captions");
       }
 
-      // Phase 2: Finding hooks (simulate with delay for UX)
+      // Phase 2: Finding hooks
       onPhaseUpdate?.("hooking");
-      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Phase 3: Matching brand voice
       onPhaseUpdate?.("matching");

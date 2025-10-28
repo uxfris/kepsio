@@ -158,19 +158,6 @@ export const CaptionCard: React.FC<CaptionCardProps> = ({
                     {metadata.style}
                   </Chip>
                 )}
-                {metadata.engagementScore && (
-                  <Chip
-                    variant="outline"
-                    size="sm"
-                    className="bg-surface text-text-body"
-                  >
-                    {metadata.engagementScore === "high"
-                      ? "High Potential"
-                      : metadata.engagementScore === "medium"
-                      ? "Good Potential"
-                      : "Standard"}
-                  </Chip>
-                )}
               </div>
             )}
           </div>

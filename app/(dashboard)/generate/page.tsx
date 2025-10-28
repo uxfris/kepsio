@@ -13,8 +13,10 @@ import {
   useCaptionGeneration,
   usePaywall,
   useSubscription,
-  useUserUsage,
 } from "../../../hooks";
+
+// Context
+import { useUsage } from "../../../contexts/UsageContext";
 
 // Components
 import {
@@ -66,7 +68,8 @@ export default function CaptionInputPage() {
     usage,
     isLoading: usageLoading,
     refetch: refetchUsage,
-  } = useUserUsage();
+    incrementUsage,
+  } = useUsage();
 
   // Track caption IDs and saved states
   const [captionIds, setCaptionIds] = React.useState<string[]>([]);
@@ -97,6 +100,9 @@ export default function CaptionInputPage() {
       }
     }
 
+    // IMMEDIATE FEEDBACK: Optimistically update usage counter right away
+    incrementUsage();
+
     // Start immersive loading
     updateState({
       isGenerating: true,
@@ -118,7 +124,7 @@ export default function CaptionInputPage() {
       setCaptionIds(result.captionIds);
       setSavedStates(result.savedStates);
 
-      // Refetch usage data to update UI
+      // Refetch usage data to sync with server (in case of any discrepancies)
       refetchUsage();
 
       // Complete loading
@@ -135,6 +141,11 @@ export default function CaptionInputPage() {
           used: error.usage?.used || 0,
           limit: error.usage?.limit || 10,
         });
+        // Refetch to get the actual server state
+        refetchUsage();
+      } else {
+        // For other errors, refetch to ensure we're in sync
+        refetchUsage();
       }
 
       // Handle error
@@ -267,6 +278,9 @@ export default function CaptionInputPage() {
         break;
     }
 
+    // IMMEDIATE FEEDBACK: Optimistically update usage counter right away
+    incrementUsage();
+
     // Start generation
     updateState({
       isGenerating: true,
@@ -287,7 +301,7 @@ export default function CaptionInputPage() {
       setCaptionIds(result.captionIds);
       setSavedStates(result.savedStates);
 
-      // Refetch usage data to update UI
+      // Refetch usage data to sync with server (in case of any discrepancies)
       refetchUsage();
 
       updateState({
@@ -303,6 +317,11 @@ export default function CaptionInputPage() {
           used: error.usage?.used || 0,
           limit: error.usage?.limit || 10,
         });
+        // Refetch to get the actual server state
+        refetchUsage();
+      } else {
+        // For other errors, refetch to ensure we're in sync
+        refetchUsage();
       }
 
       updateState({
