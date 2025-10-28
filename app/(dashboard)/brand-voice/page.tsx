@@ -222,30 +222,56 @@ const BrandVoiceContent: React.FC = () => {
 
               {/* Quick Stats */}
               <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-                <div
-                  className="flex items-center gap-2 group cursor-help"
-                  title={voiceStatus.description}
-                >
-                  <div
-                    className={`w-2 h-2 ${voiceStatus.color} rounded-full transition-colors`}
-                  ></div>
-                  <span className="text-sm font-medium text-text-body">
-                    {voiceStatus.text}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-hint" />
-                  <span className="text-sm text-text-body">
-                    {uploadedCaptions} training samples
-                  </span>
-                </div>
-                {selectedTone && (
+                {/* Voice Status */}
+                {isLoading || isLoadingSamples ? (
                   <div className="flex items-center gap-2">
-                    <Target className="w-4 h-4 text-hint" />
-                    <span className="text-sm text-text-body capitalize">
-                      {selectedTone.name} tone
+                    <div className="w-2 h-2 bg-hint/20 rounded-full animate-pulse"></div>
+                    <div className="h-4 w-24 bg-hint/20 rounded animate-pulse"></div>
+                  </div>
+                ) : (
+                  <div
+                    className="flex items-center gap-2 group cursor-help"
+                    title={voiceStatus.description}
+                  >
+                    <div
+                      className={`w-2 h-2 ${voiceStatus.color} rounded-full transition-colors`}
+                    ></div>
+                    <span className="text-sm font-medium text-text-body">
+                      {voiceStatus.text}
                     </span>
                   </div>
+                )}
+
+                {/* Training Samples Count */}
+                {isLoadingSamples ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 bg-hint/20 rounded animate-pulse"></div>
+                    <div className="h-4 w-32 bg-hint/20 rounded animate-pulse"></div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-hint" />
+                    <span className="text-sm text-text-body">
+                      {uploadedCaptions} training samples
+                    </span>
+                  </div>
+                )}
+
+                {/* Selected Tone */}
+                {isLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 bg-hint/20 rounded animate-pulse"></div>
+                    <div className="h-4 w-28 bg-hint/20 rounded animate-pulse"></div>
+                  </div>
+                ) : (
+                  selectedTone && (
+                    <div className="flex items-center gap-2">
+                      <Target className="w-4 h-4 text-hint" />
+                      <span className="text-sm text-text-body capitalize">
+                        {selectedTone.name} tone
+                      </span>
+                    </div>
+                  )
                 )}
               </div>
             </div>
