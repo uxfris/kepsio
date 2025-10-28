@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TrendingUp,
   Upload,
@@ -53,8 +53,21 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [deletingIndex, setDeletingIndex] = useState<number | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [animatedProgress, setAnimatedProgress] = useState(0);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     const { addToast } = useToast();
+
+    // Animate progress bar after loading finishes
+    useEffect(() => {
+      if (!isLoadingSamples) {
+        // Start from 0 and animate to actual value
+        setAnimatedProgress(0);
+        const timer = setTimeout(() => {
+          setAnimatedProgress(uploadedCaptions);
+        }, 100);
+        return () => clearTimeout(timer);
+      }
+    }, [isLoadingSamples, uploadedCaptions]);
 
     const handleAddCaptions = async () => {
       setIsAdding(true);
@@ -235,7 +248,7 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
           <Card className="lg:col-span-2" padding="none">
             <CardHeader>
               <div className="flex items-start justify-between">
-                <div>
+                <div className="flex-1">
                   <CardTitle className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center">
                       <TrendingUp className="w-4 h-4 text-accent" />
@@ -247,30 +260,66 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
                     writing style
                   </p>
                 </div>
-                <div className="px-3 py-1 bg-accent/10 text-accent text-xs font-semibold rounded-full">
-                  {uploadedCaptions}/{MAX_SAMPLES} samples
-                </div>
+                {isLoadingSamples ? (
+                  <div className="h-6 w-20 bg-hint/20 rounded-full animate-pulse"></div>
+                ) : (
+                  <div className="px-3 py-1 bg-accent/10 text-accent text-xs font-semibold rounded-full">
+                    {uploadedCaptions}/{MAX_SAMPLES} samples
+                  </div>
+                )}
               </div>
             </CardHeader>
             <CardContent>
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-medium text-text-head">
-                    Training Progress
-                  </span>
-                  <span className="text-sm text-text-body">
-                    {Math.round((uploadedCaptions / MAX_SAMPLES) * 100)}%
-                    complete
-                  </span>
+              {isLoadingSamples ? (
+                // Loading Skeleton
+                <div className="space-y-6">
+                  {/* Progress Bar Skeleton */}
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="h-4 bg-hint/20 rounded w-32 animate-pulse"></div>
+                      <div className="h-4 bg-hint/20 rounded w-24 animate-pulse"></div>
+                    </div>
+                    <div className="w-full h-2 bg-hint/20 rounded-full animate-pulse"></div>
+                    <div className="flex justify-between text-xs text-hint mt-2">
+                      <div className="h-3 bg-hint/20 rounded w-20 animate-pulse"></div>
+                      <div className="h-3 bg-hint/20 rounded w-16 animate-pulse"></div>
+                      <div className="h-3 bg-hint/20 rounded w-20 animate-pulse"></div>
+                    </div>
+                  </div>
+                  {/* Status Alert Skeleton */}
+                  <div className="p-4 bg-hint/10 rounded-xl border border-hint/20">
+                    <div className="flex items-start gap-3">
+                      <div className="w-5 h-5 bg-hint/20 rounded animate-pulse shrink-0 mt-0.5"></div>
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-hint/20 rounded w-3/4 animate-pulse"></div>
+                        <div className="h-3 bg-hint/20 rounded w-full animate-pulse"></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <Progress value={uploadedCaptions} max={MAX_SAMPLES} />
-                <div className="flex justify-between text-xs text-hint mt-2">
-                  <span>Getting started</span>
-                  <span>Good</span>
-                  <span>Excellent</span>
-                </div>
-              </div>
-              <StatusAlert uploadedCaptions={uploadedCaptions} />
+              ) : (
+                // Actual Content
+                <>
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-medium text-text-head">
+                        Training Progress
+                      </span>
+                      <span className="text-sm text-text-body">
+                        {Math.round((uploadedCaptions / MAX_SAMPLES) * 100)}%
+                        complete
+                      </span>
+                    </div>
+                    <Progress value={animatedProgress} max={MAX_SAMPLES} />
+                    <div className="flex justify-between text-xs text-hint mt-2">
+                      <span>Getting started</span>
+                      <span>Good</span>
+                      <span>Excellent</span>
+                    </div>
+                  </div>
+                  <StatusAlert uploadedCaptions={uploadedCaptions} />
+                </>
+              )}
             </CardContent>
           </Card>
 
