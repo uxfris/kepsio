@@ -70,6 +70,7 @@ model VoiceProfile {
   style            String
   contentTypeIds   String[] @default([]) // Array of content type IDs
   examples         String[]
+  voiceStrength    Int      @default(75) // Voice strength percentage (0-100)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 

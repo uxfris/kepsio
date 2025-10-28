@@ -22,6 +22,7 @@ interface ToneTabProps {
   onToneChange: (toneId: string) => void;
   onContentTypeToggle: (typeId: string) => void;
   onVoiceStrengthChange: (value: number) => void;
+  onVoiceStrengthChangeComplete?: (value: number) => void; // Called when dragging ends
   onStylePreferencesChange: (preferences: StylePreferences) => void;
 }
 
@@ -38,6 +39,7 @@ export const ToneTab: React.FC<ToneTabProps> = React.memo(
     onToneChange,
     onContentTypeToggle,
     onVoiceStrengthChange,
+    onVoiceStrengthChangeComplete,
     onStylePreferencesChange,
   }) => {
     const selectedTone = onboardingOptions.brandTones.find(
@@ -269,6 +271,7 @@ export const ToneTab: React.FC<ToneTabProps> = React.memo(
                 <Slider
                   value={voiceStrength}
                   onChange={onVoiceStrengthChange}
+                  onChangeComplete={onVoiceStrengthChangeComplete}
                   min={0}
                   max={100}
                 />

@@ -23,7 +23,6 @@ type TabValue = (typeof TAB_OPTIONS)[number]["value"];
 const BrandVoiceContent: React.FC = () => {
   // State management
   const [activeTab, setActiveTab] = useState<TabValue>("training");
-  const [voiceStrength, setVoiceStrength] = useState(75);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(0);
   const [stylePreferences, setStylePreferences] = useState<StylePreferences>({
@@ -39,10 +38,12 @@ const BrandVoiceContent: React.FC = () => {
     selectedToneId,
     selectedContentTypes,
     voiceInsights,
+    voiceStrength,
     isLoading,
     setSelectedPlatformId,
     setSelectedToneId,
     setSelectedContentTypes,
+    setVoiceStrength,
     refreshVoiceInsights,
   } = useBrandVoiceData();
 
@@ -63,6 +64,7 @@ const BrandVoiceContent: React.FC = () => {
     selectedPlatformId,
     selectedToneId,
     selectedContentTypes,
+    voiceStrength,
     refreshVoiceInsights,
   });
 
@@ -129,7 +131,7 @@ const BrandVoiceContent: React.FC = () => {
     setShowOnboarding(false);
   }, []);
 
-  // Platform/Tone/Content handlers with DB persistence
+  // Platform/Tone/Content handlers with DB persistence (silent saves)
   const handlePlatformChange = useCallback(
     (platformId: string) => {
       setSelectedPlatformId(platformId);
@@ -155,6 +157,23 @@ const BrandVoiceContent: React.FC = () => {
       saveOnboardingData({ contentTypeIds: updatedTypes });
     },
     [selectedContentTypes, setSelectedContentTypes, saveOnboardingData]
+  );
+
+  // Voice strength handlers - onChange for UI, onChangeComplete for saving
+  const handleVoiceStrengthChange = useCallback(
+    (strength: number) => {
+      // Update UI immediately while dragging
+      setVoiceStrength(strength);
+    },
+    [setVoiceStrength]
+  );
+
+  const handleVoiceStrengthChangeComplete = useCallback(
+    (strength: number) => {
+      // Save to database when user finishes dragging
+      saveOnboardingData({ voiceStrength: strength });
+    },
+    [saveOnboardingData]
   );
 
   // Training handlers
@@ -372,7 +391,8 @@ const BrandVoiceContent: React.FC = () => {
             onPlatformChange={handlePlatformChange}
             onToneChange={handleToneChange}
             onContentTypeToggle={handleContentTypeToggle}
-            onVoiceStrengthChange={setVoiceStrength}
+            onVoiceStrengthChange={handleVoiceStrengthChange}
+            onVoiceStrengthChangeComplete={handleVoiceStrengthChangeComplete}
             onStylePreferencesChange={setStylePreferences}
           />
         )}

@@ -21,6 +21,7 @@ export async function GET() {
         toneId: true,
         contentTypeIds: true,
         style: true,
+        voiceStrength: true,
       },
     });
 
@@ -29,6 +30,7 @@ export async function GET() {
       toneId: voiceProfile?.toneId || null,
       contentTypeIds: voiceProfile?.contentTypeIds || [],
       voiceInsights: voiceProfile?.style || null,
+      voiceStrength: voiceProfile?.voiceStrength ?? 75,
     });
   } catch (error) {
     console.error("Error fetching onboarding data:", error);
@@ -67,14 +69,30 @@ export async function POST(request: Request) {
       });
 
       if (voiceProfile) {
-        // Update existing voice profile
+        // Update existing voice profile - only update fields that are provided
+        const updateData: {
+          platformId?: string | null;
+          toneId?: string | null;
+          contentTypeIds?: string[];
+          voiceStrength?: number;
+        } = {};
+
+        if (onboardingData.platformId !== undefined) {
+          updateData.platformId = onboardingData.platformId || null;
+        }
+        if (onboardingData.toneId !== undefined) {
+          updateData.toneId = onboardingData.toneId || null;
+        }
+        if (onboardingData.contentTypeIds !== undefined) {
+          updateData.contentTypeIds = onboardingData.contentTypeIds;
+        }
+        if (onboardingData.voiceStrength !== undefined) {
+          updateData.voiceStrength = onboardingData.voiceStrength;
+        }
+
         await prisma.voiceProfile.update({
           where: { id: voiceProfile.id },
-          data: {
-            platformId: onboardingData.platformId || null,
-            toneId: onboardingData.toneId || null,
-            contentTypeIds: onboardingData.contentTypeIds || [],
-          },
+          data: updateData,
         });
       } else {
         // Create new voice profile with onboarding data
@@ -88,6 +106,7 @@ export async function POST(request: Request) {
             style: "",
             contentTypeIds: onboardingData.contentTypeIds || [],
             examples: [],
+            voiceStrength: onboardingData.voiceStrength ?? 75,
           },
         });
       }

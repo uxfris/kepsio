@@ -5,12 +5,14 @@ interface SaveOnboardingDataParams {
   platformId?: string;
   toneId?: string;
   contentTypeIds?: string[];
+  voiceStrength?: number;
 }
 
 interface UseBrandVoiceActionsProps {
   selectedPlatformId: string;
   selectedToneId: string;
   selectedContentTypes: string[];
+  voiceStrength: number;
   refreshVoiceInsights: () => Promise<void>;
 }
 
@@ -18,6 +20,7 @@ export function useBrandVoiceActions({
   selectedPlatformId,
   selectedToneId,
   selectedContentTypes,
+  voiceStrength,
   refreshVoiceInsights,
 }: UseBrandVoiceActionsProps) {
   const { addToast } = useToast();
@@ -27,19 +30,37 @@ export function useBrandVoiceActions({
       platformId,
       toneId,
       contentTypeIds,
+      voiceStrength: newVoiceStrength,
     }: SaveOnboardingDataParams = {}) => {
       try {
+        // Only send fields that are explicitly provided to avoid overwriting other fields
+        const onboardingData: {
+          platformId?: string;
+          toneId?: string;
+          contentTypeIds?: string[];
+          voiceStrength?: number;
+        } = {};
+
+        if (platformId !== undefined) {
+          onboardingData.platformId = platformId;
+        }
+        if (toneId !== undefined) {
+          onboardingData.toneId = toneId;
+        }
+        if (contentTypeIds !== undefined) {
+          onboardingData.contentTypeIds = contentTypeIds;
+        }
+        if (newVoiceStrength !== undefined) {
+          onboardingData.voiceStrength = newVoiceStrength;
+        }
+
         const response = await fetch("/api/user/onboarding", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            onboardingData: {
-              platformId: platformId ?? selectedPlatformId,
-              toneId: toneId ?? selectedToneId,
-              contentTypeIds: contentTypeIds ?? selectedContentTypes,
-            },
+            onboardingData,
             onboardingCompleted: true,
           }),
         });
@@ -47,22 +68,11 @@ export function useBrandVoiceActions({
         if (!response.ok) {
           throw new Error("Failed to save settings");
         }
-
-        addToast({
-          type: "success",
-          title: "Settings Saved",
-          description: "Your brand voice settings have been updated.",
-        });
       } catch (error) {
         console.error("Error saving onboarding data:", error);
-        addToast({
-          type: "error",
-          title: "Save Failed",
-          description: "Could not save your settings. Please try again.",
-        });
       }
     },
-    [selectedPlatformId, selectedToneId, selectedContentTypes, addToast]
+    [addToast]
   );
 
   const handleAnalyze = useCallback(async () => {

@@ -7,11 +7,13 @@ interface UseBrandVoiceDataReturn {
   selectedToneId: string;
   selectedContentTypes: string[];
   voiceInsights: VoiceInsights | null;
+  voiceStrength: number;
   isLoading: boolean;
   error: Error | null;
   setSelectedPlatformId: (id: string) => void;
   setSelectedToneId: (id: string) => void;
   setSelectedContentTypes: (types: string[]) => void;
+  setVoiceStrength: (strength: number) => void;
   refreshVoiceInsights: () => Promise<void>;
 }
 
@@ -31,6 +33,7 @@ export function useBrandVoiceData(): UseBrandVoiceDataReturn {
   const [voiceInsights, setVoiceInsights] = useState<VoiceInsights | null>(
     null
   );
+  const [voiceStrength, setVoiceStrength] = useState(75);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -54,6 +57,7 @@ export function useBrandVoiceData(): UseBrandVoiceDataReturn {
         let platformId = optionsData.platforms[0]?.id || "";
         let toneId = optionsData.brandTones[0]?.id || "";
         let contentTypeIds: string[] = [];
+        let strength = 75;
 
         // Override with user data if available
         if (userDataResponse.ok) {
@@ -61,6 +65,7 @@ export function useBrandVoiceData(): UseBrandVoiceDataReturn {
           platformId = userData.platformId || platformId;
           toneId = userData.toneId || toneId;
           contentTypeIds = userData.contentTypeIds || [];
+          strength = userData.voiceStrength ?? 75;
 
           // Parse voice insights if available
           if (userData.voiceInsights) {
@@ -79,6 +84,7 @@ export function useBrandVoiceData(): UseBrandVoiceDataReturn {
         setSelectedPlatformId(platformId);
         setSelectedToneId(toneId);
         setSelectedContentTypes(contentTypeIds);
+        setVoiceStrength(strength);
       } catch (err) {
         setError(err instanceof Error ? err : new Error("Unknown error"));
         console.error("Error fetching brand voice data:", err);
@@ -122,11 +128,13 @@ export function useBrandVoiceData(): UseBrandVoiceDataReturn {
     selectedToneId,
     selectedContentTypes,
     voiceInsights,
+    voiceStrength,
     isLoading,
     error,
     setSelectedPlatformId,
     setSelectedToneId,
     setSelectedContentTypes,
+    setVoiceStrength,
     refreshVoiceInsights,
   };
 }
