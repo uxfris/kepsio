@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { Zap } from "lucide-react";
+import { Zap, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "../../../components/ui";
@@ -22,7 +22,7 @@ import {
 import { useToast } from "../../../components/ui/Toast";
 
 export default function PricingPage() {
-  const [billingCycle, setBillingCycle] = useState<BillingCycle>("annual");
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
   const [isProcessing, setIsProcessing] = useState(false);
   const { subscription, isLoading } = useSubscription();
   const router = useRouter();
@@ -166,6 +166,21 @@ export default function PricingPage() {
           </div> */}
         </div>
       </main>
+
+      {/* Loading Overlay */}
+      {isProcessing && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-section border border-border rounded-2xl p-8 max-w-md mx-4 text-center shadow-2xl">
+            <Loader2 className="w-12 h-12 text-text-head mx-auto mb-4 animate-spin" />
+            <h3 className="text-xl font-semibold text-text-head mb-2">
+              Setting up your subscription
+            </h3>
+            <p className="text-text-body">
+              Redirecting you to secure checkout...
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

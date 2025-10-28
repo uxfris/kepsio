@@ -52,7 +52,7 @@ const PricingCard = memo<PricingCardProps>(
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-bold text-text-head">
               {plan.id === "enterprise" ? "From $" : "$"}
-              {formatPrice(plan.price)}
+              {plan.id === "enterprise" ? plan.price : formatPrice(plan.price)}
             </span>
             <span className="text-text-body">
               {plan.id === "enterprise" ? "" : "/month"}
