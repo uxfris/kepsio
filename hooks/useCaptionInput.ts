@@ -24,7 +24,7 @@ export const useCaptionInput = () => {
   });
 
   const [options, setOptions] = useState<CaptionOptions>({
-    cta: "none",
+    cta: "link-in-bio",
     captionLength: "medium",
     emojiStyle: "minimal",
     hashtagCount: 5,
