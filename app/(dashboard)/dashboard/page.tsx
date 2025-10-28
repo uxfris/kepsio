@@ -20,6 +20,11 @@ import {
   CardContent,
 } from "../../../components/ui/Card";
 import { CaptionCard } from "../../../components/captions/CaptionCard";
+import {
+  CaptionCardSkeleton,
+  StatCardSkeleton,
+} from "../../../components/ui/Skeleton";
+import { dataCache, CACHE_KEYS, CACHE_TTL } from "../../../lib/utils/cache";
 
 // Mock data - in real app this would come from API/hooks
 const mockUser = {
@@ -33,30 +38,69 @@ const mockUser = {
 function DashboardContent() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const [savedCaptions, setSavedCaptions] = useState<Set<number>>(new Set());
   const [recentCaptions, setRecentCaptions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [savingCaptionId, setSavingCaptionId] = useState<string | null>(null);
 
-  // Fetch recent captions
-  useEffect(() => {
-    const fetchCaptions = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch("/api/captions/recent?limit=6");
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success) {
-            setRecentCaptions(data.captions);
-          }
+  // Fetch recent captions with caching
+  const fetchCaptions = async (forceRefresh = false) => {
+    try {
+      // Check cache first (skip if force refresh)
+      if (!forceRefresh) {
+        const cachedData = dataCache.get<any[]>(
+          CACHE_KEYS.RECENT_CAPTIONS,
+          CACHE_TTL.SHORT
+        );
+
+        if (cachedData) {
+          setRecentCaptions(cachedData);
+          setIsLoading(false);
+          return;
         }
-      } catch (error) {
-        console.error("Error fetching captions:", error);
-      } finally {
-        setIsLoading(false);
+      }
+
+      setIsLoading(true);
+      const response = await fetch("/api/captions/recent?limit=6");
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setRecentCaptions(data.captions);
+          // Cache the data
+          dataCache.set(CACHE_KEYS.RECENT_CAPTIONS, data.captions);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching captions:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Initial fetch
+  useEffect(() => {
+    fetchCaptions();
+  }, []);
+
+  // Refetch when page becomes visible (user navigates back)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        // Check if cache was invalidated while away
+        const cachedData = dataCache.get<any[]>(
+          CACHE_KEYS.RECENT_CAPTIONS,
+          CACHE_TTL.SHORT
+        );
+        if (!cachedData) {
+          // Cache was invalidated, refetch
+          fetchCaptions(true);
+        }
       }
     };
 
-    fetchCaptions();
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   const handleCopyCaption = async (captionText: string, index: number) => {
@@ -70,16 +114,44 @@ function DashboardContent() {
     }
   };
 
-  const handleSaveCaption = (index: number) => {
-    setSavedCaptions((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(index)) {
-        newSet.delete(index);
+  const handleSaveCaption = async (captionId: string) => {
+    try {
+      // Optimistic update - update UI immediately
+      setRecentCaptions((prev) =>
+        prev.map((caption) =>
+          caption.id === captionId
+            ? { ...caption, isSaved: !caption.isSaved }
+            : caption
+        )
+      );
+
+      // Then sync with server
+      const response = await fetch("/api/captions/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ captionId }),
+      });
+
+      if (!response.ok) {
+        // If server update fails, revert the optimistic update
+        setRecentCaptions((prev) =>
+          prev.map((caption) =>
+            caption.id === captionId
+              ? { ...caption, isSaved: !caption.isSaved }
+              : caption
+          )
+        );
+        throw new Error("Failed to save caption");
       } else {
-        newSet.add(index);
+        // Invalidate cache so next load fetches fresh data
+        dataCache.invalidate(CACHE_KEYS.RECENT_CAPTIONS);
+        dataCache.invalidate(CACHE_KEYS.SAVED_CAPTIONS);
       }
-      return newSet;
-    });
+    } catch (error) {
+      console.error("Failed to save caption:", error);
+    }
   };
 
   const progressPercentage =
@@ -124,61 +196,70 @@ function DashboardContent() {
       <div className="px-6 py-6">
         {/* Quick Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <Card
-            variant="outlined"
-            className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
-          >
-            <CardContent padding="none">
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center">
-                    <Sparkles className="w-6 h-6 text-accent" />
+          {isLoading ? (
+            <>
+              <StatCardSkeleton />
+              <StatCardSkeleton />
+            </>
+          ) : (
+            <>
+              <Card
+                variant="outlined"
+                className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
+              >
+                <CardContent padding="none">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center">
+                        <Sparkles className="w-6 h-6 text-accent" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-semibold text-primary">
+                          Captions Created
+                        </h3>
+                        <p className="text-xs text-hint">This month</p>
+                      </div>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold text-primary">
+                        {mockUser.captionsCreated}
+                      </span>
+                      <span className="text-sm text-hint">
+                        of {mockUser.totalCredits}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-primary">
-                      Captions Created
-                    </h3>
-                    <p className="text-xs text-hint">This month</p>
-                  </div>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-primary">
-                    {mockUser.captionsCreated}
-                  </span>
-                  <span className="text-sm text-hint">
-                    of {mockUser.totalCredits}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
 
-          <Card
-            variant="outlined"
-            className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
-          >
-            <CardContent padding="none">
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                    <Clock className="w-6 h-6 text-blue-600" />
+              <Card
+                variant="outlined"
+                className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
+              >
+                <CardContent padding="none">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <Clock className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-semibold text-primary">
+                          Time Saved
+                        </h3>
+                        <p className="text-xs text-hint">This month</p>
+                      </div>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold text-primary">
+                        {mockUser.timeSaved}
+                      </span>
+                      <span className="text-sm text-hint">hours</span>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-primary">
-                      Time Saved
-                    </h3>
-                    <p className="text-xs text-hint">This month</p>
-                  </div>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-primary">
-                    {mockUser.timeSaved}
-                  </span>
-                  <span className="text-sm text-hint">hours</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </>
+          )}
         </div>
 
         {/* Recent Captions Section */}
@@ -197,13 +278,10 @@ function DashboardContent() {
 
           {/* Caption Cards Grid */}
           {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto mb-4"></div>
-                <p className="text-sm text-text-body">
-                  Loading your captions...
-                </p>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <CaptionCardSkeleton key={i} />
+              ))}
             </div>
           ) : recentCaptions.length === 0 ? (
             <div className="text-center py-12">
@@ -239,14 +317,15 @@ function DashboardContent() {
                       variant: "ghost",
                     },
                     {
-                      icon: savedCaptions.has(index) ? (
-                        <BookmarkCheck className="w-4 h-4 shrink-0" />
+                      icon: caption.isSaved ? (
+                        <BookmarkCheck className="w-4 h-4 shrink-0 text-accent" />
                       ) : (
                         <Bookmark className="w-4 h-4 shrink-0" />
                       ),
-                      label: savedCaptions.has(index) ? "Unsave" : "Save",
-                      onClick: () => handleSaveCaption(index),
+                      label: caption.isSaved ? "Saved" : "Save",
+                      onClick: () => handleSaveCaption(caption.id),
                       variant: "ghost",
+                      className: caption.isSaved ? "text-accent" : "",
                     },
                   ]}
                 />

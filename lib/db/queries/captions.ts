@@ -70,14 +70,62 @@ export async function updateCaption(
   userId: string,
   content: string
 ) {
+  // Verify user owns this caption first
+  const caption = await prisma.caption.findFirst({
+    where: { id, userId },
+  });
+
+  if (!caption) {
+    throw new Error(
+      "Caption not found or you don't have permission to edit it"
+    );
+  }
+
   return await prisma.caption.update({
     where: {
       id,
-      userId,
     },
     data: {
       content,
       updatedAt: new Date(),
     },
+  });
+}
+
+export async function toggleCaptionSaved(id: string, userId: string) {
+  // First get the current state
+  const caption = await prisma.caption.findFirst({
+    where: {
+      id,
+      userId,
+    },
+    select: {
+      isSaved: true,
+    },
+  });
+
+  if (!caption) {
+    throw new Error("Caption not found");
+  }
+
+  // Toggle the saved state
+  return await prisma.caption.update({
+    where: {
+      id,
+    },
+    data: {
+      isSaved: !caption.isSaved,
+      updatedAt: new Date(),
+    },
+  });
+}
+
+export async function getSavedCaptions(userId: string) {
+  return await prisma.caption.findMany({
+    where: {
+      userId,
+      isSaved: true,
+    },
+    orderBy: { updatedAt: "desc" },
   });
 }

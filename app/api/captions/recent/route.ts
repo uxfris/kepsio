@@ -40,6 +40,7 @@ export async function GET(request: NextRequest) {
         style,
         createdAt: caption.createdAt,
         metadata: caption.metadata,
+        isSaved: caption.isSaved,
       };
     });
 

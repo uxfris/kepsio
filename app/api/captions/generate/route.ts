@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { openai } from "@/lib/ai/openai";
 import { getUserVoiceProfile } from "@/lib/db/queries/voice-profiles";
-import { createMultipleCaptions } from "@/lib/db/queries/captions";
+import {
+  createMultipleCaptions,
+  getUserCaptions,
+} from "@/lib/db/queries/captions";
 
 export async function POST(request: NextRequest) {
   try {
@@ -141,9 +144,18 @@ export async function POST(request: NextRequest) {
 
     await createMultipleCaptions(captionInputs);
 
+    // Fetch the saved captions to get their IDs
+    const captionsWithIds = await getUserCaptions(user.id, captions.length);
+
     return NextResponse.json({
       success: true,
       captions,
+      captionIds: captionsWithIds.map((c: any) => c.id),
+      captionsData: captionsWithIds.map((c: any) => ({
+        id: c.id,
+        content: c.content,
+        isSaved: c.isSaved || false,
+      })),
       platform: voiceProfile?.platform?.name || "Instagram",
     });
   } catch (error) {

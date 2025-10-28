@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Search,
   Filter,
@@ -12,6 +12,7 @@ import {
   BookMarked,
   BookmarkCheck,
   Copy,
+  RefreshCw,
 } from "lucide-react";
 import { SocialIcon } from "react-social-icons";
 import { Button } from "../../../components/ui/Button";
@@ -19,9 +20,14 @@ import { Card, CardHeader, CardTitle } from "../../../components/ui/Card";
 import { ToastProvider } from "../../../components/ui/Toast";
 import { CaptionCard } from "../../../components/captions/CaptionCard";
 import EditCaptionModal from "../../../components/captions/EditCaptionModal";
+import {
+  CaptionCardSkeleton,
+  StatCardSkeleton,
+} from "../../../components/ui/Skeleton";
+import { dataCache, CACHE_KEYS, CACHE_TTL } from "../../../lib/utils/cache";
 
-// Mock data - replace with actual API calls
-const savedCaptions = [
+// Note: savedCaptions data is now fetched from the API instead of using mock data
+const mockSavedCaptions = [
   {
     id: "1",
     content:
@@ -31,6 +37,7 @@ const savedCaptions = [
     savedDate: "2024-01-20",
     tags: ["product launch", "engagement"],
     createdAt: new Date("2024-01-20"),
+    isSaved: true,
   },
   {
     id: "2",
@@ -117,8 +124,10 @@ export default function LibraryPage() {
   const [editingCaptionIndex, setEditingCaptionIndex] = useState<number | null>(
     null
   );
-  const [editedCaptions, setEditedCaptions] = useState(savedCaptions);
+  const [editedCaptions, setEditedCaptions] = useState(mockSavedCaptions);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [savingCaptionId, setSavingCaptionId] = useState<string | null>(null);
 
   // Filter and sort captions
   const filteredCaptions = useMemo(() => {
@@ -252,15 +261,127 @@ export default function LibraryPage() {
     setEditingCaptionIndex(null);
   };
 
+  // Fetch saved captions from API with caching
+  const fetchSavedCaptions = async (forceRefresh = false) => {
+    try {
+      // Check cache first (skip if force refresh)
+      if (!forceRefresh) {
+        const cachedData = dataCache.get<any[]>(
+          CACHE_KEYS.SAVED_CAPTIONS,
+          CACHE_TTL.MEDIUM
+        );
+
+        if (cachedData) {
+          setEditedCaptions(cachedData);
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      setIsLoading(true);
+      const response = await fetch("/api/captions/recent?limit=100");
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          // Filter only saved captions
+          const saved = data.captions
+            .filter((c: any) => c.isSaved)
+            .map((c: any) => ({
+              id: c.id,
+              content: c.fullText,
+              platform: c.platform,
+              style: c.style,
+              savedDate: c.createdAt,
+              tags: [],
+              createdAt: new Date(c.createdAt),
+              isSaved: c.isSaved,
+            }));
+          setEditedCaptions(saved);
+          // Cache the data
+          dataCache.set(CACHE_KEYS.SAVED_CAPTIONS, saved);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching saved captions:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Initial fetch
+  useEffect(() => {
+    fetchSavedCaptions();
+  }, []);
+
+  // Refetch when page becomes visible (user navigates back)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        // Check if cache was invalidated while away
+        const cachedData = dataCache.get<any[]>(
+          CACHE_KEYS.SAVED_CAPTIONS,
+          CACHE_TTL.MEDIUM
+        );
+        if (!cachedData) {
+          // Cache was invalidated, refetch
+          fetchSavedCaptions(true);
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
+  // Handle save/unsave caption
+  const handleSaveCaption = async (captionId: string) => {
+    try {
+      setSavingCaptionId(captionId);
+      const response = await fetch("/api/captions/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ captionId }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // If unsaved, remove from the list
+        if (!data.isSaved) {
+          setEditedCaptions((prev) =>
+            prev.filter((caption) => caption.id !== captionId)
+          );
+          setToastMessage("Caption removed from library");
+          setShowToast(true);
+          setTimeout(() => setShowToast(false), 2000);
+
+          // Invalidate cache
+          dataCache.invalidate(CACHE_KEYS.SAVED_CAPTIONS);
+          dataCache.invalidate(CACHE_KEYS.RECENT_CAPTIONS);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to save caption:", error);
+    } finally {
+      setSavingCaptionId(null);
+    }
+  };
+
   // Calculate stats
-  const totalSaved = savedCaptions.length;
-  const topPlatform = savedCaptions.reduce((acc, caption) => {
+  const totalSaved = editedCaptions.length;
+  const topPlatform = editedCaptions.reduce((acc, caption) => {
     acc[caption.platform] = (acc[caption.platform] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
-  const topPlatformName = Object.keys(topPlatform).reduce((a, b) =>
-    topPlatform[a] > topPlatform[b] ? a : b
-  );
+  const topPlatformName =
+    Object.keys(topPlatform).length > 0
+      ? Object.keys(topPlatform).reduce((a, b) =>
+          topPlatform[a] > topPlatform[b] ? a : b
+        )
+      : "instagram";
 
   return (
     <ToastProvider>
@@ -279,6 +400,14 @@ export default function LibraryPage() {
                 </p>
               </div>
               <div className="flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  onClick={() => fetchSavedCaptions(true)}
+                  leftIcon={<RefreshCw className="w-4 h-4" />}
+                  title="Refresh library"
+                >
+                  Refresh
+                </Button>
                 <Button
                   variant="outline"
                   leftIcon={<Download className="w-4 h-4" />}
@@ -444,46 +573,70 @@ export default function LibraryPage() {
         <div className="px-6 py-6">
           {/* Summary Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <Card
-              padding="none"
-              className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
-            >
-              <div className="p-4">
-                <div className="text-sm text-hint mb-1">Total Saved</div>
-                <div className="text-2xl font-display font-semibold text-text-head">
-                  {totalSaved}
-                </div>
-              </div>
-            </Card>
-            <Card
-              padding="none"
-              className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
-            >
-              <div className="p-4">
-                <div className="text-sm text-hint mb-1">Top Platform</div>
-                <div className="flex items-center gap-2 mt-1">
-                  {getPlatformIcon(topPlatformName)}
-                  <span className="text-lg font-display font-semibold text-text-head capitalize">
-                    {topPlatformName}
-                  </span>
-                </div>
-              </div>
-            </Card>
-            <Card
-              padding="none"
-              className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
-            >
-              <div className="p-4">
-                <div className="text-sm text-hint mb-1">Best Style</div>
-                <div className="text-lg font-display font-semibold text-text-head">
-                  Thought Leadership
-                </div>
-              </div>
-            </Card>
+            {isLoading ? (
+              <>
+                <StatCardSkeleton />
+                <StatCardSkeleton />
+                <StatCardSkeleton />
+              </>
+            ) : (
+              <>
+                <Card
+                  padding="none"
+                  className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
+                >
+                  <div className="p-4">
+                    <div className="text-sm text-hint mb-1">Total Saved</div>
+                    <div className="text-2xl font-display font-semibold text-text-head">
+                      {totalSaved}
+                    </div>
+                  </div>
+                </Card>
+                <Card
+                  padding="none"
+                  className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
+                >
+                  <div className="p-4">
+                    <div className="text-sm text-hint mb-1">Top Platform</div>
+                    <div className="flex items-center gap-2 mt-1">
+                      {getPlatformIcon(topPlatformName)}
+                      <span className="text-lg font-display font-semibold text-text-head capitalize">
+                        {topPlatformName}
+                      </span>
+                    </div>
+                  </div>
+                </Card>
+                <Card
+                  padding="none"
+                  className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
+                >
+                  <div className="p-4">
+                    <div className="text-sm text-hint mb-1">Best Style</div>
+                    <div className="text-lg font-display font-semibold text-text-head">
+                      Thought Leadership
+                    </div>
+                  </div>
+                </Card>
+              </>
+            )}
           </div>
 
           {/* Caption Grid/List */}
-          {filteredCaptions.length === 0 ? (
+          {isLoading ? (
+            viewMode === "grid" ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <CaptionCardSkeleton key={i} />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {[...Array(6)].map((_, i) => (
+                  <CaptionCardSkeleton key={i} />
+                ))}
+              </div>
+            )
+          ) : filteredCaptions.length === 0 ? (
             <Card
               padding="lg"
               className="text-center hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
@@ -543,8 +696,12 @@ export default function LibraryPage() {
                               <BookmarkCheck className="w-4 h-4 shrink-0" />
                             ),
                             label: "Unsave",
-                            onClick: () => {},
+                            onClick: () => handleSaveCaption(caption.id),
                             variant: "ghost",
+                            className:
+                              savingCaptionId === caption.id
+                                ? "opacity-50"
+                                : "",
                           },
                         ]}
                       />
@@ -586,9 +743,10 @@ export default function LibraryPage() {
                           {
                             icon: <BookmarkCheck className="w-4 h-4" />,
                             label: "Unsave",
-                            onClick: () => {},
-                            className:
-                              "p-2 hover:bg-error/10 text-hint hover:text-error rounded transition-colors",
+                            onClick: () => handleSaveCaption(caption.id),
+                            className: `p-2 hover:bg-error/10 text-hint hover:text-error rounded transition-colors ${
+                              savingCaptionId === caption.id ? "opacity-50" : ""
+                            }`,
                           },
                         ]}
                       />

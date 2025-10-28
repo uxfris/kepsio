@@ -23,21 +23,21 @@ const convertImageToBase64 = (file: File): Promise<string> => {
         }
 
         // Create canvas and resize
-        const canvas = document.createElement('canvas');
+        const canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        
+        const ctx = canvas.getContext("2d");
+
         if (!ctx) {
-          reject(new Error('Failed to get canvas context'));
+          reject(new Error("Failed to get canvas context"));
           return;
         }
 
         ctx.drawImage(img, 0, 0, width, height);
-        
+
         // Convert to JPEG with 85% quality for optimal size/quality balance
-        const base64String = canvas.toDataURL('image/jpeg', 0.85);
-        const base64Data = base64String.split(',')[1];
+        const base64String = canvas.toDataURL("image/jpeg", 0.85);
+        const base64Data = base64String.split(",")[1];
         resolve(base64Data);
       };
       img.onerror = reject;
@@ -57,7 +57,11 @@ export const useCaptionGeneration = () => {
     onPhaseUpdate?: (
       phase: "analyzing" | "hooking" | "matching" | "complete"
     ) => void
-  ): Promise<string[]> => {
+  ): Promise<{
+    captions: string[];
+    captionIds: string[];
+    savedStates: boolean[];
+  }> => {
     // Phase 1: Analyzing content
     onPhaseUpdate?.("analyzing");
 
@@ -111,7 +115,13 @@ export const useCaptionGeneration = () => {
       // Complete
       onPhaseUpdate?.("complete");
 
-      return data.captions;
+      return {
+        captions: data.captions,
+        captionIds: data.captionIds || [],
+        savedStates: data.captionsData
+          ? data.captionsData.map((c: any) => c.isSaved || false)
+          : [],
+      };
     } catch (error) {
       console.error("Caption generation error:", error);
       throw error;

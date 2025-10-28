@@ -58,6 +58,10 @@ export default function CaptionInputPage() {
     showPaywall,
   } = usePaywall();
 
+  // Track caption IDs and saved states
+  const [captionIds, setCaptionIds] = React.useState<string[]>([]);
+  const [savedStates, setSavedStates] = React.useState<boolean[]>([]);
+
   // Event handlers
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     updateState({ contentInput: e.target.value });
@@ -110,7 +114,7 @@ export default function CaptionInputPage() {
     });
 
     try {
-      const captions = await generateCaptions(
+      const result = await generateCaptions(
         state.contentInput,
         contextData,
         state.selectedContextItems,
@@ -118,9 +122,13 @@ export default function CaptionInputPage() {
         (phase) => updateState({ loadingPhase: phase })
       );
 
+      // Update state with captions and their IDs
+      setCaptionIds(result.captionIds);
+      setSavedStates(result.savedStates);
+
       // Complete loading
       updateState({
-        generatedCaptions: captions,
+        generatedCaptions: result.captions,
         isGenerating: false,
         showImmersiveLoading: false,
         loadingPhase: "complete",
@@ -189,6 +197,38 @@ export default function CaptionInputPage() {
     updateState({ showImmersiveLoading: false });
   };
 
+  const handleSaveCaption = async (captionId: string, index: number) => {
+    try {
+      // Optimistic update - update UI immediately
+      setSavedStates((prev) => {
+        const newStates = [...prev];
+        newStates[index] = !newStates[index];
+        return newStates;
+      });
+
+      // Then sync with server
+      const response = await fetch("/api/captions/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ captionId }),
+      });
+
+      if (!response.ok) {
+        // If server update fails, revert the optimistic update
+        setSavedStates((prev) => {
+          const newStates = [...prev];
+          newStates[index] = !newStates[index];
+          return newStates;
+        });
+        throw new Error("Failed to save caption");
+      }
+    } catch (error) {
+      console.error("Failed to save caption:", error);
+    }
+  };
+
   const handleGenerateVariation = async (variation: string) => {
     // Store current input and context
     const currentInput = state.contentInput;
@@ -232,7 +272,7 @@ export default function CaptionInputPage() {
     });
 
     try {
-      const captions = await generateCaptions(
+      const result = await generateCaptions(
         modifiedInput,
         currentContext,
         currentSelectedItems,
@@ -240,8 +280,12 @@ export default function CaptionInputPage() {
         (phase) => updateState({ loadingPhase: phase })
       );
 
+      // Update state with captions and their IDs
+      setCaptionIds(result.captionIds);
+      setSavedStates(result.savedStates);
+
       updateState({
-        generatedCaptions: captions,
+        generatedCaptions: result.captions,
         isGenerating: false,
         showImmersiveLoading: false,
         loadingPhase: "complete",
@@ -426,6 +470,9 @@ export default function CaptionInputPage() {
               onGenerateVariation={handleGenerateVariation}
               platform="Instagram"
               isGenerating={state.isGenerating}
+              captionIds={captionIds}
+              savedStates={savedStates}
+              onSaveCaption={handleSaveCaption}
             />
           )}
         </div>

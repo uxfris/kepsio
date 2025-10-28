@@ -1,5 +1,12 @@
 import React, { useState, useMemo } from "react";
-import { Edit3, Bookmark, Star, Sparkles, RefreshCw } from "lucide-react";
+import {
+  Edit3,
+  Bookmark,
+  BookmarkCheck,
+  Star,
+  Sparkles,
+  RefreshCw,
+} from "lucide-react";
 import { Button } from "../ui/Button";
 import { Chip } from "../ui/Chip";
 import { useToast, toast } from "../ui/Toast";
@@ -15,6 +22,9 @@ interface CaptionResultsProps {
   onGenerateVariation?: (variation: string) => void;
   platform?: string;
   isGenerating?: boolean;
+  captionIds?: string[];
+  savedStates?: boolean[];
+  onSaveCaption?: (captionId: string, index: number) => void;
 }
 
 type FilterType =
@@ -94,9 +104,11 @@ export const CaptionResults = ({
   onGenerateVariation,
   platform = "Instagram",
   isGenerating = false,
+  captionIds = [],
+  savedStates = [],
+  onSaveCaption,
 }: CaptionResultsProps) => {
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
-  const [savedCaptions, setSavedCaptions] = useState<Set<number>>(new Set());
   const [editingCaptionIndex, setEditingCaptionIndex] = useState<number | null>(
     null
   );
@@ -141,7 +153,9 @@ export const CaptionResults = ({
   }, [captionsWithMetadata, activeFilter]);
 
   const handleSaveCaption = (index: number) => {
-    setSavedCaptions((prev) => new Set([...prev, index]));
+    if (onSaveCaption && captionIds[index]) {
+      onSaveCaption(captionIds[index], index);
+    }
   };
 
   const handleEditCaption = (index: number) => {
@@ -260,11 +274,20 @@ export const CaptionResults = ({
                         variant: "outline",
                       },
                       {
-                        icon: <Bookmark className="w-4 h-4 shrink-0" />,
-                        label: "Save",
+                        icon: savedStates[filteredCaptions[0].index] ? (
+                          <BookmarkCheck className="w-4 h-4 shrink-0 text-accent" />
+                        ) : (
+                          <Bookmark className="w-4 h-4 shrink-0" />
+                        ),
+                        label: savedStates[filteredCaptions[0].index]
+                          ? "Saved"
+                          : "Save",
                         onClick: () =>
                           handleSaveCaption(filteredCaptions[0].index),
                         variant: "outline",
+                        className: savedStates[filteredCaptions[0].index]
+                          ? "border-accent text-accent"
+                          : "",
                       },
                     ]}
                   />
@@ -316,10 +339,17 @@ export const CaptionResults = ({
                               variant: "outline",
                             },
                             {
-                              icon: <Bookmark className="w-4 h-4 shrink-0" />,
-                              label: "Save",
+                              icon: savedStates[index] ? (
+                                <BookmarkCheck className="w-4 h-4 shrink-0 text-accent" />
+                              ) : (
+                                <Bookmark className="w-4 h-4 shrink-0" />
+                              ),
+                              label: savedStates[index] ? "Saved" : "Save",
                               onClick: () => handleSaveCaption(index),
                               variant: "outline",
+                              className: savedStates[index]
+                                ? "border-accent text-accent"
+                                : "",
                             },
                           ]}
                         />
@@ -364,11 +394,20 @@ export const CaptionResults = ({
                         variant: "outline",
                       },
                       {
-                        icon: <Bookmark className="w-4 h-4 shrink-0" />,
-                        label: "Save",
+                        icon: savedStates[filteredCaptions[0].index] ? (
+                          <BookmarkCheck className="w-4 h-4 shrink-0 text-accent" />
+                        ) : (
+                          <Bookmark className="w-4 h-4 shrink-0" />
+                        ),
+                        label: savedStates[filteredCaptions[0].index]
+                          ? "Saved"
+                          : "Save",
                         onClick: () =>
                           handleSaveCaption(filteredCaptions[0].index),
                         variant: "outline",
+                        className: savedStates[filteredCaptions[0].index]
+                          ? "border-accent text-accent"
+                          : "",
                       },
                     ]}
                   />
