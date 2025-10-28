@@ -226,10 +226,6 @@ function buildUserPrompt(
       }`;
     }
 
-    if (options.hashtagCount > 0) {
-      prompt += `\n- Include ${options.hashtagCount} relevant hashtags`;
-    }
-
     if (options.emojiStyle) {
       const emojiGuide = {
         none: "No emojis",
@@ -244,16 +240,26 @@ function buildUserPrompt(
 
     if (options.cta && options.cta !== "none") {
       if (options.cta === "custom" && options.customCta) {
-        prompt += `\n- End with this CTA: "${options.customCta}"`;
+        prompt += `\n- Include this CTA before any hashtags: "${options.customCta}"`;
       } else {
-        const ctaMap: Record<string, string> = {
-          "link-in-bio": "Link in bio 🔗",
-          "shop-now": "Shop now 🛍️",
-          "dm-me": "DM me for more info 💬",
-          "comment-below": "Comment below 👇",
+        const ctaGuide: Record<string, string> = {
+          "link-in-bio":
+            "a creative call-to-action directing users to check the link in bio (avoid generic phrases, make it contextual and engaging)",
+          "shop-now":
+            "a creative call-to-action encouraging users to shop or make a purchase (make it natural and compelling)",
+          "dm-me":
+            "a creative call-to-action inviting users to send a direct message (make it conversational and welcoming)",
+          "comment-below":
+            "a creative call-to-action encouraging users to comment (make it engaging and specific to the content)",
         };
-        prompt += `\n- Include CTA: "${ctaMap[options.cta] || ""}"`;
+        prompt += `\n- Include ${
+          ctaGuide[options.cta] || "a creative call-to-action"
+        } before any hashtags`;
       }
+    }
+
+    if (options.hashtagCount > 0) {
+      prompt += `\n- Include ${options.hashtagCount} relevant hashtags at the end of the caption`;
     }
   }
 
@@ -263,6 +269,11 @@ function buildUserPrompt(
 3. Direct & actionable (clear, straightforward message)
 4. Question-based (engage with a thought-provoking question)
 5. Inspirational (motivational and uplifting)
+
+IMPORTANT: Structure each caption in this order:
+1. Main content/message
+2. Call-to-action (if specified)
+3. Hashtags (if specified)
 
 Format: Return ONLY the 5 captions, each on a new line, separated by "---"`;
 
