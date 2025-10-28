@@ -1,19 +1,9 @@
 import React, { useState, useMemo } from "react";
-import {
-  Copy,
-  Check,
-  Zap,
-  Edit3,
-  Bookmark,
-  Star,
-  ChevronDown,
-  Sparkles,
-  RefreshCw,
-} from "lucide-react";
+import { Edit3, Bookmark, Star, Sparkles, RefreshCw } from "lucide-react";
 import { Button } from "../ui/Button";
-import { Card, CardContent, CardHeader } from "../ui/Card";
 import { Chip } from "../ui/Chip";
 import { useToast, toast } from "../ui/Toast";
+import { CaptionCard } from "./CaptionCard";
 import EditCaptionModal from "./EditCaptionModal";
 
 interface CaptionResultsProps {
@@ -93,198 +83,6 @@ const getCaptionMetadata = (caption: string): CaptionMetadata => {
     isStory,
     isDirect,
   };
-};
-
-const CaptionCard: React.FC<{
-  caption: string;
-  index: number;
-  metadata: CaptionMetadata;
-  isTopPick: boolean;
-  isCopied: boolean;
-  onCopy: () => void;
-  onEdit: () => void;
-  onSave: () => void;
-}> = ({
-  caption,
-  index,
-  metadata,
-  isTopPick,
-  isCopied,
-  onCopy,
-  onEdit,
-  onSave,
-}) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  // const { addToast } = useToast();
-
-  const handleCopy = () => {
-    onCopy();
-    // addToast(toast.copied());
-  };
-
-  const handleSave = () => {
-    onSave();
-    // addToast(toast.saved());
-  };
-
-  const getEngagementIcon = () => {
-    switch (metadata.engagementScore) {
-      case "high":
-        return <Star className="w-3 h-3 text-warning" />;
-      case "medium":
-        return <Star className="w-3 h-3 text-hint" />;
-      default:
-        return null;
-    }
-  };
-
-  const getEngagementText = () => {
-    switch (metadata.engagementScore) {
-      case "high":
-        return "High Potential";
-      case "medium":
-        return "Good Potential";
-      default:
-        return "Standard";
-    }
-  };
-
-  const previewText = isExpanded
-    ? caption
-    : caption.substring(0, 120) + (caption.length > 120 ? "..." : "");
-
-  return (
-    <Card
-      padding="none"
-      variant="elevated"
-      className={`group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 relative overflow-hidden ${
-        isTopPick ? "ring-1 ring-primary/10" : ""
-      }`}
-    >
-      {/* Top Pick Badge */}
-      {isTopPick && (
-        <div className="absolute top-0 left-0 right-0 bg-linear-to-r from-section-light/50 to-section-light/0 p-3 border-b border-border-alt">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-text-head" />
-            <span className="text-xs font-semibold text-text-head">
-              Our top pick for you
-            </span>
-          </div>
-        </div>
-      )}
-
-      <CardHeader padding="md" className={isTopPick ? "pt-16" : ""}>
-        <div className="space-y-4">
-          {/* Caption Content */}
-          <div className="space-y-3">
-            <p className="text-sm leading-relaxed text-text-head font-medium">
-              {previewText}
-            </p>
-            {caption.length > 120 && (
-              <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="text-sm text-accent hover:text-accent-hover font-medium flex items-center gap-2 transition-colors duration-200"
-              >
-                {isExpanded ? "Show less" : "Read more"}
-                <ChevronDown
-                  className={`w-4 h-4 transition-transform duration-200 ${
-                    isExpanded ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-            )}
-          </div>
-
-          {/* Metadata badges */}
-          <div className="flex flex-wrap items-center gap-1">
-            <Chip
-              variant="outline"
-              size="sm"
-              className="bg-surface text-text-body"
-            >
-              {metadata.length === "short"
-                ? "Short"
-                : metadata.length === "medium"
-                ? "Medium"
-                : "Long"}
-            </Chip>
-            <Chip
-              variant="outline"
-              size="sm"
-              className="bg-surface text-text-body"
-            >
-              {metadata.style === "hook-first"
-                ? "Hook-first"
-                : metadata.style === "story-driven"
-                ? "Story-driven"
-                : "CTA-focused"}
-            </Chip>
-            {/* Engagement Badge */}
-            <Chip
-              variant="outline"
-              size="sm"
-              className="bg-surface text-text-body"
-            >
-              {getEngagementText()}
-            </Chip>
-          </div>
-        </div>
-      </CardHeader>
-
-      <CardContent
-        padding="md"
-        className="pt-0 group-hover:pt-3 h-0 group-hover:h-auto overflow-hidden transition-all duration-200"
-      >
-        {/* Action buttons */}
-        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          {/* Primary Action - Copy */}
-          <Button
-            variant="primary"
-            size="md"
-            onClick={handleCopy}
-            leftIcon={
-              isCopied ? (
-                <Check className="w-4 h-4" />
-              ) : (
-                <Copy className="w-4 h-4" />
-              )
-            }
-            className="flex-1 text-sm font-semibold h-10"
-          >
-            {isCopied ? "Copied!" : "Copy"}
-          </Button>
-
-          {/* Secondary Actions */}
-          <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onEdit}
-              className="h-10 w-10 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.edit-label]:block"
-              title="Edit caption"
-            >
-              <Edit3 className="w-4 h-4 shrink-0" />
-              <span className="edit-label ml-2 text-sm font-medium hidden whitespace-nowrap">
-                Edit
-              </span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleSave}
-              className="h-10 w-10 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.save-label]:block"
-              title="Save to library"
-            >
-              <Bookmark className="w-4 h-4 shrink-0 " />
-              <span className="save-label ml-2 text-sm font-medium hidden whitespace-nowrap">
-                Save
-              </span>
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
 };
 
 export const CaptionResults = ({
@@ -432,7 +230,7 @@ export const CaptionResults = ({
                   <CaptionCard
                     caption={filteredCaptions[0].caption}
                     index={filteredCaptions[0].index}
-                    metadata={filteredCaptions[0].metadata}
+                    variant="elevated"
                     isTopPick={true}
                     isCopied={copiedIndex === filteredCaptions[0].index}
                     onCopy={() =>
@@ -441,8 +239,34 @@ export const CaptionResults = ({
                         filteredCaptions[0].index
                       )
                     }
-                    onEdit={() => handleEditCaption(filteredCaptions[0].index)}
-                    onSave={() => handleSaveCaption(filteredCaptions[0].index)}
+                    metadata={{
+                      length: filteredCaptions[0].metadata.length,
+                      style:
+                        filteredCaptions[0].metadata.style === "hook-first"
+                          ? "Hook-first"
+                          : filteredCaptions[0].metadata.style ===
+                            "story-driven"
+                          ? "Story-driven"
+                          : "CTA-focused",
+                      engagementScore:
+                        filteredCaptions[0].metadata.engagementScore,
+                    }}
+                    actions={[
+                      {
+                        icon: <Edit3 className="w-4 h-4 shrink-0" />,
+                        label: "Edit",
+                        onClick: () =>
+                          handleEditCaption(filteredCaptions[0].index),
+                        variant: "outline",
+                      },
+                      {
+                        icon: <Bookmark className="w-4 h-4 shrink-0" />,
+                        label: "Save",
+                        onClick: () =>
+                          handleSaveCaption(filteredCaptions[0].index),
+                        variant: "outline",
+                      },
+                    ]}
                   />
                 </div>
               )}
@@ -470,12 +294,34 @@ export const CaptionResults = ({
                         <CaptionCard
                           caption={caption}
                           index={index}
-                          metadata={metadata}
+                          variant="elevated"
                           isTopPick={false}
                           isCopied={copiedIndex === index}
                           onCopy={() => onCopyCaption(caption, index)}
-                          onEdit={() => handleEditCaption(index)}
-                          onSave={() => handleSaveCaption(index)}
+                          metadata={{
+                            length: metadata.length,
+                            style:
+                              metadata.style === "hook-first"
+                                ? "Hook-first"
+                                : metadata.style === "story-driven"
+                                ? "Story-driven"
+                                : "CTA-focused",
+                            engagementScore: metadata.engagementScore,
+                          }}
+                          actions={[
+                            {
+                              icon: <Edit3 className="w-4 h-4 shrink-0" />,
+                              label: "Edit",
+                              onClick: () => handleEditCaption(index),
+                              variant: "outline",
+                            },
+                            {
+                              icon: <Bookmark className="w-4 h-4 shrink-0" />,
+                              label: "Save",
+                              onClick: () => handleSaveCaption(index),
+                              variant: "outline",
+                            },
+                          ]}
                         />
                       </div>
                     ))}
@@ -488,7 +334,7 @@ export const CaptionResults = ({
                   <CaptionCard
                     caption={filteredCaptions[0].caption}
                     index={filteredCaptions[0].index}
-                    metadata={filteredCaptions[0].metadata}
+                    variant="elevated"
                     isTopPick={false}
                     isCopied={copiedIndex === filteredCaptions[0].index}
                     onCopy={() =>
@@ -497,8 +343,34 @@ export const CaptionResults = ({
                         filteredCaptions[0].index
                       )
                     }
-                    onEdit={() => handleEditCaption(filteredCaptions[0].index)}
-                    onSave={() => handleSaveCaption(filteredCaptions[0].index)}
+                    metadata={{
+                      length: filteredCaptions[0].metadata.length,
+                      style:
+                        filteredCaptions[0].metadata.style === "hook-first"
+                          ? "Hook-first"
+                          : filteredCaptions[0].metadata.style ===
+                            "story-driven"
+                          ? "Story-driven"
+                          : "CTA-focused",
+                      engagementScore:
+                        filteredCaptions[0].metadata.engagementScore,
+                    }}
+                    actions={[
+                      {
+                        icon: <Edit3 className="w-4 h-4 shrink-0" />,
+                        label: "Edit",
+                        onClick: () =>
+                          handleEditCaption(filteredCaptions[0].index),
+                        variant: "outline",
+                      },
+                      {
+                        icon: <Bookmark className="w-4 h-4 shrink-0" />,
+                        label: "Save",
+                        onClick: () =>
+                          handleSaveCaption(filteredCaptions[0].index),
+                        variant: "outline",
+                      },
+                    ]}
                   />
                 </div>
               )}

@@ -5,18 +5,12 @@ import Link from "next/link";
 import {
   Sparkles,
   Plus,
-  Copy,
-  Check,
   RotateCcw,
   Bookmark,
   BookmarkCheck,
-  TrendingUp,
   Clock,
-  Zap,
   Crown,
   History,
-  ChevronDown,
-  ChevronUp,
 } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
 import {
@@ -25,7 +19,7 @@ import {
   CardTitle,
   CardContent,
 } from "../../../components/ui/Card";
-import { Badge } from "../../../components/ui/Badge";
+import { CaptionCard } from "../../../components/captions/CaptionCard";
 
 // Mock data - in real app this would come from API/hooks
 const mockUser = {
@@ -33,8 +27,6 @@ const mockUser = {
   captionsCreated: 4,
   captionsRemaining: 6,
   totalCredits: 10,
-  avgEngagement: 4.2,
-  engagementChange: 12,
   timeSaved: 2.5,
 };
 
@@ -42,9 +34,6 @@ function DashboardContent() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [savedCaptions, setSavedCaptions] = useState<Set<number>>(new Set());
-  const [expandedCaptions, setExpandedCaptions] = useState<Set<number>>(
-    new Set()
-  );
   const [recentCaptions, setRecentCaptions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -93,24 +82,6 @@ function DashboardContent() {
     });
   };
 
-  const toggleCaptionExpansion = (index: number) => {
-    setExpandedCaptions((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(index)) {
-        newSet.delete(index);
-      } else {
-        newSet.add(index);
-      }
-      return newSet;
-    });
-  };
-
-  // Helper function to determine if content needs truncation
-  // Using the same logic as CaptionResults.tsx for consistency
-  const needsTruncation = (content: string) => {
-    return content.length > 120;
-  };
-
   const progressPercentage =
     (mockUser.captionsCreated / mockUser.totalCredits) * 100;
 
@@ -152,7 +123,7 @@ function DashboardContent() {
       {/* Dashboard Content */}
       <div className="px-6 py-6">
         {/* Quick Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <Card
             variant="outlined"
             className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
@@ -176,35 +147,6 @@ function DashboardContent() {
                   </span>
                   <span className="text-sm text-hint">
                     of {mockUser.totalCredits}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card
-            variant="outlined"
-            className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
-          >
-            <CardContent padding="none">
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                    <TrendingUp className="w-6 h-6 text-green-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-primary">
-                      Avg. Engagement
-                    </h3>
-                    <p className="text-xs text-hint">Performance</p>
-                  </div>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-primary">
-                    {mockUser.avgEngagement}%
-                  </span>
-                  <span className="text-sm text-green-600 font-semibold">
-                    +{mockUser.engagementChange}%
                   </span>
                 </div>
               </div>
@@ -277,133 +219,37 @@ function DashboardContent() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {recentCaptions.map((caption, index) => (
-                <Card
+                <CaptionCard
                   key={caption.id}
-                  variant="outlined"
-                  className="cursor-pointer group overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
-                  onMouseEnter={() => setHoveredCard(caption.id)}
-                  onMouseLeave={() => setHoveredCard(null)}
-                >
-                  <CardContent
-                    padding="none"
-                    className={`transition-all duration-200`}
-                  >
-                    <div
-                      className={` space-y-4 ${
-                        hoveredCard === caption.id ? "" : "-mb-3"
-                      }`}
-                    >
-                      {/* Platform Badge and Date */}
-                      <div className="flex items-center justify-between">
-                        <Badge
-                          variant="platform"
-                          platform={caption.platform as any}
-                          size="md"
-                        />
-                        <span className="text-xs text-hint font-medium">
-                          {caption.date}
-                        </span>
-                      </div>
-
-                      {/* Caption Preview */}
-                      <div className="space-y-3">
-                        <div>
-                          <p className="text-sm text-text-body leading-relaxed">
-                            {expandedCaptions.has(index)
-                              ? caption.fullText
-                              : caption.fullText.substring(0, 120) +
-                                (caption.fullText.length > 120 ? "..." : "")}
-                          </p>
-                          {needsTruncation(caption.fullText) && (
-                            <button
-                              onClick={() => toggleCaptionExpansion(index)}
-                              className="text-xs text-accent hover:text-accent-hover font-medium mt-1 flex items-center gap-1"
-                            >
-                              {expandedCaptions.has(index) ? (
-                                <>
-                                  <ChevronUp className="w-3 h-3" />
-                                  Show less
-                                </>
-                              ) : (
-                                <>
-                                  <ChevronDown className="w-3 h-3" />
-                                  Read more
-                                </>
-                              )}
-                            </button>
-                          )}
-                        </div>
-
-                        {/* Style Tag */}
-                        <div>
-                          <Badge variant="style" size="md">
-                            {caption.style}
-                          </Badge>
-                        </div>
-                      </div>
-
-                      {/* Action Buttons - Show on Hover with Height Animation */}
-                      <div
-                        className={`transition-all duration-200 overflow-hidden ${
-                          hoveredCard === caption.id
-                            ? "opacity-100 max-h-12 translate-y-0"
-                            : "opacity-0 max-h-0 -translate-y-2"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 pt-2">
-                          <Button
-                            onClick={() =>
-                              handleCopyCaption(caption.fullText, index)
-                            }
-                            variant="primary"
-                            size="md"
-                            leftIcon={
-                              copiedIndex === index ? (
-                                <Check className="w-3.5 h-3.5" />
-                              ) : (
-                                <Copy className="w-3.5 h-3.5" />
-                              )
-                            }
-                            className="flex-1 text-xs font-semibold"
-                          >
-                            {copiedIndex === index ? "Copied!" : "Copy"}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-9 w-9 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.rotate-label]:block border border-border"
-                            title="Regenerate caption"
-                          >
-                            <RotateCcw className="w-4 h-4 shrink-0" />
-                            <span className="rotate-label ml-2 text-sm font-medium hidden whitespace-nowrap">
-                              Regenerate
-                            </span>
-                          </Button>
-                          <Button
-                            onClick={() => handleSaveCaption(index)}
-                            variant="ghost"
-                            size="sm"
-                            className="h-9 w-9 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.bookmark-label]:block border border-border"
-                            title={
-                              savedCaptions.has(index)
-                                ? "Remove from library"
-                                : "Save to library"
-                            }
-                          >
-                            {savedCaptions.has(index) ? (
-                              <BookmarkCheck className="w-4 h-4 shrink-0" />
-                            ) : (
-                              <Bookmark className="w-4 h-4 shrink-0" />
-                            )}
-                            <span className="bookmark-label ml-2 text-sm font-medium hidden whitespace-nowrap">
-                              {savedCaptions.has(index) ? "Unsave" : "Save"}
-                            </span>
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                  id={caption.id}
+                  caption={caption.fullText}
+                  platform={caption.platform as any}
+                  style={caption.style}
+                  date={caption.date}
+                  hoveredCard={hoveredCard}
+                  onHoverChange={(id) => setHoveredCard(id as number | null)}
+                  isCopied={copiedIndex === index}
+                  onCopy={() => handleCopyCaption(caption.fullText, index)}
+                  variant="grid"
+                  actions={[
+                    {
+                      icon: <RotateCcw className="w-4 h-4 shrink-0" />,
+                      label: "Regenerate",
+                      onClick: () => {},
+                      variant: "ghost",
+                    },
+                    {
+                      icon: savedCaptions.has(index) ? (
+                        <BookmarkCheck className="w-4 h-4 shrink-0" />
+                      ) : (
+                        <Bookmark className="w-4 h-4 shrink-0" />
+                      ),
+                      label: savedCaptions.has(index) ? "Unsave" : "Save",
+                      onClick: () => handleSaveCaption(index),
+                      variant: "ghost",
+                    },
+                  ]}
+                />
               ))}
             </div>
           )}

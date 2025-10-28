@@ -6,24 +6,21 @@ import {
   Filter,
   Grid3x3,
   List,
-  Copy,
   Edit2,
   Trash2,
-  MoreVertical,
   Download,
-  Tag,
   Check,
   X,
-  Calendar,
-  TrendingUp,
   BookMarked,
-  ChevronDown,
-  ChevronUp,
+  BookmarkCheck,
+  Calendar,
+  Copy,
 } from "lucide-react";
 import { SocialIcon } from "react-social-icons";
 import { Button } from "../../../components/ui/Button";
 import { Card, CardHeader, CardTitle } from "../../../components/ui/Card";
 import { ToastProvider } from "../../../components/ui/Toast";
+import { CaptionCard } from "../../../components/captions/CaptionCard";
 import EditCaptionModal from "../../../components/captions/EditCaptionModal";
 
 // Mock data - replace with actual API calls
@@ -35,9 +32,7 @@ const savedCaptions = [
     platform: "instagram",
     style: "Teaser",
     savedDate: "2024-01-20",
-    performance: "high",
     tags: ["product launch", "engagement"],
-    engagementRate: "6.2%",
     createdAt: new Date("2024-01-20"),
   },
   {
@@ -47,9 +42,7 @@ const savedCaptions = [
     platform: "linkedin",
     style: "Thought Leadership",
     savedDate: "2024-01-19",
-    performance: "high",
     tags: ["product", "lessons"],
-    engagementRate: "5.8%",
     createdAt: new Date("2024-01-19"),
   },
   {
@@ -59,9 +52,7 @@ const savedCaptions = [
     platform: "instagram",
     style: "Engagement",
     savedDate: "2024-01-18",
-    performance: "medium",
     tags: ["lifestyle", "routine"],
-    engagementRate: "4.3%",
     createdAt: new Date("2024-01-18"),
   },
   {
@@ -71,9 +62,7 @@ const savedCaptions = [
     platform: "x",
     style: "Educational",
     savedDate: "2024-01-17",
-    performance: "medium",
     tags: ["tips", "authenticity"],
-    engagementRate: "4.1%",
     createdAt: new Date("2024-01-17"),
   },
   {
@@ -83,9 +72,7 @@ const savedCaptions = [
     platform: "linkedin",
     style: "Listicle",
     savedDate: "2024-01-15",
-    performance: "high",
     tags: ["product launch", "lessons"],
-    engagementRate: "7.1%",
     createdAt: new Date("2024-01-15"),
   },
   {
@@ -95,9 +82,7 @@ const savedCaptions = [
     platform: "instagram",
     style: "Relatable",
     savedDate: "2024-01-14",
-    performance: "medium",
     tags: ["wins", "celebration"],
-    engagementRate: "3.9%",
     createdAt: new Date("2024-01-14"),
   },
   {
@@ -107,9 +92,7 @@ const savedCaptions = [
     platform: "x",
     style: "Hot Take",
     savedDate: "2024-01-12",
-    performance: "high",
     tags: ["marketing", "strategy"],
-    engagementRate: "6.8%",
     createdAt: new Date("2024-01-12"),
   },
   {
@@ -119,9 +102,7 @@ const savedCaptions = [
     platform: "instagram",
     style: "Motivational",
     savedDate: "2024-01-10",
-    performance: "low",
     tags: ["motivation", "goals"],
-    engagementRate: "2.7%",
     createdAt: new Date("2024-01-10"),
   },
 ];
@@ -137,9 +118,6 @@ export default function LibraryPage() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const [expandedCaptions, setExpandedCaptions] = useState<Set<string>>(
-    new Set()
-  );
   const [editingCaptionIndex, setEditingCaptionIndex] = useState<number | null>(
     null
   );
@@ -181,13 +159,6 @@ export default function LibraryPage() {
       case "recent":
         filtered.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
         break;
-      case "performance":
-        filtered.sort((a, b) => {
-          const aRate = parseFloat(a.engagementRate);
-          const bRate = parseFloat(b.engagementRate);
-          return bRate - aRate;
-        });
-        break;
       case "platform":
         filtered.sort((a, b) => a.platform.localeCompare(b.platform));
         break;
@@ -221,15 +192,6 @@ export default function LibraryPage() {
       default: "bg-gray-100 text-gray-600 border-gray-200",
     };
     return colors[platform as keyof typeof colors];
-  };
-
-  const getPerformanceColor = (performance: string) => {
-    const colors = {
-      high: "text-success bg-green-50 border-green-200",
-      medium: "text-warning bg-yellow-50 border-yellow-200",
-      low: "text-text-body bg-gray-50 border-gray-200",
-    };
-    return colors[performance as keyof typeof colors];
   };
 
   // Event handlers
@@ -291,18 +253,6 @@ export default function LibraryPage() {
     setSearchQuery("");
   };
 
-  const toggleCaptionExpansion = (captionId: string) => {
-    setExpandedCaptions((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(captionId)) {
-        newSet.delete(captionId);
-      } else {
-        newSet.add(captionId);
-      }
-      return newSet;
-    });
-  };
-
   // Edit caption handlers
   const handleEditCaption = (index: number) => {
     setEditingCaptionIndex(index);
@@ -327,20 +277,8 @@ export default function LibraryPage() {
     setEditingCaptionIndex(null);
   };
 
-  // Helper function to determine if content needs truncation
-  // Using the same logic as CaptionResults.tsx for consistency
-  const needsTruncation = (content: string) => {
-    return content.length > 120;
-  };
-
   // Calculate stats
   const totalSaved = savedCaptions.length;
-  const avgEngagement = (
-    savedCaptions.reduce(
-      (sum, caption) => sum + parseFloat(caption.engagementRate),
-      0
-    ) / savedCaptions.length
-  ).toFixed(1);
   const topPlatform = savedCaptions.reduce((acc, caption) => {
     acc[caption.platform] = (acc[caption.platform] || 0) + 1;
     return acc;
@@ -492,7 +430,6 @@ export default function LibraryPage() {
                           className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-surface text-text-head focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
                         >
                           <option value="recent">Recently Saved</option>
-                          <option value="performance">Best Performance</option>
                           <option value="platform">Platform</option>
                           <option value="style">Style</option>
                         </select>
@@ -567,7 +504,7 @@ export default function LibraryPage() {
         {/* Content Area */}
         <div className="px-6 py-6">
           {/* Summary Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <Card
               padding="none"
               className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
@@ -576,17 +513,6 @@ export default function LibraryPage() {
                 <div className="text-sm text-hint mb-1">Total Saved</div>
                 <div className="text-2xl font-display font-semibold text-text-head">
                   {totalSaved}
-                </div>
-              </div>
-            </Card>
-            <Card
-              padding="none"
-              className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
-            >
-              <div className="p-4">
-                <div className="text-sm text-hint mb-1">Avg. Engagement</div>
-                <div className="text-2xl font-display font-semibold text-text-head">
-                  {avgEngagement}%
                 </div>
               </div>
             </Card>
@@ -665,250 +591,106 @@ export default function LibraryPage() {
               {viewMode === "grid" ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredCaptions.map((caption, index) => (
-                    <Card
-                      key={caption.id}
-                      variant="outlined"
-                      className="cursor-pointer group overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
-                      onMouseEnter={() => setHoveredCard(caption.id)}
-                      onMouseLeave={() => setHoveredCard(null)}
-                    >
-                      <div
-                        className={`space-y-4 ${
-                          hoveredCard === caption.id ? "" : "-mb-3"
-                        }`}
-                      >
-                        {/* Platform Badge and Date */}
-                        <div className="flex items-center justify-between">
-                          <div
-                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border ${getPlatformColor(
-                              caption.platform
-                            )}`}
-                          >
-                            {getPlatformIcon(caption.platform)}
-                            <span className="capitalize">
-                              {caption.platform}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`px-2 py-1 rounded-md text-xs font-medium border ${getPerformanceColor(
-                                caption.performance
-                              )}`}
-                            >
-                              <TrendingUp className="w-3 h-3 inline mr-1" />
-                              {caption.engagementRate}
-                            </span>
-                            <label className="relative flex items-center cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={selectedCaptions.includes(caption.id)}
-                                onChange={() => handleSelectCaption(caption.id)}
-                                className="peer h-4 w-4 appearance-none rounded border border-border checked:bg-accent cursor-pointer transition"
-                              />
-                              <Check className="pointer-events-none absolute left-[2px] top-[2px] h-3 w-3 text-white opacity-0 peer-checked:opacity-100 transition" />
-                            </label>
-                          </div>
-                        </div>
-
-                        {/* Caption Preview */}
-                        <div className="space-y-3">
-                          <div>
-                            <p className="text-sm text-text-body leading-relaxed">
-                              {expandedCaptions.has(caption.id)
-                                ? caption.content
-                                : caption.content.substring(0, 120) +
-                                  (caption.content.length > 120 ? "..." : "")}
-                            </p>
-                            {needsTruncation(caption.content) && (
-                              <button
-                                onClick={() =>
-                                  toggleCaptionExpansion(caption.id)
-                                }
-                                className="text-xs text-accent hover:text-accent-hover font-medium mt-1 flex items-center gap-1"
-                              >
-                                {expandedCaptions.has(caption.id) ? (
-                                  <>
-                                    <ChevronUp className="w-3 h-3" />
-                                    Show less
-                                  </>
-                                ) : (
-                                  <>
-                                    <ChevronDown className="w-3 h-3" />
-                                    Read more
-                                  </>
-                                )}
-                              </button>
-                            )}
-                          </div>
-
-                          {/* Style Tag */}
-                          <div className="flex flex-wrap gap-2">
-                            <span className="inline-block px-3 py-1.5 bg-surface text-text-body text-xs font-medium rounded-lg border border-border">
-                              {caption.style}
-                            </span>
-                            <div className="flex items-center gap-1 text-xs text-hint">
-                              <Calendar className="w-3 h-3" />
-                              {new Date(caption.savedDate).toLocaleDateString(
-                                "en-US",
-                                { month: "short", day: "numeric" }
-                              )}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Action Buttons - Show on Hover with Height Animation */}
-                        <div
-                          className={`transition-all duration-200 overflow-hidden ${
-                            hoveredCard === caption.id
-                              ? "opacity-100 max-h-12 translate-y-0"
-                              : "opacity-0 max-h-0 -translate-y-2"
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 pt-2">
-                            <Button
-                              onClick={() => handleCopy(caption.content, index)}
-                              variant="primary"
-                              size="md"
-                              leftIcon={
-                                copiedIndex === index ? (
-                                  <Check className="w-3.5 h-3.5" />
-                                ) : (
-                                  <Copy className="w-3.5 h-3.5" />
-                                )
-                              }
-                              className="flex-1 text-xs font-semibold"
-                            >
-                              {copiedIndex === index ? "Copied!" : "Copy"}
-                            </Button>
-                            <Button
-                              onClick={() => handleEditCaption(index)}
-                              variant="ghost"
-                              size="sm"
-                              className="h-9 w-9 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.edit-label]:block border border-border"
-                              title="Edit caption"
-                            >
-                              <Edit2 className="w-4 h-4 shrink-0" />
-                              <span className="edit-label ml-2 text-sm font-medium hidden whitespace-nowrap">
-                                Edit
-                              </span>
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-9 w-9 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.delete-label]:block border border-border"
-                              title="Delete caption"
-                            >
-                              <Trash2 className="w-4 h-4 shrink-0" />
-                              <span className="delete-label ml-2 text-sm font-medium hidden whitespace-nowrap">
-                                Delete
-                              </span>
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
+                    <div key={caption.id} className="relative">
+                      {/* Selection Checkbox */}
+                      <label className="absolute top-4 right-4 z-10 flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedCaptions.includes(caption.id)}
+                          onChange={() => handleSelectCaption(caption.id)}
+                          className="peer h-4 w-4 appearance-none rounded border border-border checked:bg-accent cursor-pointer transition"
+                        />
+                        <Check className="pointer-events-none absolute left-[2px] top-[2px] h-3 w-3 text-white opacity-0 peer-checked:opacity-100 transition" />
+                      </label>
+                      <CaptionCard
+                        id={caption.id}
+                        caption={caption.content}
+                        platform={caption.platform as any}
+                        style={caption.style}
+                        date={new Date(caption.savedDate).toLocaleDateString(
+                          "en-US",
+                          { month: "short", day: "numeric" }
+                        )}
+                        hoveredCard={hoveredCard}
+                        onHoverChange={(id) =>
+                          setHoveredCard(id as string | null)
+                        }
+                        isCopied={copiedIndex === index}
+                        onCopy={() => handleCopy(caption.content, index)}
+                        variant="grid"
+                        actions={[
+                          {
+                            icon: <Edit2 className="w-4 h-4 shrink-0" />,
+                            label: "Edit",
+                            onClick: () => handleEditCaption(index),
+                            variant: "ghost",
+                          },
+                          {
+                            icon: (
+                              <BookmarkCheck className="w-4 h-4 shrink-0" />
+                            ),
+                            label: "Unsave",
+                            onClick: () => {},
+                            variant: "ghost",
+                          },
+                        ]}
+                      />
+                    </div>
                   ))}
                 </div>
               ) : (
                 <div className="space-y-3">
                   {filteredCaptions.map((caption, index) => (
-                    <Card
-                      key={caption.id}
-                      padding="none"
-                      className={`transition-all hover:shadow-2xl duration-300 hover:-translate-y-2 `}
-                    >
-                      <div className="p-4 flex items-center gap-4">
-                        <label className="relative flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={selectedCaptions.includes(caption.id)}
-                            onChange={() => handleSelectCaption(caption.id)}
-                            className="peer h-4 w-4 appearance-none rounded border border-border checked:bg-accent cursor-pointer transition"
-                          />
-                          <Check className="pointer-events-none absolute left-[2px] top-[2px] h-3 w-3 text-white opacity-0 peer-checked:opacity-100 transition" />
-                        </label>
-                        <div className="flex-1 min-w-0">
-                          <div className="mb-2">
-                            <p className="text-sm text-text-body">
-                              {expandedCaptions.has(caption.id)
-                                ? caption.content
-                                : caption.content.substring(0, 120) +
-                                  (caption.content.length > 120 ? "..." : "")}
-                            </p>
-                            {needsTruncation(caption.content) && (
-                              <button
-                                onClick={() =>
-                                  toggleCaptionExpansion(caption.id)
-                                }
-                                className="text-xs text-accent hover:text-accent-hover font-medium mt-1 flex items-center gap-1"
-                              >
-                                {expandedCaptions.has(caption.id) ? (
-                                  <>
-                                    <ChevronUp className="w-3 h-3" />
-                                    Show less
-                                  </>
-                                ) : (
-                                  <>
-                                    <ChevronDown className="w-3 h-3" />
-                                    Read more
-                                  </>
-                                )}
-                              </button>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-3 text-xs text-hint flex-wrap">
-                            <div
-                              className={`inline-flex items-center gap-1 ${getPlatformColor(
-                                caption.platform
-                              )} px-2 py-0.5 rounded border`}
-                            >
-                              {getPlatformIcon(caption.platform)}
-                              <span className="capitalize">
-                                {caption.platform}
-                              </span>
-                            </div>
-                            <span className="px-2 py-0.5 bg-chip-bg text-text-body rounded border border-border">
-                              {caption.style}
-                            </span>
-                            <span
-                              className={`px-2 py-0.5 rounded border ${getPerformanceColor(
-                                caption.performance
-                              )}`}
-                            >
-                              {caption.engagementRate}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Calendar className="w-3 h-3" />
-                              {new Date(caption.savedDate).toLocaleDateString(
-                                "en-US",
-                                { month: "short", day: "numeric" }
-                              )}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1 shrink-0">
-                          <button
-                            onClick={() => handleCopy(caption.content, index)}
-                            className={`p-2 rounded transition-colors ${
-                              copiedIndex === index
-                                ? "bg-accent/10 text-accent"
-                                : "hover:bg-accent/5 text-hint hover:text-accent"
-                            }`}
-                          >
-                            <Copy className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleEditCaption(index)}
-                            className="p-2 hover:bg-accent/5 text-hint hover:text-accent rounded transition-colors"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button className="p-2 hover:bg-error/10 text-hint hover:text-error rounded transition-colors">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
+                    <div key={caption.id} className="flex items-center gap-4">
+                      <label className="relative flex items-center cursor-pointer shrink-0">
+                        <input
+                          type="checkbox"
+                          checked={selectedCaptions.includes(caption.id)}
+                          onChange={() => handleSelectCaption(caption.id)}
+                          className="peer h-4 w-4 appearance-none rounded border border-border checked:bg-accent cursor-pointer transition"
+                        />
+                        <Check className="pointer-events-none absolute left-[2px] top-[2px] h-3 w-3 text-white opacity-0 peer-checked:opacity-100 transition" />
+                      </label>
+                      <div className="flex-1">
+                        <CaptionCard
+                          id={caption.id}
+                          caption={caption.content}
+                          platform={caption.platform as any}
+                          style={caption.style}
+                          date={new Date(caption.savedDate).toLocaleDateString(
+                            "en-US",
+                            { month: "short", day: "numeric" }
+                          )}
+                          variant="list"
+                          actions={[
+                            {
+                              icon: <Copy className="w-4 h-4" />,
+                              label: "Copy",
+                              onClick: () => handleCopy(caption.content, index),
+                              className: `p-2 rounded transition-colors ${
+                                copiedIndex === index
+                                  ? "bg-accent/10 text-accent"
+                                  : "hover:bg-accent/5 text-hint hover:text-accent"
+                              }`,
+                            },
+                            {
+                              icon: <Edit2 className="w-4 h-4" />,
+                              label: "Edit",
+                              onClick: () => handleEditCaption(index),
+                              className:
+                                "p-2 hover:bg-accent/5 text-hint hover:text-accent rounded transition-colors",
+                            },
+                            {
+                              icon: <Trash2 className="w-4 h-4" />,
+                              label: "Delete",
+                              onClick: () => {},
+                              className:
+                                "p-2 hover:bg-error/10 text-hint hover:text-error rounded transition-colors",
+                            },
+                          ]}
+                        />
                       </div>
-                    </Card>
+                    </div>
                   ))}
                 </div>
               )}
