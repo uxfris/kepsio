@@ -18,7 +18,7 @@ import { Button } from "../ui/Button";
 import { Card, CardHeader, CardContent } from "../ui/Card";
 import { Textarea } from "../ui/Textarea";
 import { Chip } from "../ui/Chip";
-import { useToast, toast } from "../ui/Toast";
+import { useToast } from "../ui/Toast";
 
 interface EditCaptionModalProps {
   isOpen: boolean;
@@ -138,7 +138,7 @@ export default function EditCaptionModal({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const hashtagPickerRef = useRef<HTMLDivElement>(null);
-  const { addToast } = useToast();
+  const { showToast } = useToast();
 
   // Platform-specific character limits
   const platformLimits: Record<string, number> = {
@@ -259,17 +259,17 @@ export default function EditCaptionModal({
     try {
       await navigator.clipboard.writeText(editedCaption);
       setCopied(true);
-      addToast(toast.copied());
+      showToast("Copied to clipboard! 📋");
       onCopy?.(editedCaption);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      addToast(toast.error("Failed to copy caption"));
+      showToast("Failed to copy caption", "error");
     }
-  }, [editedCaption, onCopy, addToast]);
+  }, [editedCaption, onCopy, showToast]);
 
   const handleSave = useCallback(async () => {
     if (isOverLimit) {
-      addToast(toast.error("Caption is too long. Please shorten it."));
+      showToast("Caption is too long. Please shorten it.", "error");
       return;
     }
 
@@ -298,14 +298,13 @@ export default function EditCaptionModal({
 
       // Call the onSave callback (for local state updates)
       onSave(editedCaption);
-      addToast(toast.success("Caption saved successfully"));
+      showToast("Caption saved successfully ✅");
       onClose();
     } catch (error) {
       console.error("Error saving caption:", error);
-      addToast(
-        toast.error(
-          error instanceof Error ? error.message : "Failed to save caption"
-        )
+      showToast(
+        error instanceof Error ? error.message : "Failed to save caption",
+        "error"
       );
     } finally {
       setIsSaving(false);
@@ -314,7 +313,7 @@ export default function EditCaptionModal({
     editedCaption,
     isOverLimit,
     onSave,
-    addToast,
+    showToast,
     saveToDatabase,
     captionId,
     onClose,
@@ -322,8 +321,8 @@ export default function EditCaptionModal({
 
   const handleReset = useCallback(() => {
     setEditedCaption(originalCaption);
-    addToast(toast.info("Caption reset to original"));
-  }, [originalCaption, addToast]);
+    showToast("Caption reset to original", "info");
+  }, [originalCaption, showToast]);
 
   const handleClose = useCallback(() => {
     if (hasChanges) {

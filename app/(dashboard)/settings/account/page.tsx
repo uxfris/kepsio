@@ -23,7 +23,7 @@ import { Input } from "../../../../components/ui/Input";
 import { ToastProvider, useToast } from "../../../../components/ui/Toast";
 
 const AccountSettingsContent = () => {
-  const { addToast } = useToast();
+  const { showToast } = useToast();
   const router = useRouter();
 
   // Account Settings State
@@ -33,16 +33,8 @@ const AccountSettingsContent = () => {
   const [hasChanges, setHasChanges] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const showSuccessToast = (message: string) => {
-    addToast({
-      title: "Success",
-      description: message,
-      type: "success",
-    });
-  };
-
   const handleSaveAccount = () => {
-    showSuccessToast("Account settings saved successfully");
+    showToast("Account settings saved successfully ✅");
     setHasChanges(false);
   };
 
@@ -57,18 +49,10 @@ const AccountSettingsContent = () => {
     setIsLoggingOut(true);
     try {
       await signOut();
-      addToast({
-        title: "Logged out",
-        description: "You have been successfully logged out",
-        type: "success",
-      });
+      showToast("You have been successfully logged out ✅");
       router.push("/");
     } catch (error) {
-      addToast({
-        title: "Error",
-        description: "Failed to log out. Please try again.",
-        type: "error",
-      });
+      showToast("Failed to log out. Please try again.", "error");
     } finally {
       setIsLoggingOut(false);
     }

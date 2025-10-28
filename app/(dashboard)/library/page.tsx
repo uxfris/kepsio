@@ -17,7 +17,7 @@ import {
 import { SocialIcon } from "react-social-icons";
 import { Button } from "../../../components/ui/Button";
 import { Card, CardHeader, CardTitle } from "../../../components/ui/Card";
-import { ToastProvider } from "../../../components/ui/Toast";
+import { ToastProvider, useToast } from "../../../components/ui/Toast";
 import { CaptionCard } from "../../../components/captions/CaptionCard";
 import EditCaptionModal from "../../../components/captions/EditCaptionModal";
 import {
@@ -111,15 +111,14 @@ const mockSavedCaptions = [
   },
 ];
 
-export default function LibraryPage() {
+const LibraryPageContent = () => {
+  const { showToast } = useToast();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("recent");
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [editingCaptionIndex, setEditingCaptionIndex] = useState<number | null>(
     null
@@ -203,17 +202,13 @@ export default function LibraryPage() {
   const handleCopy = async (text: string, index: number) => {
     try {
       await navigator.clipboard.writeText(text);
-      setToastMessage("Caption copied! 📋");
-      setShowToast(true);
+      showToast("Caption copied! 📋");
       setCopiedIndex(index);
       setTimeout(() => {
-        setShowToast(false);
         setCopiedIndex(null);
       }, 2000);
     } catch (error) {
-      setToastMessage("Failed to copy caption");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2000);
+      showToast("Failed to copy caption", "error");
     }
   };
 
@@ -257,9 +252,7 @@ export default function LibraryPage() {
       dataCache.invalidate(CACHE_KEYS.SAVED_CAPTIONS);
       dataCache.invalidate(CACHE_KEYS.RECENT_CAPTIONS);
 
-      setToastMessage("Caption updated successfully! ✏️");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2000);
+      showToast("Caption updated successfully! ✏️");
     }
   };
 
@@ -354,9 +347,7 @@ export default function LibraryPage() {
       setEditedCaptions((prev) =>
         prev.filter((caption) => caption.id !== captionId)
       );
-      setToastMessage("Caption removed from library");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2000);
+      showToast("Caption removed from library");
 
       const response = await fetch("/api/captions/save", {
         method: "POST",
@@ -369,9 +360,7 @@ export default function LibraryPage() {
       if (!response.ok) {
         // Revert on failure
         setEditedCaptions((prev) => [...prev, captionToRemove]);
-        setToastMessage("Failed to remove caption. Please try again.");
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 2000);
+        showToast("Failed to remove caption. Please try again.", "error");
       } else {
         // Invalidate cache on success
         dataCache.invalidate(CACHE_KEYS.SAVED_CAPTIONS);
@@ -381,9 +370,7 @@ export default function LibraryPage() {
       console.error("Failed to save caption:", error);
       // Revert on error
       setEditedCaptions((prev) => [...prev, captionToRemove]);
-      setToastMessage("Failed to remove caption. Please try again.");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2000);
+      showToast("Failed to remove caption. Please try again.", "error");
     } finally {
       setSavingCaptionId(null);
     }
@@ -392,9 +379,7 @@ export default function LibraryPage() {
   // Export captions to CSV
   const handleExportCaptions = () => {
     if (editedCaptions.length === 0) {
-      setToastMessage("No captions to export");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2000);
+      showToast("No captions to export", "warning");
       return;
     }
 
@@ -427,14 +412,10 @@ export default function LibraryPage() {
       link.click();
       document.body.removeChild(link);
 
-      setToastMessage(`Exported ${editedCaptions.length} captions! 📥`);
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2000);
+      showToast(`Exported ${editedCaptions.length} captions! 📥`);
     } catch (error) {
       console.error("Failed to export captions:", error);
-      setToastMessage("Failed to export captions");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2000);
+      showToast("Failed to export captions", "error");
     }
   };
 
@@ -475,407 +456,399 @@ export default function LibraryPage() {
   }, [editedCaptions]);
 
   return (
-    <ToastProvider>
-      <div className="min-h-screen bg-section">
-        {/* Header */}
-        <div className="bg-surface border-b border-border">
-          <div className="px-6 py-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h1 className="text-2xl font-display font-semibold text-text-head mb-1 flex items-center gap-2">
-                  <BookMarked className="w-6 h-6 text-accent" />
-                  Caption Library
-                </h1>
-                <p className="text-text-body text-sm">
-                  Your collection of high-performing captions
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="ghost"
-                  onClick={() => fetchSavedCaptions(true)}
-                  leftIcon={<RefreshCw className="w-4 h-4" />}
-                  title="Refresh library"
-                >
-                  Refresh
-                </Button>
-                <Button
-                  variant="outline"
-                  leftIcon={<Download className="w-4 h-4" />}
-                  onClick={handleExportCaptions}
-                  disabled={editedCaptions.length === 0}
-                >
-                  Export All
-                </Button>
-              </div>
+    <div className="min-h-screen bg-section">
+      {/* Header */}
+      <div className="bg-surface border-b border-border">
+        <div className="px-6 py-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-2xl font-display font-semibold text-text-head mb-1 flex items-center gap-2">
+                <BookMarked className="w-6 h-6 text-accent" />
+                Caption Library
+              </h1>
+              <p className="text-text-body text-sm">
+                Your collection of high-performing captions
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                onClick={() => fetchSavedCaptions(true)}
+                leftIcon={<RefreshCw className="w-4 h-4" />}
+                title="Refresh library"
+              >
+                Refresh
+              </Button>
+              <Button
+                variant="outline"
+                leftIcon={<Download className="w-4 h-4" />}
+                onClick={handleExportCaptions}
+                disabled={editedCaptions.length === 0}
+              >
+                Export All
+              </Button>
+            </div>
+          </div>
+
+          {/* Search and Filters Bar */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-hint" />
+              <input
+                type="text"
+                placeholder="Search captions, tags, or platforms..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 text-sm border border-border rounded-xl bg-surface text-text-head placeholder:text-hint focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
+              />
             </div>
 
-            {/* Search and Filters Bar */}
-            <div className="flex items-center gap-3">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-hint" />
-                <input
-                  type="text"
-                  placeholder="Search captions, tags, or platforms..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 text-sm border border-border rounded-xl bg-surface text-text-head placeholder:text-hint focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
-                />
-              </div>
+            <div className="relative">
+              <Button
+                variant="outline"
+                onClick={() => setFilterOpen(!filterOpen)}
+                leftIcon={<Filter className="w-4 h-4" />}
+                className={
+                  selectedPlatforms.length > 0 || selectedStyles.length > 0
+                    ? "border-accent bg-accent/5 text-accent"
+                    : ""
+                }
+              >
+                Filter
+                {(selectedPlatforms.length > 0 ||
+                  selectedStyles.length > 0) && (
+                  <span className="ml-1 px-1.5 py-0.5 bg-accent text-surface text-xs rounded-full">
+                    {selectedPlatforms.length + selectedStyles.length}
+                  </span>
+                )}
+              </Button>
 
-              <div className="relative">
-                <Button
-                  variant="outline"
-                  onClick={() => setFilterOpen(!filterOpen)}
-                  leftIcon={<Filter className="w-4 h-4" />}
-                  className={
-                    selectedPlatforms.length > 0 || selectedStyles.length > 0
-                      ? "border-accent bg-accent/5 text-accent"
-                      : ""
-                  }
-                >
-                  Filter
-                  {(selectedPlatforms.length > 0 ||
-                    selectedStyles.length > 0) && (
-                    <span className="ml-1 px-1.5 py-0.5 bg-accent text-surface text-xs rounded-full">
-                      {selectedPlatforms.length + selectedStyles.length}
-                    </span>
-                  )}
-                </Button>
+              {/* Filter Dropdown */}
+              {filterOpen && (
+                <div className="absolute right-0 top-full mt-2 w-80 bg-surface rounded-lg border border-border shadow-lg z-10">
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-semibold text-text-head">Filters</h3>
+                      <button
+                        onClick={clearAllFilters}
+                        className="text-sm text-accent hover:text-accent-hover font-medium"
+                      >
+                        Clear all
+                      </button>
+                    </div>
 
-                {/* Filter Dropdown */}
-                {filterOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-80 bg-surface rounded-lg border border-border shadow-lg z-10">
-                    <div className="p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="font-semibold text-text-head">
-                          Filters
-                        </h3>
-                        <button
-                          onClick={clearAllFilters}
-                          className="text-sm text-accent hover:text-accent-hover font-medium"
-                        >
-                          Clear all
-                        </button>
-                      </div>
-
-                      {/* Platform Filters */}
-                      <div className="mb-4">
-                        <label className="block text-sm font-medium text-text-head mb-2">
-                          Platform
-                        </label>
-                        <div className="flex flex-wrap gap-2">
-                          {availablePlatforms.length > 0 ? (
-                            availablePlatforms.map((platform) => (
-                              <button
-                                key={platform}
-                                onClick={() => togglePlatformFilter(platform)}
-                                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
-                                  selectedPlatforms.includes(platform)
-                                    ? `${getPlatformColor(platform)} border-2`
-                                    : "bg-chip-bg text-text-body hover:bg-section-light border-border"
-                                }`}
-                              >
-                                {getPlatformIcon(platform)}
-                                <span className="capitalize">{platform}</span>
-                                {selectedPlatforms.includes(platform) && (
-                                  <Check className="w-3 h-3" />
-                                )}
-                              </button>
-                            ))
-                          ) : (
-                            <p className="text-sm text-hint">
-                              No platforms available
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Style Filters */}
-                      <div className="mb-4">
-                        <label className="block text-sm font-medium text-text-head mb-2">
-                          Style
-                        </label>
-                        <div className="flex flex-wrap gap-2">
-                          {availableStyles.length > 0 ? (
-                            availableStyles.map((style) => (
-                              <button
-                                key={style}
-                                onClick={() => toggleStyleFilter(style)}
-                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
-                                  selectedStyles.includes(style)
-                                    ? "bg-accent/10 text-accent border-accent border-2"
-                                    : "bg-chip-bg text-text-body hover:bg-section-light border-border"
-                                }`}
-                              >
-                                {style}
-                              </button>
-                            ))
-                          ) : (
-                            <p className="text-sm text-hint">
-                              No styles available
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Sort By */}
-                      <div>
-                        <label className="block text-sm font-medium text-text-head mb-2">
-                          Sort By
-                        </label>
-                        <select
-                          value={sortBy}
-                          onChange={(e) => setSortBy(e.target.value)}
-                          className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-surface text-text-head focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
-                        >
-                          <option value="recent">Recently Saved</option>
-                          <option value="platform">Platform</option>
-                          <option value="style">Style</option>
-                        </select>
+                    {/* Platform Filters */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-text-head mb-2">
+                        Platform
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {availablePlatforms.length > 0 ? (
+                          availablePlatforms.map((platform) => (
+                            <button
+                              key={platform}
+                              onClick={() => togglePlatformFilter(platform)}
+                              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
+                                selectedPlatforms.includes(platform)
+                                  ? `${getPlatformColor(platform)} border-2`
+                                  : "bg-chip-bg text-text-body hover:bg-section-light border-border"
+                              }`}
+                            >
+                              {getPlatformIcon(platform)}
+                              <span className="capitalize">{platform}</span>
+                              {selectedPlatforms.includes(platform) && (
+                                <Check className="w-3 h-3" />
+                              )}
+                            </button>
+                          ))
+                        ) : (
+                          <p className="text-sm text-hint">
+                            No platforms available
+                          </p>
+                        )}
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
 
-              <div className="flex items-center gap-1 border border-border rounded-lg p-1 bg-surface">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2 rounded transition-colors ${
-                    viewMode === "grid"
-                      ? "bg-section-light text-text-head"
-                      : "text-hint hover:text-text-body"
-                  }`}
-                >
-                  <Grid3x3 className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-2 rounded transition-colors ${
-                    viewMode === "list"
-                      ? "bg-section-light text-text-head"
-                      : "text-hint hover:text-text-body"
-                  }`}
-                >
-                  <List className="w-4 h-4" />
-                </button>
-              </div>
+                    {/* Style Filters */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-text-head mb-2">
+                        Style
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {availableStyles.length > 0 ? (
+                          availableStyles.map((style) => (
+                            <button
+                              key={style}
+                              onClick={() => toggleStyleFilter(style)}
+                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
+                                selectedStyles.includes(style)
+                                  ? "bg-accent/10 text-accent border-accent border-2"
+                                  : "bg-chip-bg text-text-body hover:bg-section-light border-border"
+                              }`}
+                            >
+                              {style}
+                            </button>
+                          ))
+                        ) : (
+                          <p className="text-sm text-hint">
+                            No styles available
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Sort By */}
+                    <div>
+                      <label className="block text-sm font-medium text-text-head mb-2">
+                        Sort By
+                      </label>
+                      <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-surface text-text-head focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
+                      >
+                        <option value="recent">Recently Saved</option>
+                        <option value="platform">Platform</option>
+                        <option value="style">Style</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1 border border-border rounded-lg p-1 bg-surface">
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === "grid"
+                    ? "bg-section-light text-text-head"
+                    : "text-hint hover:text-text-body"
+                }`}
+              >
+                <Grid3x3 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === "list"
+                    ? "bg-section-light text-text-head"
+                    : "text-hint hover:text-text-body"
+                }`}
+              >
+                <List className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Content Area */}
-        <div className="px-6 py-6">
-          {/* Summary Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            {isLoading ? (
-              <>
-                <StatCardSkeleton />
-                <StatCardSkeleton />
-                <StatCardSkeleton />
-              </>
-            ) : (
-              <>
-                <Card
-                  padding="none"
-                  className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
-                >
-                  <div className="p-4">
-                    <div className="text-sm text-hint mb-1">Total Saved</div>
-                    <div className="text-2xl font-display font-semibold text-text-head">
-                      {totalSaved}
-                    </div>
-                  </div>
-                </Card>
-                <Card
-                  padding="none"
-                  className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
-                >
-                  <div className="p-4">
-                    <div className="text-sm text-hint mb-1">Top Platform</div>
-                    <div className="flex items-center gap-2 mt-1">
-                      {getPlatformIcon(topPlatformName)}
-                      <span className="text-lg font-display font-semibold text-text-head capitalize">
-                        {topPlatformName}
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-                <Card
-                  padding="none"
-                  className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
-                >
-                  <div className="p-4">
-                    <div className="text-sm text-hint mb-1">Best Style</div>
-                    <div className="text-lg font-display font-semibold text-text-head">
-                      {topStyleName}
-                    </div>
-                  </div>
-                </Card>
-              </>
-            )}
-          </div>
-
-          {/* Caption Grid/List */}
+      {/* Content Area */}
+      <div className="px-6 py-6">
+        {/* Summary Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {isLoading ? (
-            viewMode === "grid" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...Array(6)].map((_, i) => (
-                  <CaptionCardSkeleton key={i} />
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {[...Array(6)].map((_, i) => (
-                  <CaptionCardSkeleton key={i} />
-                ))}
-              </div>
-            )
-          ) : filteredCaptions.length === 0 ? (
-            <Card
-              padding="lg"
-              className="text-center hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
-            >
-              <div className="max-w-md mx-auto">
-                <BookMarked className="w-12 h-12 text-hint mx-auto mb-4" />
-                <h3 className="text-lg font-display font-semibold text-text-head mb-2">
-                  No captions found
-                </h3>
-                <p className="text-text-body mb-4">
-                  {searchQuery ||
-                  selectedPlatforms.length > 0 ||
-                  selectedStyles.length > 0
-                    ? "Try adjusting your search or filters to find what you're looking for."
-                    : "Start creating captions to build your library."}
-                </p>
-                {(searchQuery ||
-                  selectedPlatforms.length > 0 ||
-                  selectedStyles.length > 0) && (
-                  <Button variant="outline" onClick={clearAllFilters}>
-                    Clear Filters
-                  </Button>
-                )}
-              </div>
-            </Card>
+            <>
+              <StatCardSkeleton />
+              <StatCardSkeleton />
+              <StatCardSkeleton />
+            </>
           ) : (
             <>
-              {viewMode === "grid" ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredCaptions.map((caption, index) => (
-                    <div key={caption.id}>
-                      <CaptionCard
-                        id={caption.id}
-                        caption={caption.content}
-                        platform={caption.platform as any}
-                        style={caption.style}
-                        date={new Date(caption.savedDate).toLocaleDateString(
-                          "en-US",
-                          { month: "short", day: "numeric" }
-                        )}
-                        hoveredCard={hoveredCard}
-                        onHoverChange={(id) =>
-                          setHoveredCard(id as string | null)
-                        }
-                        isCopied={copiedIndex === index}
-                        onCopy={() => handleCopy(caption.content, index)}
-                        variant="grid"
-                        actions={[
-                          {
-                            icon: <Edit2 className="w-4 h-4 shrink-0" />,
-                            label: "Edit",
-                            onClick: () => handleEditCaption(index),
-                            variant: "ghost",
-                          },
-                          {
-                            icon: (
-                              <BookmarkCheck className="w-4 h-4 shrink-0" />
-                            ),
-                            label: "Unsave",
-                            onClick: () => handleSaveCaption(caption.id),
-                            variant: "ghost",
-                            className:
-                              savingCaptionId === caption.id
-                                ? "opacity-50"
-                                : "",
-                          },
-                        ]}
-                      />
-                    </div>
-                  ))}
+              <Card
+                padding="none"
+                className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
+              >
+                <div className="p-4">
+                  <div className="text-sm text-hint mb-1">Total Saved</div>
+                  <div className="text-2xl font-display font-semibold text-text-head">
+                    {totalSaved}
+                  </div>
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  {filteredCaptions.map((caption, index) => (
-                    <div key={caption.id}>
-                      <CaptionCard
-                        id={caption.id}
-                        caption={caption.content}
-                        platform={caption.platform as any}
-                        style={caption.style}
-                        date={new Date(caption.savedDate).toLocaleDateString(
-                          "en-US",
-                          { month: "short", day: "numeric" }
-                        )}
-                        variant="list"
-                        actions={[
-                          {
-                            icon: <Copy className="w-4 h-4" />,
-                            label: "Copy",
-                            onClick: () => handleCopy(caption.content, index),
-                            className: `p-2 rounded transition-colors ${
-                              copiedIndex === index
-                                ? "bg-accent/10 text-accent"
-                                : "hover:bg-accent/5 text-hint hover:text-accent"
-                            }`,
-                          },
-                          {
-                            icon: <Edit2 className="w-4 h-4" />,
-                            label: "Edit",
-                            onClick: () => handleEditCaption(index),
-                            className:
-                              "p-2 hover:bg-accent/5 text-hint hover:text-accent rounded transition-colors",
-                          },
-                          {
-                            icon: <BookmarkCheck className="w-4 h-4" />,
-                            label: "Unsave",
-                            onClick: () => handleSaveCaption(caption.id),
-                            className: `p-2 hover:bg-error/10 text-hint hover:text-error rounded transition-colors ${
-                              savingCaptionId === caption.id ? "opacity-50" : ""
-                            }`,
-                          },
-                        ]}
-                      />
-                    </div>
-                  ))}
+              </Card>
+              <Card
+                padding="none"
+                className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
+              >
+                <div className="p-4">
+                  <div className="text-sm text-hint mb-1">Top Platform</div>
+                  <div className="flex items-center gap-2 mt-1">
+                    {getPlatformIcon(topPlatformName)}
+                    <span className="text-lg font-display font-semibold text-text-head capitalize">
+                      {topPlatformName}
+                    </span>
+                  </div>
                 </div>
-              )}
+              </Card>
+              <Card
+                padding="none"
+                className="hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 "
+              >
+                <div className="p-4">
+                  <div className="text-sm text-hint mb-1">Best Style</div>
+                  <div className="text-lg font-display font-semibold text-text-head">
+                    {topStyleName}
+                  </div>
+                </div>
+              </Card>
             </>
           )}
         </div>
 
-        {/* Toast Notification */}
-        {showToast && (
-          <div className="fixed bottom-6 right-6 bg-text-head text-surface px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-slide-in-up z-50">
-            <Check className="w-4 h-4" />
-            <span className="text-sm font-medium">{toastMessage}</span>
-          </div>
-        )}
-
-        {/* Edit Caption Modal */}
-        {editingCaptionIndex !== null && (
-          <EditCaptionModal
-            isOpen={editingCaptionIndex !== null}
-            originalCaption={editedCaptions[editingCaptionIndex].content}
-            onClose={handleCloseEditModal}
-            onSave={handleSaveEditedCaption}
-            onCopy={(caption) => handleCopy(caption, editingCaptionIndex)}
-            captionId={editedCaptions[editingCaptionIndex].id}
-            platform={editedCaptions[editingCaptionIndex].platform}
-            saveToDatabase={true}
-          />
+        {/* Caption Grid/List */}
+        {isLoading ? (
+          viewMode === "grid" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <CaptionCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {[...Array(6)].map((_, i) => (
+                <CaptionCardSkeleton key={i} />
+              ))}
+            </div>
+          )
+        ) : filteredCaptions.length === 0 ? (
+          <Card
+            padding="lg"
+            className="text-center hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+          >
+            <div className="max-w-md mx-auto">
+              <BookMarked className="w-12 h-12 text-hint mx-auto mb-4" />
+              <h3 className="text-lg font-display font-semibold text-text-head mb-2">
+                No captions found
+              </h3>
+              <p className="text-text-body mb-4">
+                {searchQuery ||
+                selectedPlatforms.length > 0 ||
+                selectedStyles.length > 0
+                  ? "Try adjusting your search or filters to find what you're looking for."
+                  : "Start creating captions to build your library."}
+              </p>
+              {(searchQuery ||
+                selectedPlatforms.length > 0 ||
+                selectedStyles.length > 0) && (
+                <Button variant="outline" onClick={clearAllFilters}>
+                  Clear Filters
+                </Button>
+              )}
+            </div>
+          </Card>
+        ) : (
+          <>
+            {viewMode === "grid" ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredCaptions.map((caption, index) => (
+                  <div key={caption.id}>
+                    <CaptionCard
+                      id={caption.id}
+                      caption={caption.content}
+                      platform={caption.platform as any}
+                      style={caption.style}
+                      date={new Date(caption.savedDate).toLocaleDateString(
+                        "en-US",
+                        { month: "short", day: "numeric" }
+                      )}
+                      hoveredCard={hoveredCard}
+                      onHoverChange={(id) =>
+                        setHoveredCard(id as string | null)
+                      }
+                      isCopied={copiedIndex === index}
+                      onCopy={() => handleCopy(caption.content, index)}
+                      variant="grid"
+                      actions={[
+                        {
+                          icon: <Edit2 className="w-4 h-4 shrink-0" />,
+                          label: "Edit",
+                          onClick: () => handleEditCaption(index),
+                          variant: "ghost",
+                        },
+                        {
+                          icon: <BookmarkCheck className="w-4 h-4 shrink-0" />,
+                          label: "Unsave",
+                          onClick: () => handleSaveCaption(caption.id),
+                          variant: "ghost",
+                          className:
+                            savingCaptionId === caption.id ? "opacity-50" : "",
+                        },
+                      ]}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filteredCaptions.map((caption, index) => (
+                  <div key={caption.id}>
+                    <CaptionCard
+                      id={caption.id}
+                      caption={caption.content}
+                      platform={caption.platform as any}
+                      style={caption.style}
+                      date={new Date(caption.savedDate).toLocaleDateString(
+                        "en-US",
+                        { month: "short", day: "numeric" }
+                      )}
+                      variant="list"
+                      actions={[
+                        {
+                          icon: <Copy className="w-4 h-4" />,
+                          label: "Copy",
+                          onClick: () => handleCopy(caption.content, index),
+                          className: `p-2 rounded transition-colors ${
+                            copiedIndex === index
+                              ? "bg-accent/10 text-accent"
+                              : "hover:bg-accent/5 text-hint hover:text-accent"
+                          }`,
+                        },
+                        {
+                          icon: <Edit2 className="w-4 h-4" />,
+                          label: "Edit",
+                          onClick: () => handleEditCaption(index),
+                          className:
+                            "p-2 hover:bg-accent/5 text-hint hover:text-accent rounded transition-colors",
+                        },
+                        {
+                          icon: <BookmarkCheck className="w-4 h-4" />,
+                          label: "Unsave",
+                          onClick: () => handleSaveCaption(caption.id),
+                          className: `p-2 hover:bg-error/10 text-hint hover:text-error rounded transition-colors ${
+                            savingCaptionId === caption.id ? "opacity-50" : ""
+                          }`,
+                        },
+                      ]}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
+
+      {/* Edit Caption Modal */}
+      {editingCaptionIndex !== null && (
+        <EditCaptionModal
+          isOpen={editingCaptionIndex !== null}
+          originalCaption={editedCaptions[editingCaptionIndex].content}
+          onClose={handleCloseEditModal}
+          onSave={handleSaveEditedCaption}
+          onCopy={(caption) => handleCopy(caption, editingCaptionIndex)}
+          captionId={editedCaptions[editingCaptionIndex].id}
+          platform={editedCaptions[editingCaptionIndex].platform}
+          saveToDatabase={true}
+        />
+      )}
+    </div>
+  );
+};
+
+export default function LibraryPage() {
+  return (
+    <ToastProvider>
+      <LibraryPageContent />
     </ToastProvider>
   );
 }

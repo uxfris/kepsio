@@ -58,7 +58,7 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
     const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
-    const { addToast } = useToast();
+    const { showToast } = useToast();
 
     // Animate progress bar after loading finishes
     useEffect(() => {
@@ -147,32 +147,20 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
         );
 
         if (!isValid) {
-          addToast({
-            type: "error",
-            title: "Invalid File Type",
-            description: "Please upload a .txt or .csv file",
-          });
+          showToast("Please upload a .txt or .csv file", "error");
           return;
         }
 
         // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
-          addToast({
-            type: "error",
-            title: "File Too Large",
-            description: "File size must be less than 5MB",
-          });
+          showToast("File size must be less than 5MB", "error");
           return;
         }
 
         const content = await parseFileContent(file);
 
         if (!content.trim()) {
-          addToast({
-            type: "error",
-            title: "Empty File",
-            description: "The file contains no valid captions",
-          });
+          showToast("The file contains no valid captions", "error");
           return;
         }
 
@@ -183,11 +171,7 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
         }
       } catch (error) {
         console.error("Error uploading file:", error);
-        addToast({
-          type: "error",
-          title: "Upload Failed",
-          description: "Failed to process file. Please try again.",
-        });
+        showToast("Failed to process file. Please try again.", "error");
       } finally {
         setIsUploading(false);
       }

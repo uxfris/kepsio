@@ -25,7 +25,7 @@ export function useBrandVoiceActions({
   voiceStrength,
   refreshVoiceInsights,
 }: UseBrandVoiceActionsProps) {
-  const { addToast } = useToast();
+  const { showToast } = useToast();
 
   const saveOnboardingData = useCallback(
     async ({
@@ -79,7 +79,7 @@ export function useBrandVoiceActions({
         console.error("Error saving onboarding data:", error);
       }
     },
-    [addToast]
+    []
   );
 
   const handleAnalyze = useCallback(async () => {
@@ -100,11 +100,7 @@ export function useBrandVoiceActions({
       // Refresh voice insights to get the latest analysis
       await refreshVoiceInsights();
 
-      addToast({
-        type: "success",
-        title: "Voice Updated Successfully! 🎉",
-        description: "Your brand voice has been analyzed and updated.",
-      });
+      showToast("Voice Updated Successfully! 🎉");
     } catch (error) {
       console.error("Error analyzing voice:", error);
 
@@ -113,13 +109,9 @@ export function useBrandVoiceActions({
           ? error.message
           : "There was an error analyzing your voice. Please try again.";
 
-      addToast({
-        type: "error",
-        title: "Analysis Failed",
-        description: errorMessage,
-      });
+      showToast(errorMessage, "error");
     }
-  }, [addToast, refreshVoiceInsights]);
+  }, [showToast, refreshVoiceInsights]);
 
   const handleAddCaptions = useCallback(
     async (captions: string) => {
@@ -142,26 +134,22 @@ export function useBrandVoiceActions({
 
         const data = await response.json();
 
-        addToast({
-          type: "success",
-          title: "Captions Added",
-          description: `${data.count} caption${
+        showToast(
+          `${data.count} caption${
             data.count > 1 ? "s" : ""
-          } added to your training data.`,
-        });
+          } added to your training data ✅`
+        );
         return true;
       } catch (error) {
         console.error("Error adding captions:", error);
-        addToast({
-          type: "error",
-          title: "Failed to Add Captions",
-          description:
-            "Could not add captions to training data. Please try again.",
-        });
+        showToast(
+          "Could not add captions to training data. Please try again.",
+          "error"
+        );
         return false;
       }
     },
-    [addToast]
+    [showToast]
   );
 
   const handleRemoveSample = useCallback(
@@ -178,23 +166,15 @@ export function useBrandVoiceActions({
           throw new Error("Failed to remove sample");
         }
 
-        addToast({
-          type: "success",
-          title: "Sample Removed",
-          description: "The caption sample has been removed.",
-        });
+        showToast("Caption sample removed ✅");
         return true;
       } catch (error) {
         console.error("Error removing sample:", error);
-        addToast({
-          type: "error",
-          title: "Failed to Remove Sample",
-          description: "Could not remove the sample. Please try again.",
-        });
+        showToast("Could not remove the sample. Please try again.", "error");
         return false;
       }
     },
-    [addToast]
+    [showToast]
   );
 
   const handleEditSample = useCallback(
@@ -212,23 +192,15 @@ export function useBrandVoiceActions({
           throw new Error("Failed to update sample");
         }
 
-        addToast({
-          type: "success",
-          title: "Sample Updated",
-          description: "The caption sample has been updated.",
-        });
+        showToast("Caption sample updated ✅");
         return true;
       } catch (error) {
         console.error("Error updating sample:", error);
-        addToast({
-          type: "error",
-          title: "Failed to Update Sample",
-          description: "Could not update the sample. Please try again.",
-        });
+        showToast("Could not update the sample. Please try again.", "error");
         return false;
       }
     },
-    [addToast]
+    [showToast]
   );
 
   return {

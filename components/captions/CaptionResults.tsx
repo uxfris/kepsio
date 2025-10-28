@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import { Button } from "../ui/Button";
 import { Chip } from "../ui/Chip";
-import { useToast, toast } from "../ui/Toast";
 import { CaptionCard } from "./CaptionCard";
 import EditCaptionModal from "./EditCaptionModal";
 
@@ -200,15 +199,6 @@ export const CaptionResults = ({
               Choose your favorite or copy to use right away
             </p>
           </div>
-          <Button
-            variant="ghost"
-            size="lg"
-            onClick={onGenerateNew}
-            leftIcon={<RefreshCw className="w-5 h-5" />}
-            className="self-start sm:self-center hover:bg-accent/10 transition-all duration-200"
-          >
-            Generate 5 More
-          </Button>
         </div>
 
         {/* Filter Chips */}
