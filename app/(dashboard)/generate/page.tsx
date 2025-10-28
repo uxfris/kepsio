@@ -189,6 +189,73 @@ export default function CaptionInputPage() {
     updateState({ showImmersiveLoading: false });
   };
 
+  const handleGenerateVariation = async (variation: string) => {
+    // Store current input and context
+    const currentInput = state.contentInput;
+    const currentContext = contextData;
+    const currentSelectedItems = state.selectedContextItems;
+    const currentOptions = { ...options };
+
+    // Modify the input or options based on variation type
+    let modifiedInput = currentInput;
+    let modifiedOptions = { ...currentOptions };
+
+    switch (variation) {
+      case "playful":
+        modifiedInput = `${currentInput}\n\nMake this more playful, fun, and lighthearted with a friendly tone.`;
+        modifiedOptions.emojiStyle = "expressive";
+        break;
+      case "urgent":
+        modifiedInput = `${currentInput}\n\nAdd a sense of urgency and FOMO (fear of missing out). Make it time-sensitive.`;
+        break;
+      case "shorter":
+        modifiedOptions.captionLength = "short";
+        modifiedInput = `${currentInput}\n\nKeep it concise and punchy.`;
+        break;
+      case "professional":
+        modifiedInput = `${currentInput}\n\nMake this more professional, polished, and business-appropriate.`;
+        modifiedOptions.emojiStyle = "minimal";
+        break;
+      case "casual":
+        modifiedInput = `${currentInput}\n\nMake this more casual, conversational, and relatable.`;
+        break;
+      case "emotional":
+        modifiedInput = `${currentInput}\n\nMake this more emotional, heartfelt, and inspiring.`;
+        break;
+    }
+
+    // Start generation
+    updateState({
+      isGenerating: true,
+      showImmersiveLoading: true,
+      loadingPhase: "analyzing",
+    });
+
+    try {
+      const captions = await generateCaptions(
+        modifiedInput,
+        currentContext,
+        currentSelectedItems,
+        modifiedOptions,
+        (phase) => updateState({ loadingPhase: phase })
+      );
+
+      updateState({
+        generatedCaptions: captions,
+        isGenerating: false,
+        showImmersiveLoading: false,
+        loadingPhase: "complete",
+      });
+    } catch (error) {
+      updateState({
+        isGenerating: false,
+        showImmersiveLoading: false,
+        showError: true,
+      });
+      setTimeout(() => updateState({ showError: false }), 2000);
+    }
+  };
+
   return (
     <ToastProvider>
       <div className="h-screen flex flex-col lg:flex-row">
@@ -356,7 +423,9 @@ export default function CaptionInputPage() {
               onCopyCaption={handleCopyCaption}
               onGenerateNew={() => updateState({ generatedCaptions: [] })}
               onCaptionUpdate={handleCaptionUpdate}
+              onGenerateVariation={handleGenerateVariation}
               platform="Instagram"
+              isGenerating={state.isGenerating}
             />
           )}
         </div>

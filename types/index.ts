@@ -68,6 +68,7 @@ export interface ContextData {
   productLink: string;
   uploadedImage: File | null;
   imagePreview: string | null;
+  imageBase64?: string | null;
   selectedPreviousPost: string;
 }
 

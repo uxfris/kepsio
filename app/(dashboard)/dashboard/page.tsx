@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Sparkles,
@@ -18,7 +18,6 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { SocialIcon } from "react-social-icons";
 import { Button } from "../../../components/ui/Button";
 import {
   Card,
@@ -26,6 +25,7 @@ import {
   CardTitle,
   CardContent,
 } from "../../../components/ui/Card";
+import { Badge } from "../../../components/ui/Badge";
 
 // Mock data - in real app this would come from API/hooks
 const mockUser = {
@@ -38,63 +38,6 @@ const mockUser = {
   timeSaved: 2.5,
 };
 
-const recentCaptions = [
-  {
-    id: 1,
-    snippet: "Exciting news! 🎉 We're launching something special next week...",
-    fullText:
-      "Exciting news! 🎉 We're launching something special next week that's going to change how you create content. Can you guess what it is? Drop your guesses below! 👇",
-    date: "2 hours ago",
-    platform: "instagram",
-    style: "Teaser",
-  },
-  {
-    id: 2,
-    snippet: "Behind the scenes of building a product people actually want...",
-    fullText:
-      "Behind the scenes of building a product people actually want: Talk to users early, ship fast, and don't be afraid to pivot. What's your #1 product lesson?",
-    date: "Yesterday",
-    platform: "linkedin",
-    style: "Thought Leadership",
-  },
-  {
-    id: 3,
-    snippet: "Coffee first, creativity second ☕️ What's your morning ritual?",
-    fullText:
-      "Coffee first, creativity second ☕️ What's your morning ritual that helps you stay productive? Mine: 1. Coffee 2. Quick workout 3. Review goals. Let me know yours!",
-    date: "2 days ago",
-    platform: "instagram",
-    style: "Engagement",
-  },
-  {
-    id: 4,
-    snippet: "Quick tip: Your audience doesn't want perfection...",
-    fullText:
-      "Quick tip: Your audience doesn't want perfection, they want authenticity. Show up as you are, share your process, and watch engagement soar. 📈",
-    date: "3 days ago",
-    platform: "x",
-    style: "Educational",
-  },
-  {
-    id: 5,
-    snippet: "5 things I learned launching my first product...",
-    fullText:
-      "5 things I learned launching my first product: 1. Launch before you're ready 2. Listen more than you talk 3. Iterate based on feedback 4. Celebrate small wins 5. Community > marketing budget",
-    date: "5 days ago",
-    platform: "linkedin",
-    style: "Listicle",
-  },
-  {
-    id: 6,
-    snippet: "That feeling when you finally solve a problem you've been...",
-    fullText:
-      "That feeling when you finally solve a problem you've been stuck on for days... 🎯 What's your latest win? Celebrate with me in the comments!",
-    date: "1 week ago",
-    platform: "instagram",
-    style: "Relatable",
-  },
-];
-
 function DashboardContent() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -102,35 +45,30 @@ function DashboardContent() {
   const [expandedCaptions, setExpandedCaptions] = useState<Set<number>>(
     new Set()
   );
+  const [recentCaptions, setRecentCaptions] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const getPlatformIcon = (platform: string) => {
-    switch (platform) {
-      case "instagram":
-        return (
-          <SocialIcon network="instagram" style={{ width: 16, height: 16 }} />
-        );
-      case "linkedin":
-        return (
-          <SocialIcon network="linkedin" style={{ width: 16, height: 16 }} />
-        );
-      case "x":
-        return <SocialIcon network="x" style={{ width: 16, height: 16 }} />;
-      default:
-        return (
-          <SocialIcon network="instagram" style={{ width: 16, height: 16 }} />
-        );
-    }
-  };
-
-  const getPlatformColor = (platform: string) => {
-    const colors = {
-      instagram: "bg-pink-50 text-pink-600 border-pink-200",
-      linkedin: "bg-blue-50 text-blue-600 border-blue-200",
-      x: "bg-gray-100 text-gray-600 border-gray-200",
-      default: "bg-gray-100 text-gray-600 border-gray-200",
+  // Fetch recent captions
+  useEffect(() => {
+    const fetchCaptions = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch("/api/captions/recent?limit=6");
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setRecentCaptions(data.captions);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching captions:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
-    return colors[platform as keyof typeof colors];
-  };
+
+    fetchCaptions();
+  }, []);
 
   const handleCopyCaption = async (captionText: string, index: number) => {
     try {
@@ -316,140 +254,159 @@ function DashboardContent() {
           </div>
 
           {/* Caption Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recentCaptions.map((caption, index) => (
-              <Card
-                key={caption.id}
-                variant="outlined"
-                className="cursor-pointer group overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
-                onMouseEnter={() => setHoveredCard(caption.id)}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <CardContent
-                  padding="none"
-                  className={`transition-all duration-200`}
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto mb-4"></div>
+                <p className="text-sm text-text-body">
+                  Loading your captions...
+                </p>
+              </div>
+            </div>
+          ) : recentCaptions.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-text-body mb-4">
+                You haven't created any captions yet.
+              </p>
+              <Link href="/generate">
+                <Button variant="primary" size="lg">
+                  Create Your First Caption
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recentCaptions.map((caption, index) => (
+                <Card
+                  key={caption.id}
+                  variant="outlined"
+                  className="cursor-pointer group overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+                  onMouseEnter={() => setHoveredCard(caption.id)}
+                  onMouseLeave={() => setHoveredCard(null)}
                 >
-                  <div
-                    className={` space-y-4 ${
-                      hoveredCard === caption.id ? "" : "-mb-3"
-                    }`}
+                  <CardContent
+                    padding="none"
+                    className={`transition-all duration-200`}
                   >
-                    {/* Platform Badge and Date */}
-                    <div className="flex items-center justify-between">
-                      <div
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border ${getPlatformColor(
-                          caption.platform
-                        )}`}
-                      >
-                        {getPlatformIcon(caption.platform)}
-                        <span className="capitalize">{caption.platform}</span>
-                      </div>
-                      <span className="text-xs text-hint font-medium">
-                        {caption.date}
-                      </span>
-                    </div>
-
-                    {/* Caption Preview */}
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-sm text-text-body leading-relaxed">
-                          {expandedCaptions.has(index)
-                            ? caption.fullText
-                            : caption.fullText.substring(0, 120) +
-                              (caption.fullText.length > 120 ? "..." : "")}
-                        </p>
-                        {needsTruncation(caption.fullText) && (
-                          <button
-                            onClick={() => toggleCaptionExpansion(index)}
-                            className="text-xs text-accent hover:text-accent-hover font-medium mt-1 flex items-center gap-1"
-                          >
-                            {expandedCaptions.has(index) ? (
-                              <>
-                                <ChevronUp className="w-3 h-3" />
-                                Show less
-                              </>
-                            ) : (
-                              <>
-                                <ChevronDown className="w-3 h-3" />
-                                Read more
-                              </>
-                            )}
-                          </button>
-                        )}
-                      </div>
-
-                      {/* Style Tag */}
-                      <div>
-                        <span className="inline-block px-3 py-1.5 bg-surface text-text-body text-xs font-medium rounded-lg border border-border">
-                          {caption.style}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Action Buttons - Show on Hover with Height Animation */}
                     <div
-                      className={`transition-all duration-200 overflow-hidden ${
-                        hoveredCard === caption.id
-                          ? "opacity-100 max-h-12 translate-y-0"
-                          : "opacity-0 max-h-0 -translate-y-2"
+                      className={` space-y-4 ${
+                        hoveredCard === caption.id ? "" : "-mb-3"
                       }`}
                     >
-                      <div className="flex items-center gap-2 pt-2">
-                        <Button
-                          onClick={() =>
-                            handleCopyCaption(caption.fullText, index)
-                          }
-                          variant="primary"
+                      {/* Platform Badge and Date */}
+                      <div className="flex items-center justify-between">
+                        <Badge
+                          variant="platform"
+                          platform={caption.platform as any}
                           size="md"
-                          leftIcon={
-                            copiedIndex === index ? (
-                              <Check className="w-3.5 h-3.5" />
-                            ) : (
-                              <Copy className="w-3.5 h-3.5" />
-                            )
-                          }
-                          className="flex-1 text-xs font-semibold"
-                        >
-                          {copiedIndex === index ? "Copied!" : "Copy"}
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-9 w-9 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.rotate-label]:block border border-border"
-                          title="Regenerate caption"
-                        >
-                          <RotateCcw className="w-4 h-4 shrink-0" />
-                          <span className="rotate-label ml-2 text-sm font-medium hidden whitespace-nowrap">
-                            Regenerate
-                          </span>
-                        </Button>
-                        <Button
-                          onClick={() => handleSaveCaption(index)}
-                          variant="ghost"
-                          size="sm"
-                          className="h-9 w-9 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.bookmark-label]:block border border-border"
-                          title={
-                            savedCaptions.has(index)
-                              ? "Remove from library"
-                              : "Save to library"
-                          }
-                        >
-                          {savedCaptions.has(index) ? (
-                            <BookmarkCheck className="w-4 h-4 shrink-0" />
-                          ) : (
-                            <Bookmark className="w-4 h-4 shrink-0" />
+                        />
+                        <span className="text-xs text-hint font-medium">
+                          {caption.date}
+                        </span>
+                      </div>
+
+                      {/* Caption Preview */}
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-sm text-text-body leading-relaxed">
+                            {expandedCaptions.has(index)
+                              ? caption.fullText
+                              : caption.fullText.substring(0, 120) +
+                                (caption.fullText.length > 120 ? "..." : "")}
+                          </p>
+                          {needsTruncation(caption.fullText) && (
+                            <button
+                              onClick={() => toggleCaptionExpansion(index)}
+                              className="text-xs text-accent hover:text-accent-hover font-medium mt-1 flex items-center gap-1"
+                            >
+                              {expandedCaptions.has(index) ? (
+                                <>
+                                  <ChevronUp className="w-3 h-3" />
+                                  Show less
+                                </>
+                              ) : (
+                                <>
+                                  <ChevronDown className="w-3 h-3" />
+                                  Read more
+                                </>
+                              )}
+                            </button>
                           )}
-                          <span className="bookmark-label ml-2 text-sm font-medium hidden whitespace-nowrap">
-                            {savedCaptions.has(index) ? "Unsave" : "Save"}
-                          </span>
-                        </Button>
+                        </div>
+
+                        {/* Style Tag */}
+                        <div>
+                          <Badge variant="style" size="md">
+                            {caption.style}
+                          </Badge>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons - Show on Hover with Height Animation */}
+                      <div
+                        className={`transition-all duration-200 overflow-hidden ${
+                          hoveredCard === caption.id
+                            ? "opacity-100 max-h-12 translate-y-0"
+                            : "opacity-0 max-h-0 -translate-y-2"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 pt-2">
+                          <Button
+                            onClick={() =>
+                              handleCopyCaption(caption.fullText, index)
+                            }
+                            variant="primary"
+                            size="md"
+                            leftIcon={
+                              copiedIndex === index ? (
+                                <Check className="w-3.5 h-3.5" />
+                              ) : (
+                                <Copy className="w-3.5 h-3.5" />
+                              )
+                            }
+                            className="flex-1 text-xs font-semibold"
+                          >
+                            {copiedIndex === index ? "Copied!" : "Copy"}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-9 w-9 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.rotate-label]:block border border-border"
+                            title="Regenerate caption"
+                          >
+                            <RotateCcw className="w-4 h-4 shrink-0" />
+                            <span className="rotate-label ml-2 text-sm font-medium hidden whitespace-nowrap">
+                              Regenerate
+                            </span>
+                          </Button>
+                          <Button
+                            onClick={() => handleSaveCaption(index)}
+                            variant="ghost"
+                            size="sm"
+                            className="h-9 w-9 p-0 flex items-center justify-center overflow-hidden transition-all duration-200 hover:w-auto hover:px-3 hover:justify-start [&:hover_.bookmark-label]:block border border-border"
+                            title={
+                              savedCaptions.has(index)
+                                ? "Remove from library"
+                                : "Save to library"
+                            }
+                          >
+                            {savedCaptions.has(index) ? (
+                              <BookmarkCheck className="w-4 h-4 shrink-0" />
+                            ) : (
+                              <Bookmark className="w-4 h-4 shrink-0" />
+                            )}
+                            <span className="bookmark-label ml-2 text-sm font-medium hidden whitespace-nowrap">
+                              {savedCaptions.has(index) ? "Unsave" : "Save"}
+                            </span>
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Upgrade Prompt */}

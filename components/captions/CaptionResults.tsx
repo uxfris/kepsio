@@ -22,7 +22,9 @@ interface CaptionResultsProps {
   onCopyCaption: (caption: string, index: number) => void;
   onGenerateNew: () => void;
   onCaptionUpdate?: (index: number, newCaption: string) => void;
+  onGenerateVariation?: (variation: string) => void;
   platform?: string;
+  isGenerating?: boolean;
 }
 
 type FilterType =
@@ -291,7 +293,9 @@ export const CaptionResults = ({
   onCopyCaption,
   onGenerateNew,
   onCaptionUpdate,
+  onGenerateVariation,
   platform = "Instagram",
+  isGenerating = false,
 }: CaptionResultsProps) => {
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [savedCaptions, setSavedCaptions] = useState<Set<number>>(new Set());
@@ -512,32 +516,64 @@ export const CaptionResults = ({
             <Chip
               variant="default"
               size="md"
-              className="border border-border transition-all duration-200 hover:scale-105 rounded-xl text-text-head"
+              onClick={() => onGenerateVariation?.("playful")}
+              disabled={isGenerating}
+              className="border border-border transition-all duration-200 hover:scale-105 hover:bg-accent/10 hover:border-accent rounded-xl text-text-head cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              More playful
+              ✨ More playful
             </Chip>
             <Chip
               variant="default"
               size="md"
-              className="border border-border transition-all duration-200 hover:scale-105 rounded-xl text-text-head"
+              onClick={() => onGenerateVariation?.("urgent")}
+              disabled={isGenerating}
+              className="border border-border transition-all duration-200 hover:scale-105 hover:bg-accent/10 hover:border-accent rounded-xl text-text-head cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Add urgency
+              ⚡ Add urgency
             </Chip>
             <Chip
               variant="default"
               size="md"
-              className="border border-border transition-all duration-200 hover:scale-105 rounded-xl text-text-head"
+              onClick={() => onGenerateVariation?.("shorter")}
+              disabled={isGenerating}
+              className="border border-border transition-all duration-200 hover:scale-105 hover:bg-accent/10 hover:border-accent rounded-xl text-text-head cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Shorter
+              📏 Shorter
             </Chip>
             <Chip
               variant="default"
               size="md"
-              className="border border-border transition-all duration-200 hover:scale-105 rounded-xl text-text-head"
+              onClick={() => onGenerateVariation?.("professional")}
+              disabled={isGenerating}
+              className="border border-border transition-all duration-200 hover:scale-105 hover:bg-accent/10 hover:border-accent rounded-xl text-text-head cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              More professional
+              💼 More professional
+            </Chip>
+            <Chip
+              variant="default"
+              size="md"
+              onClick={() => onGenerateVariation?.("casual")}
+              disabled={isGenerating}
+              className="border border-border transition-all duration-200 hover:scale-105 hover:bg-accent/10 hover:border-accent rounded-xl text-text-head cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              😊 More casual
+            </Chip>
+            <Chip
+              variant="default"
+              size="md"
+              onClick={() => onGenerateVariation?.("emotional")}
+              disabled={isGenerating}
+              className="border border-border transition-all duration-200 hover:scale-105 hover:bg-accent/10 hover:border-accent rounded-xl text-text-head cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              ❤️ More emotional
             </Chip>
           </div>
+          {isGenerating && (
+            <div className="mt-4 flex items-center justify-center gap-2 text-sm text-accent">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-accent"></div>
+              <span>Generating variations...</span>
+            </div>
+          )}
         </div>
       </div>
 

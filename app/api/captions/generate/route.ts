@@ -1,19 +1,381 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { openai } from "@/lib/ai/openai";
+import { getUserVoiceProfile } from "@/lib/db/queries/voice-profiles";
+import { createMultipleCaptions } from "@/lib/db/queries/captions";
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    // Caption generation logic will be implemented here
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { contentInput, contextData, selectedContextItems, options } = body;
+
+    if (!contentInput || contentInput.trim() === "") {
+      return NextResponse.json(
+        { error: "Content input is required" },
+        { status: 400 }
+      );
+    }
+
+    // Fetch user's voice profile
+    const voiceProfile = await getUserVoiceProfile(user.id);
+
+    // Build context information
+    let contextInfo = "";
+    let hasImage = false;
+    let imageBase64 = null;
+
+    if (selectedContextItems && selectedContextItems.length > 0) {
+      const contextParts = [];
+      if (
+        selectedContextItems.includes("product-link") &&
+        contextData?.productLink
+      ) {
+        contextParts.push(`Product link: ${contextData.productLink}`);
+      }
+      if (
+        selectedContextItems.includes("upload-image") &&
+        contextData?.imageBase64
+      ) {
+        hasImage = true;
+        imageBase64 = contextData.imageBase64;
+        contextParts.push(
+          `Image: The user has uploaded an image. Analyze it and incorporate what you see into the captions.`
+        );
+      }
+      if (
+        selectedContextItems.includes("previous-post") &&
+        contextData?.selectedPreviousPost
+      ) {
+        contextParts.push(`Related to: ${contextData.selectedPreviousPost}`);
+      }
+      if (contextParts.length > 0) {
+        contextInfo = "\n\nAdditional context:\n" + contextParts.join("\n");
+      }
+    }
+
+    // Build the AI prompt based on voice profile and options
+    const systemPrompt = buildSystemPrompt(voiceProfile, options);
+    const userPrompt = buildUserPrompt(contentInput, contextInfo, options);
+
+    // Build messages array - include image if present
+    const messages: any[] = [{ role: "system", content: systemPrompt }];
+
+    if (hasImage && imageBase64) {
+      // Use vision capabilities when image is present
+      // Using "low" detail mode for social media captions (85 tokens vs ~3,500)
+      // This is perfect for caption generation - we don't need to analyze tiny details
+      messages.push({
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: userPrompt,
+          },
+          {
+            type: "image_url",
+            image_url: {
+              url: `data:image/jpeg;base64,${imageBase64}`,
+              detail: "low", // Reduces tokens from ~3,500 to 85
+            },
+          },
+        ],
+      });
+    } else {
+      // Text-only when no image
+      messages.push({
+        role: "user",
+        content: userPrompt,
+      });
+    }
+
+    // Generate captions using OpenAI
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages,
+      temperature: voiceProfile?.voiceStrength
+        ? (100 - voiceProfile.voiceStrength) / 100
+        : 0.7,
+      max_tokens: 1500,
+    });
+
+    const response = completion.choices[0]?.message?.content;
+    if (!response) {
+      throw new Error("No response from AI");
+    }
+
+    // Parse the response to extract individual captions
+    const captions = parseGeneratedCaptions(response);
+
+    // Determine platform
+    const platform = voiceProfile?.platform?.name?.toLowerCase() || "instagram";
+
+    // Save captions to database with metadata
+    const captionInputs = captions.map((caption, index) => {
+      const style = determineCaptionStyle(caption, index);
+      const metadata = getCaptionMetadata(caption);
+
+      return {
+        userId: user.id,
+        content: caption,
+        context: JSON.stringify({
+          contentInput,
+          contextData,
+          selectedContextItems,
+          options,
+        }),
+        voiceProfile: voiceProfile?.id,
+        platform,
+        style,
+        metadata,
+      };
+    });
+
+    await createMultipleCaptions(captionInputs);
 
     return NextResponse.json({
       success: true,
-      caption: "Generated caption will appear here",
+      captions,
+      platform: voiceProfile?.platform?.name || "Instagram",
     });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to generate caption" },
-      { status: 500 }
-    );
+    console.error("Caption generation error:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to generate caption";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
+}
+
+function buildSystemPrompt(voiceProfile: any, options: any): string {
+  let prompt = `You are an expert social media caption writer. Your task is to generate engaging, authentic captions that drive engagement.`;
+
+  if (voiceProfile) {
+    const { tone, platform, stylePreferences, examples } = voiceProfile;
+
+    if (tone) {
+      prompt += `\n\nBrand Tone: ${tone.name} - ${tone.description}`;
+    }
+
+    if (platform) {
+      prompt += `\n\nTarget Platform: ${platform.name}`;
+    }
+
+    if (stylePreferences) {
+      const prefs =
+        typeof stylePreferences === "string"
+          ? JSON.parse(stylePreferences)
+          : stylePreferences;
+
+      prompt += `\n\nStyle Preferences:`;
+      if (prefs.useQuestions) prompt += `\n- Include engaging questions`;
+      if (prefs.includeEmojis) prompt += `\n- Use relevant emojis naturally`;
+      if (prefs.includeCTA) prompt += `\n- Include clear calls-to-action`;
+    }
+
+      if (examples && examples.length > 0) {
+        prompt += `\n\nExample captions in the user's voice:\n${examples
+          .slice(0, 3)
+          .map((ex: string, i: number) => `${i + 1}. ${ex}`)
+          .join("\n")}`;
+        prompt += `\n\nMirror this tone, style, and voice in the generated captions.`;
+      }
+  }
+
+  return prompt;
+}
+
+function buildUserPrompt(
+  contentInput: string,
+  contextInfo: string,
+  options: any
+): string {
+  let prompt = `Generate 5 unique, engaging captions for the following content:\n\n${contentInput}${contextInfo}`;
+
+  if (options) {
+    prompt += `\n\nRequirements:`;
+
+    if (options.captionLength) {
+      const lengthGuide = {
+        short: "50-100 characters",
+        medium: "100-200 characters",
+        long: "200-400 characters",
+      };
+      prompt += `\n- Length: ${
+        lengthGuide[options.captionLength as keyof typeof lengthGuide] ||
+        "Medium (100-200 characters)"
+      }`;
+    }
+
+    if (options.hashtagCount > 0) {
+      prompt += `\n- Include ${options.hashtagCount} relevant hashtags`;
+    }
+
+    if (options.emojiStyle) {
+      const emojiGuide = {
+        none: "No emojis",
+        minimal: "Use 1-2 emojis",
+        moderate: "Use 3-5 emojis",
+        expressive: "Use 5+ emojis naturally",
+      };
+      prompt += `\n- Emoji style: ${
+        emojiGuide[options.emojiStyle as keyof typeof emojiGuide] || "Moderate"
+      }`;
+    }
+
+    if (options.cta && options.cta !== "none") {
+      if (options.cta === "custom" && options.customCta) {
+        prompt += `\n- End with this CTA: "${options.customCta}"`;
+      } else {
+        const ctaMap: Record<string, string> = {
+          "link-in-bio": "Link in bio 🔗",
+          "shop-now": "Shop now 🛍️",
+          "dm-me": "DM me for more info 💬",
+          "comment-below": "Comment below 👇",
+        };
+        prompt += `\n- Include CTA: "${ctaMap[options.cta] || ""}"`;
+      }
+    }
+  }
+
+  prompt += `\n\nGenerate 5 diverse captions with different styles:
+1. Hook-first (start with an attention-grabbing question or statement)
+2. Story-driven (tell a brief story or share an experience)
+3. Direct & actionable (clear, straightforward message)
+4. Question-based (engage with a thought-provoking question)
+5. Inspirational (motivational and uplifting)
+
+Format: Return ONLY the 5 captions, each on a new line, separated by "---"`;
+
+  return prompt;
+}
+
+function parseGeneratedCaptions(response: string): string[] {
+  // Try to split by --- first
+  let captions = response
+    .split("---")
+    .map((c) => c.trim())
+    .filter((c) => c.length > 0);
+
+  // If that doesn't work, try splitting by numbered list
+  if (captions.length < 2) {
+    captions = response
+      .split(/\d+\.\s+/)
+      .map((c) => c.trim())
+      .filter((c) => c.length > 0);
+  }
+
+  // If still not enough, try splitting by double newlines
+  if (captions.length < 2) {
+    captions = response
+      .split("\n\n")
+      .map((c) => c.trim())
+      .filter((c) => c.length > 0);
+  }
+
+  // Ensure we have exactly 5 captions
+  if (captions.length > 5) {
+    captions = captions.slice(0, 5);
+  } else if (captions.length < 5) {
+    // If we have fewer than 5, duplicate some with slight variations
+    while (captions.length < 5 && captions.length > 0) {
+      captions.push(captions[captions.length - 1]);
+    }
+  }
+
+  return captions;
+}
+
+function determineCaptionStyle(caption: string, index: number): string {
+  // Map index to intended style from our prompt
+  const styles = [
+    "Hook-first",
+    "Story-driven",
+    "Direct",
+    "Question-based",
+    "Inspirational",
+  ];
+
+  // Also check content to determine style
+  const lowerCaption = caption.toLowerCase();
+
+  if (
+    caption.startsWith("?") ||
+    lowerCaption.includes("have you") ||
+    lowerCaption.includes("did you know")
+  ) {
+    return "Question-based";
+  } else if (
+    lowerCaption.includes("story") ||
+    lowerCaption.includes("journey") ||
+    lowerCaption.includes("experience")
+  ) {
+    return "Story-driven";
+  } else if (lowerCaption.includes("tip") || lowerCaption.includes("how to")) {
+    return "Educational";
+  } else if (lowerCaption.includes("behind") || lowerCaption.includes("bts")) {
+    return "Behind the Scenes";
+  } else if (
+    caption.split("\n").filter((line) => line.trim().match(/^\d+\./)).length > 2
+  ) {
+    return "Listicle";
+  }
+
+  return styles[index] || "Engagement";
+}
+
+function getCaptionMetadata(caption: string) {
+  const length = caption.length;
+  const isQuestion = caption.includes("?");
+  const isStory =
+    caption.toLowerCase().includes("story") ||
+    caption.toLowerCase().includes("journey") ||
+    caption.toLowerCase().includes("experience");
+  const isDirect =
+    caption.includes("!") ||
+    caption.toLowerCase().includes("now") ||
+    caption.toLowerCase().includes("today");
+
+  let lengthCategory: "short" | "medium" | "long";
+  if (length < 100) lengthCategory = "short";
+  else if (length < 200) lengthCategory = "medium";
+  else lengthCategory = "long";
+
+  let styleType: "hook-first" | "story-driven" | "cta-focused";
+  if (
+    caption.startsWith("Did you know") ||
+    caption.startsWith("Have you ever") ||
+    isQuestion
+  ) {
+    styleType = "hook-first";
+  } else if (isStory) {
+    styleType = "story-driven";
+  } else {
+    styleType = "cta-focused";
+  }
+
+  let engagementScore: "high" | "medium" | "low";
+  if (isQuestion && length > 50 && length < 150) {
+    engagementScore = "high";
+  } else if (isStory || isDirect) {
+    engagementScore = "medium";
+  } else {
+    engagementScore = "low";
+  }
+
+  return {
+    length: lengthCategory,
+    style: styleType,
+    engagementScore,
+    isQuestion,
+    isStory,
+    isDirect,
+  };
 }

@@ -65,6 +65,9 @@ export type {
 export { Chip } from "./Chip";
 export type { ChipProps } from "./Chip";
 
+export { Badge } from "./Badge";
+export type { BadgeProps } from "./Badge";
+
 export { ToastProvider, useToast, toast } from "./Toast";
 
 export { Slider } from "./Slider";
