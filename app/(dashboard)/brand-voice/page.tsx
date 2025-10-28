@@ -204,7 +204,7 @@ const BrandVoiceContent: React.FC = () => {
       {/* Header */}
       <div className="bg-linear-to-r from-surface to-section border-b border-border">
         <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             {/* Title Section */}
             <div className="flex-1">
               <div className="flex items-center gap-3">
