@@ -24,10 +24,11 @@ export const useCaptionInput = () => {
   });
 
   const [options, setOptions] = useState<CaptionOptions>({
-    cta: "link-in-bio",
+    cta: "none",
     captionLength: "medium",
     emojiStyle: "minimal",
     hashtagCount: 5,
+    customCta: undefined,
   });
 
   const contextMenuRef = useRef<HTMLDivElement>(null);

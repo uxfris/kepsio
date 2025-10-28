@@ -46,29 +46,48 @@ export const useCaptionGeneration = () => {
       contextInfo.push(`Related to: ${contextData.selectedPreviousPost}`);
     }
 
+    // Generate CTA text based on options
+    const generateCTA = () => {
+      if (options.cta === "none") return "";
+      if (options.cta === "custom" && options.customCta) {
+        return `\n\n${options.customCta}`;
+      }
+
+      const ctaMap: Record<string, string> = {
+        "link-in-bio": "Link in bio 🔗",
+        "shop-now": "Shop now 🛍️",
+        "dm-me": "DM me for more info 💬",
+        "comment-below": "Comment below 👇",
+      };
+
+      return options.cta in ctaMap ? `\n\n${ctaMap[options.cta]}` : "";
+    };
+
+    const ctaText = generateCTA();
+
     // Mock generated captions with context
     const baseContent = contentInput.slice(0, 50);
     const contextText =
       contextInfo.length > 0 ? `\n\nContext: ${contextInfo.join(", ")}` : "";
 
     const mockCaptions = [
-      `🚀 Excited to share this new chapter! ${baseContent}... What do you think? #innovation #growth${contextText}`,
+      `🚀 Excited to share this new chapter! ${baseContent}... What do you think? #innovation #growth${ctaText}${contextText}`,
       `Just launched something I've been working on! ${contentInput.slice(
         0,
         40
-      )}... Can't wait to hear your thoughts! 💫${contextText}`,
+      )}... Can't wait to hear your thoughts! 💫${ctaText}${contextText}`,
       `Behind the scenes: ${contentInput.slice(
         0,
         60
-      )}... The journey has been incredible! 🌟 #behindthescenes${contextText}`,
+      )}... The journey has been incredible! 🌟 #behindthescenes${ctaText}${contextText}`,
       `New project alert! ${contentInput.slice(
         0,
         45
-      )}... This is just the beginning! ✨ #newbeginnings${contextText}`,
+      )}... This is just the beginning! ✨ #newbeginnings${ctaText}${contextText}`,
       `Sharing something special today: ${contentInput.slice(
         0,
         55
-      )}... What's your take? 🤔 #community${contextText}`,
+      )}... What's your take? 🤔 #community${ctaText}${contextText}`,
     ];
 
     return mockCaptions;

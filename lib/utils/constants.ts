@@ -22,6 +22,7 @@ export const PREVIOUS_POSTS: PreviousPost[] = [
 ];
 
 export const CTA_OPTIONS = [
+  { value: "none", label: "None" },
   { value: "link-in-bio", label: "Link in bio" },
   { value: "shop-now", label: "Shop now" },
   { value: "dm-me", label: "DM me" },

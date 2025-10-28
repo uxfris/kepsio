@@ -2,6 +2,7 @@ import React from "react";
 import { ChevronDown } from "lucide-react";
 import { Card } from "../ui/Card";
 import { SegmentedControl } from "../ui/SegmentedControl";
+import { Input } from "../ui/Input";
 import {
   Select,
   SelectTrigger,
@@ -58,13 +59,19 @@ export const AdvancedOptions = ({
       >
         <div className="px-4 pb-6 space-y-6 border-t border-divider">
           {/* Call-to-Action */}
-          <div className="pt-4">
+          <div className="pt-4 space-y-3">
             <label className="block text-xs font-medium text-primary mb-2">
               Call-to-Action
             </label>
             <Select
               value={options.cta}
-              onValueChange={(value) => onOptionsUpdate({ cta: value })}
+              onValueChange={(value) => {
+                onOptionsUpdate({ cta: value });
+                // Clear custom CTA when switching away from custom
+                if (value !== "custom") {
+                  onOptionsUpdate({ customCta: undefined });
+                }
+              }}
             >
               <SelectTrigger className="w-full border border-border rounded-xl bg-surface text-sm">
                 <SelectValue placeholder="Choose a CTA" />
@@ -77,6 +84,26 @@ export const AdvancedOptions = ({
                 ))}
               </SelectContent>
             </Select>
+
+            {/* Custom CTA Input - Only shown when "custom" is selected */}
+            {options.cta === "custom" && (
+              <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+                <Input
+                  value={options.customCta || ""}
+                  onChange={(e) =>
+                    onOptionsUpdate({ customCta: e.target.value })
+                  }
+                  placeholder="Enter your custom CTA (e.g., 'Check the link below', 'Swipe up')"
+                  className="w-full"
+                  maxLength={100}
+                />
+                {options.customCta && (
+                  <p className="text-xs text-hint mt-1">
+                    {options.customCta.length}/100 characters
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Hashtag Preference */}
