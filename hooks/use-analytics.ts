@@ -26,14 +26,23 @@ interface AnalyticsData {
   activity: ActivityData;
 }
 
-export function useAnalytics() {
+interface UseAnalyticsOptions {
+  enabled?: boolean;
+}
+
+export function useAnalytics(options: UseAnalyticsOptions = {}) {
+  const { enabled = true } = options;
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(enabled);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchAnalytics();
-  }, []);
+    if (enabled) {
+      fetchAnalytics();
+    } else {
+      setIsLoading(false);
+    }
+  }, [enabled]);
 
   const fetchAnalytics = async () => {
     try {

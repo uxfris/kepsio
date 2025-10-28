@@ -198,7 +198,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                   </button>
 
                   {/* Tooltip */}
-                  <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-black text-white text-xs px-2 py-1 rounded shadow-lg opacity-0 group-hover/button:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-[9999]">
+                  <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-black text-white text-xs px-2 py-1 rounded shadow-lg opacity-0 group-hover/button:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-9999">
                     Toggle sidebar{" "}
                     <span className="text-gray-400 ml-1">⌘.</span>
                   </div>
