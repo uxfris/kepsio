@@ -99,11 +99,11 @@ export default function PricingPage() {
           <FAQSection faqs={FAQ_ITEMS} />
 
           {/* Back to Dashboard */}
-          <div className="text-center">
+          {/* <div className="text-center">
             <Button onClick={handleBackToDashboard} variant="outline" size="lg">
               Back to Dashboard
             </Button>
-          </div>
+          </div> */}
         </div>
       </main>
     </div>

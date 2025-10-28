@@ -31,7 +31,8 @@ export default function ProBadge({ isCollapsed }: ProBadgeProps) {
 
   const captionsUsed = usage?.captionsUsed || 0;
   const captionsLimit = planConfig.limits.captionsPerMonth;
-  const usagePercentage = captionsLimit === -1 ? 0 : (captionsUsed / captionsLimit) * 100;
+  const usagePercentage =
+    captionsLimit === -1 ? 0 : (captionsUsed / captionsLimit) * 100;
 
   const getPlanIcon = () => {
     if (currentPlan === "enterprise")
@@ -119,7 +120,7 @@ export default function ProBadge({ isCollapsed }: ProBadgeProps) {
 
         {/* CTA Button */}
         {!isPro ? (
-          <Link href="/pricing">
+          <Link href="/upgrade">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

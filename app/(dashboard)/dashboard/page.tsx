@@ -351,7 +351,7 @@ function DashboardContent() {
                 </p>
               </div>
               <div className="flex items-center gap-3 shrink-0">
-                <Link href="/pricing">
+                <Link href="/upgrade">
                   <Button
                     variant="outline"
                     size="lg"
