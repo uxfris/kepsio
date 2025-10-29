@@ -6,6 +6,8 @@ import { Button } from "../ui/Button";
 
 interface PendingInvitesTabProps {
   invites: PendingInvite[];
+  onResend?: (inviteId: string) => Promise<void>;
+  onDelete?: (inviteId: string) => Promise<void>;
 }
 
 const roleConfig: Record<
@@ -34,7 +36,11 @@ const roleConfig: Record<
   },
 };
 
-export function PendingInvitesTab({ invites }: PendingInvitesTabProps) {
+export function PendingInvitesTab({
+  invites,
+  onResend,
+  onDelete,
+}: PendingInvitesTabProps) {
   if (invites.length === 0) {
     return (
       <div className="bg-surface rounded-xl border border-border p-12 text-center">
@@ -79,12 +85,24 @@ export function PendingInvitesTab({ invites }: PendingInvitesTabProps) {
             >
               {roleConfig[invite.role].label}
             </span>
-            <Button size="sm" variant="ghost" className="text-accent">
-              Resend
-            </Button>
-            <button className="p-2 text-text-body hover:bg-section-light rounded-lg transition-colors">
-              <Trash2 className="w-4 h-4" />
-            </button>
+            {onResend && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-accent"
+                onClick={() => onResend(invite.id)}
+              >
+                Resend
+              </Button>
+            )}
+            {onDelete && (
+              <button
+                className="p-2 text-text-body hover:bg-section-light rounded-lg transition-colors"
+                onClick={() => onDelete(invite.id)}
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
       ))}

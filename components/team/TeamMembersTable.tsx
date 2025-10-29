@@ -1,9 +1,18 @@
-import { MoreVertical, Crown, Shield, Edit3, Eye } from "lucide-react";
+import { Crown, Shield, Edit3, Eye } from "lucide-react";
 import type { TeamMember, TeamRole } from "@/types/team";
 import { cn } from "@/lib/utils/cn";
+import { MemberActionsDropdown } from "./MemberActionsDropdown";
+import { SortableTableHeader, type SortDirection } from "./SortableTableHeader";
 
 interface TeamMembersTableProps {
   members: TeamMember[];
+  currentUserRole: string;
+  onEditRole: (memberId: string) => void;
+  onRemoveMember: (memberId: string) => void;
+  onTransferOwnership?: (memberId: string) => void;
+  sortKey: string | null;
+  sortDirection: SortDirection;
+  onSort: (key: string) => void;
 }
 
 const roleConfig: Record<
@@ -32,28 +41,57 @@ const roleConfig: Record<
   },
 };
 
-export function TeamMembersTable({ members }: TeamMembersTableProps) {
+export function TeamMembersTable({
+  members,
+  currentUserRole,
+  onEditRole,
+  onRemoveMember,
+  onTransferOwnership,
+  sortKey,
+  sortDirection,
+  onSort,
+}: TeamMembersTableProps) {
   return (
     <div className="bg-surface rounded-xl border border-border overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-section border-b border-border">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-text-body uppercase tracking-wider">
-                Member
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-text-body uppercase tracking-wider">
-                Role
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-text-body uppercase tracking-wider">
-                Captions
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-text-body uppercase tracking-wider">
-                Last Active
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-text-body uppercase tracking-wider">
-                Status
-              </th>
+              <SortableTableHeader
+                label="Member"
+                sortKey="name"
+                currentSortKey={sortKey}
+                currentSortDirection={sortDirection}
+                onSort={onSort}
+              />
+              <SortableTableHeader
+                label="Role"
+                sortKey="role"
+                currentSortKey={sortKey}
+                currentSortDirection={sortDirection}
+                onSort={onSort}
+              />
+              <SortableTableHeader
+                label="Captions"
+                sortKey="captionsCreated"
+                currentSortKey={sortKey}
+                currentSortDirection={sortDirection}
+                onSort={onSort}
+              />
+              <SortableTableHeader
+                label="Last Active"
+                sortKey="lastActive"
+                currentSortKey={sortKey}
+                currentSortDirection={sortDirection}
+                onSort={onSort}
+              />
+              <SortableTableHeader
+                label="Status"
+                sortKey="status"
+                currentSortKey={sortKey}
+                currentSortDirection={sortDirection}
+                onSort={onSort}
+              />
               <th className="px-6 py-3 text-right text-xs font-medium text-text-body uppercase tracking-wider">
                 Actions
               </th>
@@ -117,9 +155,13 @@ export function TeamMembersTable({ members }: TeamMembersTableProps) {
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button className="p-2 hover:bg-section-light rounded-lg transition-colors">
-                      <MoreVertical className="w-4 h-4 text-text-body" />
-                    </button>
+                    <MemberActionsDropdown
+                      member={member}
+                      currentUserRole={currentUserRole}
+                      onEditRole={onEditRole}
+                      onRemoveMember={onRemoveMember}
+                      onTransferOwnership={onTransferOwnership}
+                    />
                   </td>
                 </tr>
               );

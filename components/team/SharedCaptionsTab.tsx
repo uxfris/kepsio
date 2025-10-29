@@ -12,9 +12,11 @@ import {
 import type { SharedCaption, SharedCaptionStatus } from "@/types/team";
 import { cn } from "@/lib/utils/cn";
 import { Button } from "../ui/Button";
+import { EmptySharedCaptions } from "./EmptySharedCaptions";
 
 interface SharedCaptionsTabProps {
   captions: SharedCaption[];
+  onUpdateStatus?: (sharedCaptionId: string, status: string) => Promise<void>;
 }
 
 const statusConfig: Record<
@@ -38,7 +40,22 @@ const statusConfig: Record<
   },
 };
 
-export function SharedCaptionsTab({ captions }: SharedCaptionsTabProps) {
+export function SharedCaptionsTab({
+  captions,
+  onUpdateStatus,
+}: SharedCaptionsTabProps) {
+  const handleCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (error) {
+      console.error("Failed to copy:", error);
+    }
+  };
+
+  if (captions.length === 0) {
+    return <EmptySharedCaptions />;
+  }
+
   return (
     <div className="space-y-4">
       {captions.map((caption) => {
@@ -91,13 +108,14 @@ export function SharedCaptionsTab({ captions }: SharedCaptionsTabProps) {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {caption.status === "pending-review" && (
+                {caption.status === "pending-review" && onUpdateStatus && (
                   <>
                     <Button
                       size="sm"
                       variant="ghost"
                       className="bg-green-100 hover:bg-green-200 text-green-700"
                       leftIcon={<Check className="w-4 h-4" />}
+                      onClick={() => onUpdateStatus(caption.id, "approved")}
                     >
                       Approve
                     </Button>
@@ -106,6 +124,9 @@ export function SharedCaptionsTab({ captions }: SharedCaptionsTabProps) {
                       variant="ghost"
                       className="bg-red-100 hover:bg-red-200 text-red-700"
                       leftIcon={<X className="w-4 h-4" />}
+                      onClick={() =>
+                        onUpdateStatus(caption.id, "needs-changes")
+                      }
                     >
                       Request Changes
                     </Button>
@@ -115,6 +136,7 @@ export function SharedCaptionsTab({ captions }: SharedCaptionsTabProps) {
                   size="sm"
                   variant="ghost"
                   leftIcon={<Copy className="w-4 h-4" />}
+                  onClick={() => handleCopy(caption.text)}
                 >
                   Copy
                 </Button>

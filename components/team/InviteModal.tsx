@@ -7,21 +7,33 @@ import { Button } from "../ui/Button";
 interface InviteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onInvite: (email: string, role: string) => void;
+  onInvite: (email: string, role: string) => Promise<void>;
+  isLoading?: boolean;
 }
 
-export function InviteModal({ isOpen, onClose, onInvite }: InviteModalProps) {
+export function InviteModal({
+  isOpen,
+  onClose,
+  onInvite,
+  isLoading = false,
+}: InviteModalProps) {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("editor");
 
   if (!isOpen) return null;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (email) {
-      onInvite(email, role);
+      await onInvite(email, role);
       setEmail("");
       setRole("editor");
       onClose();
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && email) {
+      handleSubmit();
     }
   };
 
@@ -39,7 +51,8 @@ export function InviteModal({ isOpen, onClose, onInvite }: InviteModalProps) {
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-section-light rounded-lg transition-colors"
+            disabled={isLoading}
+            className="p-2 hover:bg-section-light rounded-lg transition-colors disabled:opacity-50"
           >
             <X className="w-5 h-5 text-text-body" />
           </button>
@@ -54,8 +67,10 @@ export function InviteModal({ isOpen, onClose, onInvite }: InviteModalProps) {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyPress={handleKeyPress}
               placeholder="teammate@company.com"
-              className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/20 bg-surface text-primary"
+              disabled={isLoading}
+              className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/20 bg-surface text-primary disabled:opacity-50"
             />
           </div>
 
@@ -66,7 +81,8 @@ export function InviteModal({ isOpen, onClose, onInvite }: InviteModalProps) {
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/20 bg-surface text-primary"
+              disabled={isLoading}
+              className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/20 bg-surface text-primary disabled:opacity-50"
             >
               <option value="admin">
                 Admin - Can manage team and approve content
@@ -82,7 +98,12 @@ export function InviteModal({ isOpen, onClose, onInvite }: InviteModalProps) {
         </div>
 
         <div className="flex gap-3">
-          <Button onClick={onClose} variant="outline" className="flex-1">
+          <Button
+            onClick={onClose}
+            variant="outline"
+            className="flex-1"
+            disabled={isLoading}
+          >
             Cancel
           </Button>
           <Button
@@ -90,8 +111,10 @@ export function InviteModal({ isOpen, onClose, onInvite }: InviteModalProps) {
             variant="accent"
             className="flex-1"
             leftIcon={<Mail className="w-4 h-4" />}
+            disabled={!email || isLoading}
+            loading={isLoading}
           >
-            Send Invite
+            {isLoading ? "Sending..." : "Send Invite"}
           </Button>
         </div>
       </div>
