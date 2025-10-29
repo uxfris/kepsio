@@ -103,3 +103,6 @@ export interface EnhancedCaption {
   isSaved?: boolean;
   isEdited?: boolean;
 }
+
+// Re-export team types
+export * from "./team";
