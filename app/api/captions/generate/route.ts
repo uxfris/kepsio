@@ -21,7 +21,13 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { contentInput, contextData, selectedContextItems, options } = body;
+    const {
+      contentInput,
+      contextData,
+      selectedContextItems,
+      options,
+      parentGenerationBatchId,
+    } = body;
 
     if (!contentInput || contentInput.trim() === "") {
       return NextResponse.json(
@@ -56,27 +62,65 @@ export async function POST(request: NextRequest) {
     const planConfig =
       subscriptionPlans[plan as keyof typeof subscriptionPlans];
     const generationsLimit = planConfig?.limits.captionsPerMonth || 10;
+    const variationsLimit = planConfig?.limits.variationsPerGeneration || 5;
 
-    // For unlimited plans, skip the limit check
-    if (generationsLimit !== -1) {
-      const generationsUsed = subscription?.generationsUsed || 0;
-      const currentPeriodEnd = subscription?.currentPeriodEnd || new Date();
+    // If this is a variation (has parentGenerationBatchId), check variation limits
+    if (parentGenerationBatchId) {
+      // Count how many variations have been generated from this parent batch
+      // Using raw query for now until Prisma types are updated
+      const variationCount = await prisma.$queryRaw<
+        Array<{ generationBatchId: string }>
+      >`
+        SELECT DISTINCT "generationBatchId"
+        FROM captions
+        WHERE "userId" = ${user.id}::uuid
+          AND "parentGenerationBatchId" = ${parentGenerationBatchId}
+          AND "generationBatchId" IS NOT NULL
+      `;
 
-      // Check if user has exceeded their limit
-      if (generationsUsed >= generationsLimit) {
+      const variationsUsed = variationCount.length;
+
+      // Check variation limit (unlimited is -1)
+      if (variationsLimit !== -1 && variationsUsed >= variationsLimit) {
         return NextResponse.json(
           {
-            error: "Usage limit exceeded",
-            message: "You've reached your generation limit for this period",
-            limitReached: true,
-            usage: {
-              used: generationsUsed,
-              limit: generationsLimit,
-              resetDate: currentPeriodEnd,
+            error: "Variation limit exceeded",
+            message: `You've reached your limit of ${variationsLimit} variations per generation. Upgrade to ${
+              plan === "free" ? "Pro" : "Enterprise"
+            } for more variations.`,
+            variationLimitReached: true,
+            variations: {
+              used: variationsUsed,
+              limit: variationsLimit,
             },
+            requiredPlan: plan === "free" ? "pro" : "enterprise",
           },
           { status: 429 }
         );
+      }
+    } else {
+      // This is a new generation (not a variation), check generation limits
+      // For unlimited plans, skip the limit check
+      if (generationsLimit !== -1) {
+        const generationsUsed = subscription?.generationsUsed || 0;
+        const currentPeriodEnd = subscription?.currentPeriodEnd || new Date();
+
+        // Check if user has exceeded their limit
+        if (generationsUsed >= generationsLimit) {
+          return NextResponse.json(
+            {
+              error: "Usage limit exceeded",
+              message: "You've reached your generation limit for this period",
+              limitReached: true,
+              usage: {
+                used: generationsUsed,
+                limit: generationsLimit,
+                resetDate: currentPeriodEnd,
+              },
+            },
+            { status: 429 }
+          );
+        }
       }
     }
 
@@ -197,6 +241,7 @@ export async function POST(request: NextRequest) {
         style,
         metadata,
         generationBatchId, // Group all captions from this request
+        parentGenerationBatchId: parentGenerationBatchId || null, // Link to original if this is a variation
       };
     });
 
@@ -227,6 +272,7 @@ export async function POST(request: NextRequest) {
         isSaved: c.isSaved || false,
       })),
       platform: voiceProfile?.platform?.name || "Instagram",
+      generationBatchId, // Return batch ID so frontend can track it for variations
     });
   } catch (error) {
     console.error("Caption generation error:", error);

@@ -7,6 +7,8 @@ import {
   TrendingUp,
   Wand2,
   Zap,
+  Lock,
+  Crown,
 } from "lucide-react";
 import { SocialIcon } from "react-social-icons";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/Card";
@@ -15,6 +17,8 @@ import { Switch } from "../ui/Switch";
 import { Button } from "../ui/Button";
 import { SegmentedControl } from "../ui/SegmentedControl";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { useSubscription } from "../../contexts/SubscriptionContext";
+import { useToast } from "../ui/Toast";
 import {
   generateInstantPreview,
   getVoiceStrengthLabel,
@@ -67,6 +71,11 @@ export const ToneTab: React.FC<ToneTabProps> = React.memo(
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
     const [aiError, setAiError] = useState<string | null>(null);
 
+    // Subscription check
+    const { isPro, isEnterprise, isLoading: isLoadingSub } = useSubscription();
+    const { showToast } = useToast();
+    const hasAdvancedAccess = isPro || isEnterprise;
+
     const selectedTone = onboardingOptions.brandTones.find(
       (t) => t.id === selectedToneId
     );
@@ -93,6 +102,13 @@ export const ToneTab: React.FC<ToneTabProps> = React.memo(
 
     // Handle AI preview generation
     const handleGenerateAIPreview = async () => {
+      // Check if user has Pro/Enterprise access
+      if (!hasAdvancedAccess) {
+        showToast("AI Preview is a Pro feature. Upgrade to unlock!", "error");
+        setPreviewMode("instant");
+        return;
+      }
+
       setIsGeneratingAI(true);
       setAiError(null);
 
@@ -111,6 +127,17 @@ export const ToneTab: React.FC<ToneTabProps> = React.memo(
 
         if (!response.ok) {
           const error = await response.json();
+
+          // Handle subscription requirement
+          if (error.requiredPlan === "pro") {
+            showToast(
+              error.message || "Upgrade to Pro for AI Preview",
+              "error"
+            );
+            setPreviewMode("instant");
+            return;
+          }
+
           throw new Error(error.error || "Failed to generate preview");
         }
 
@@ -456,7 +483,16 @@ export const ToneTab: React.FC<ToneTabProps> = React.memo(
             <div className="mb-4 sm:mb-6">
               <SegmentedControl
                 value={previewMode}
-                onChange={(value) => setPreviewMode(value as PreviewMode)}
+                onChange={(value) => {
+                  if (value === "ai" && !hasAdvancedAccess) {
+                    showToast(
+                      "AI Preview requires Pro. Upgrade to unlock!",
+                      "error"
+                    );
+                    return;
+                  }
+                  setPreviewMode(value as PreviewMode);
+                }}
                 options={[
                   {
                     value: "instant",
@@ -465,7 +501,7 @@ export const ToneTab: React.FC<ToneTabProps> = React.memo(
                   },
                   {
                     value: "ai",
-                    label: "AI Preview",
+                    label: `AI Preview${!hasAdvancedAccess ? " 🔒" : " 👑"}`,
                     icon: <Wand2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />,
                   },
                 ]}
@@ -605,13 +641,43 @@ export const ToneTab: React.FC<ToneTabProps> = React.memo(
                     : "Generate AI Preview"}
                 </Button>
 
-                <div className="p-2.5 sm:p-3 bg-warning/5 border border-warning/20 rounded-lg">
-                  <p className="text-[10px] sm:text-xs text-warning leading-relaxed">
-                    ⚡ <span className="font-medium">AI Preview:</span>{" "}
-                    Generates real captions using your training samples.
-                    Requires at least 3 uploaded samples.
-                  </p>
-                </div>
+                {!hasAdvancedAccess ? (
+                  <div className="p-3 sm:p-4 bg-accent/5 border border-accent/20 rounded-lg">
+                    <div className="flex items-start gap-2.5 sm:gap-3">
+                      <div className="w-6 h-6 sm:w-7 sm:h-7 bg-accent/10 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+                        <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs sm:text-sm font-semibold text-text-head mb-1">
+                          AI Preview - Pro Feature
+                        </p>
+                        <p className="text-[10px] sm:text-xs text-text-body mb-2 sm:mb-3 leading-relaxed">
+                          Get authentic previews using your training samples.
+                          Upgrade to Pro to unlock this advanced feature.
+                        </p>
+                        <Button
+                          variant="accent"
+                          size="sm"
+                          leftIcon={
+                            <Crown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          }
+                          onClick={() => (window.location.href = "/upgrade")}
+                          className="w-full sm:w-auto"
+                        >
+                          Upgrade to Pro
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-2.5 sm:p-3 bg-warning/5 border border-warning/20 rounded-lg">
+                    <p className="text-[10px] sm:text-xs text-warning leading-relaxed">
+                      ⚡ <span className="font-medium">AI Preview:</span>{" "}
+                      Generates real captions using your training samples.
+                      Requires at least 3 uploaded samples.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>

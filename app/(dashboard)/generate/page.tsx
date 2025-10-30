@@ -74,6 +74,8 @@ export default function CaptionInputPage() {
   // Track caption IDs and saved states
   const [captionIds, setCaptionIds] = React.useState<string[]>([]);
   const [savedStates, setSavedStates] = React.useState<boolean[]>([]);
+  const [currentGenerationBatchId, setCurrentGenerationBatchId] =
+    React.useState<string | null>(null);
 
   // Event handlers
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -123,6 +125,10 @@ export default function CaptionInputPage() {
       // Update state with captions and their IDs
       setCaptionIds(result.captionIds);
       setSavedStates(result.savedStates);
+      // Track the generation batch ID for variations (only for new generations, not variations)
+      if (result.generationBatchId && !currentGenerationBatchId) {
+        setCurrentGenerationBatchId(result.generationBatchId);
+      }
 
       // Refetch usage data to sync with server (in case of any discrepancies)
       refetchUsage();
@@ -294,12 +300,14 @@ export default function CaptionInputPage() {
         currentContext,
         currentSelectedItems,
         modifiedOptions,
-        (phase) => updateState({ loadingPhase: phase })
+        (phase) => updateState({ loadingPhase: phase }),
+        currentGenerationBatchId || undefined // Pass parent batch ID for variation tracking
       );
 
       // Update state with captions and their IDs
       setCaptionIds(result.captionIds);
       setSavedStates(result.savedStates);
+      // Note: variations use a new batch ID but link to the original
 
       // Refetch usage data to sync with server (in case of any discrepancies)
       refetchUsage();
@@ -319,6 +327,13 @@ export default function CaptionInputPage() {
         });
         // Refetch to get the actual server state
         refetchUsage();
+      } else if (error?.variationLimitReached) {
+        // Show variation limit error (could show a modal or toast)
+        updateState({
+          showError: true,
+        });
+        setTimeout(() => updateState({ showError: false }), 3000);
+        // TODO: Show upgrade modal for variation limits
       } else {
         // For other errors, refetch to ensure we're in sync
         refetchUsage();
@@ -517,7 +532,10 @@ export default function CaptionInputPage() {
               captions={state.generatedCaptions}
               copiedIndex={state.copiedIndex}
               onCopyCaption={handleCopyCaption}
-              onGenerateNew={() => updateState({ generatedCaptions: [] })}
+              onGenerateNew={() => {
+                updateState({ generatedCaptions: [] });
+                setCurrentGenerationBatchId(null); // Reset when generating new
+              }}
               onCaptionUpdate={handleCaptionUpdate}
               onGenerateVariation={handleGenerateVariation}
               platform="Instagram"
@@ -525,6 +543,7 @@ export default function CaptionInputPage() {
               captionIds={captionIds}
               savedStates={savedStates}
               onSaveCaption={handleSaveCaption}
+              currentGenerationBatchId={currentGenerationBatchId}
             />
           )}
         </div>

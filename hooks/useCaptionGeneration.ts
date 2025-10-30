@@ -56,11 +56,13 @@ export const useCaptionGeneration = () => {
     options: CaptionOptions,
     onPhaseUpdate?: (
       phase: "analyzing" | "hooking" | "matching" | "complete"
-    ) => void
+    ) => void,
+    parentGenerationBatchId?: string
   ): Promise<{
     captions: string[];
     captionIds: string[];
     savedStates: boolean[];
+    generationBatchId?: string;
   }> => {
     // Phase 1: Analyzing content
     onPhaseUpdate?.("analyzing");
@@ -89,6 +91,7 @@ export const useCaptionGeneration = () => {
           },
           selectedContextItems,
           options,
+          parentGenerationBatchId: parentGenerationBatchId || null,
         }),
       });
 
@@ -104,6 +107,17 @@ export const useCaptionGeneration = () => {
           ) as any;
           error.limitReached = true;
           error.usage = errorData.usage;
+          throw error;
+        }
+
+        // If it's a variation limit error, throw with the full error data
+        if (errorData.variationLimitReached) {
+          const error = new Error(
+            errorData.message || "Variation limit exceeded"
+          ) as any;
+          error.variationLimitReached = true;
+          error.variations = errorData.variations;
+          error.requiredPlan = errorData.requiredPlan;
           throw error;
         }
 
@@ -131,6 +145,7 @@ export const useCaptionGeneration = () => {
         savedStates: data.captionsData
           ? data.captionsData.map((c: any) => c.isSaved || false)
           : [],
+        generationBatchId: data.generationBatchId,
       };
     } catch (error) {
       console.error("Caption generation error:", error);

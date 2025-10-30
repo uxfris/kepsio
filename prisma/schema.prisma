@@ -40,19 +40,20 @@ model Subscription {
 }
 
 model Caption {
-  id                String   @id @default(cuid())
-  userId            String   @db.Uuid
-  content           String
-  context           String?
-  voiceProfile      String?
-  platform          String?  @default("instagram")
-  style             String?
-  metadata          Json?
-  isSaved           Boolean  @default(false)
-  generationBatchId String?  // Groups captions from the same generation request
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                    String   @id @default(cuid())
+  userId                String   @db.Uuid
+  content               String
+  context               String?
+  voiceProfile          String?
+  platform              String?  @default("instagram")
+  style                 String?
+  metadata              Json?
+  isSaved               Boolean  @default(false)
+  generationBatchId     String?  // Groups captions from the same generation request
+  parentGenerationBatchId String? // Links variation generations to their original generation batch
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("captions")
 }

@@ -17,6 +17,7 @@ import { Progress } from "../ui/Progress";
 import { StatusAlert } from "./StatusAlert";
 import { EditSampleModal } from "./EditSampleModal";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
+import { AdvancedFeatures } from "./AdvancedFeatures";
 import { useToast } from "../ui/Toast";
 import {
   MAX_SAMPLES,
@@ -687,6 +688,9 @@ export const TrainingTab: React.FC<TrainingTabProps> = React.memo(
           onConfirm={handleDeleteConfirm}
           isDeleting={isDeleting}
         />
+
+        {/* Advanced Features (Export/Import) */}
+        <AdvancedFeatures />
       </div>
     );
   }

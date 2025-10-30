@@ -7,3 +7,4 @@ export { ToneTab } from "./ToneTab";
 export { InsightsTab } from "./InsightsTab";
 export { EditSampleModal } from "./EditSampleModal";
 export { ConfirmDeleteModal } from "./ConfirmDeleteModal";
+export { AdvancedFeatures } from "./AdvancedFeatures";

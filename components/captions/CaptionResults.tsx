@@ -11,6 +11,8 @@ import { Button } from "../ui/Button";
 import { Chip } from "../ui/Chip";
 import { CaptionCard } from "./CaptionCard";
 import EditCaptionModal from "./EditCaptionModal";
+import { ProBadge } from "../shared/ProBadge";
+import { useSubscription } from "../../contexts/SubscriptionContext";
 
 interface CaptionResultsProps {
   captions: string[];
@@ -24,6 +26,7 @@ interface CaptionResultsProps {
   captionIds?: string[];
   savedStates?: boolean[];
   onSaveCaption?: (captionId: string, index: number) => void;
+  currentGenerationBatchId?: string | null;
 }
 
 type FilterType =
@@ -106,7 +109,16 @@ export const CaptionResults = ({
   captionIds = [],
   savedStates = [],
   onSaveCaption,
+  currentGenerationBatchId,
 }: CaptionResultsProps) => {
+  const { isPro, isEnterprise, planLimits } = useSubscription();
+
+  // Calculate variation usage
+  const canGenerateMoreVariations = React.useMemo(() => {
+    // This would need to be passed as a prop or fetched
+    // For now, we'll show the badge for free users
+    return isPro || isEnterprise || planLimits.variationsPerGeneration === -1;
+  }, [isPro, isEnterprise, planLimits.variationsPerGeneration]);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [editingCaptionIndex, setEditingCaptionIndex] = useState<number | null>(
     null
@@ -414,61 +426,69 @@ export const CaptionResults = ({
           </h3>
           <p className="text-sm text-text-body mb-6">Try these variations:</p>
           <div className="flex flex-wrap justify-center gap-3">
-            <Chip
-              variant="default"
-              size="md"
-              onClick={() => onGenerateVariation?.("playful")}
-              disabled={isGenerating}
-              className="border border-border transition-all duration-200 hover:scale-105 hover:bg-accent/10 hover:border-accent rounded-xl text-text-head cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              ✨ More playful
-            </Chip>
-            <Chip
-              variant="default"
-              size="md"
-              onClick={() => onGenerateVariation?.("urgent")}
-              disabled={isGenerating}
-              className="border border-border transition-all duration-200 hover:scale-105 hover:bg-accent/10 hover:border-accent rounded-xl text-text-head cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              ⚡ Add urgency
-            </Chip>
-            <Chip
-              variant="default"
-              size="md"
-              onClick={() => onGenerateVariation?.("shorter")}
-              disabled={isGenerating}
-              className="border border-border transition-all duration-200 hover:scale-105 hover:bg-accent/10 hover:border-accent rounded-xl text-text-head cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              📏 Shorter
-            </Chip>
-            <Chip
-              variant="default"
-              size="md"
-              onClick={() => onGenerateVariation?.("professional")}
-              disabled={isGenerating}
-              className="border border-border transition-all duration-200 hover:scale-105 hover:bg-accent/10 hover:border-accent rounded-xl text-text-head cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              💼 More professional
-            </Chip>
-            <Chip
-              variant="default"
-              size="md"
-              onClick={() => onGenerateVariation?.("casual")}
-              disabled={isGenerating}
-              className="border border-border transition-all duration-200 hover:scale-105 hover:bg-accent/10 hover:border-accent rounded-xl text-text-head cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              😊 More casual
-            </Chip>
-            <Chip
-              variant="default"
-              size="md"
-              onClick={() => onGenerateVariation?.("emotional")}
-              disabled={isGenerating}
-              className="border border-border transition-all duration-200 hover:scale-105 hover:bg-accent/10 hover:border-accent rounded-xl text-text-head cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              ❤️ More emotional
-            </Chip>
+            {[
+              { label: "✨ More playful", value: "playful" },
+              { label: "⚡ Add urgency", value: "urgent" },
+              { label: "📏 Shorter", value: "shorter" },
+              { label: "💼 More professional", value: "professional" },
+              { label: "😊 More casual", value: "casual" },
+              { label: "❤️ More emotional", value: "emotional" },
+            ].map((variation, index) => {
+              // Show lock badge for variations beyond the free limit
+              const isBeyondFreeLimit =
+                index >= 5 && !canGenerateMoreVariations;
+
+              return (
+                <Chip
+                  key={variation.value}
+                  variant="default"
+                  size="md"
+                  onClick={() => onGenerateVariation?.(variation.value)}
+                  disabled={isGenerating}
+                  className={`
+                    relative border border-border transition-all duration-200 
+                    hover:scale-105 hover:bg-accent/10 hover:border-accent 
+                    rounded-xl text-text-head cursor-pointer 
+                    disabled:opacity-50 disabled:cursor-not-allowed
+                    ${isBeyondFreeLimit ? "opacity-75" : ""}
+                  `}
+                  title={
+                    isBeyondFreeLimit
+                      ? `Free plan limited to 5 variations. Upgrade to Pro for 10 variations per generation.`
+                      : undefined
+                  }
+                >
+                  {variation.label}
+                  {isBeyondFreeLimit && (
+                    <ProBadge
+                      size="sm"
+                      position="top-right"
+                      showForFreeOnly={true}
+                      tooltip="Upgrade to Pro for more variations"
+                    />
+                  )}
+                </Chip>
+              );
+            })}
           </div>
+
+          {/* Variation limit indicator for free users */}
+          {!canGenerateMoreVariations && (
+            <div className="mt-4 flex items-center justify-center gap-2 text-xs text-hint">
+              <span>
+                Free plan: {planLimits.variationsPerGeneration} variations per
+                generation
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => (window.location.href = "/upgrade")}
+                className="text-xs text-accent hover:text-accent-hover h-6 px-2"
+              >
+                Upgrade for 10
+              </Button>
+            </div>
+          )}
           {isGenerating && (
             <div className="mt-4 flex items-center justify-center gap-2 text-sm text-accent">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-accent"></div>

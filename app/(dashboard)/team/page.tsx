@@ -1,4 +1,4 @@
-import { TeamCollaborationClient } from "../../../components/team";
+import { TeamPageWrapper } from "../../../components/team/TeamPageWrapper";
 import type {
   TeamMember,
   PendingInvite,
@@ -231,7 +231,7 @@ export default async function TeamPage() {
 
   return (
     <ToastProvider>
-      <TeamCollaborationClient
+      <TeamPageWrapper
         initialTeamMembers={teamMembers}
         initialPendingInvites={pendingInvites}
         initialSharedCaptions={sharedCaptions}

@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db/prisma";
+import { subscriptionPlans } from "@/config/plans";
 
 export async function GET() {
   try {
@@ -105,6 +106,46 @@ export async function POST(request: Request) {
           data: updateData,
         });
       } else {
+        // Check subscription to enforce voice profile limits before creating
+        const subscription = await prisma.subscription.findFirst({
+          where: { userId: user.id },
+          orderBy: { createdAt: "desc" },
+        });
+
+        const plan = subscription?.plan || "free";
+        const planConfig =
+          subscriptionPlans[plan as keyof typeof subscriptionPlans];
+        const voiceProfileLimit = planConfig?.limits.voiceProfiles || 1;
+
+        // Count existing voice profiles
+        const existingProfilesCount = await prisma.voiceProfile.count({
+          where: { userId: user.id },
+        });
+
+        // For unlimited plans, limit is -1
+        if (
+          voiceProfileLimit !== -1 &&
+          existingProfilesCount >= voiceProfileLimit
+        ) {
+          return NextResponse.json(
+            {
+              error: "Voice profile limit exceeded",
+              message: `You've reached your limit of ${voiceProfileLimit} voice profile${
+                voiceProfileLimit > 1 ? "s" : ""
+              }. Upgrade to ${
+                plan === "free" ? "Pro" : "Enterprise"
+              } for more voice profiles.`,
+              voiceProfileLimitReached: true,
+              voiceProfiles: {
+                used: existingProfilesCount,
+                limit: voiceProfileLimit,
+              },
+              requiredPlan: plan === "free" ? "pro" : "enterprise",
+            },
+            { status: 429 }
+          );
+        }
+
         // Create new voice profile with onboarding data
         await prisma.voiceProfile.create({
           data: {

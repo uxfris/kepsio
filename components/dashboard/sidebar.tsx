@@ -16,10 +16,11 @@ import {
   ArrowLeftToLine,
   Crown,
   X,
+  Code,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import ProBadge from "./ProBadge";
-import { useSubscription } from "@/hooks/use-subscription";
+import { useSubscription } from "../../contexts/SubscriptionContext";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -33,14 +34,20 @@ const navigation = [
   { name: "Analytics", href: "/analytics", icon: BarChart3, isPro: true },
   { name: "Brand Voice", href: "/brand-voice", icon: Mic },
   { name: "Team", href: "/team", icon: Users, isPro: true },
-  { name: "Integrations", href: "/integrations", icon: Zap, isPro: true },
+  { name: "API Access", href: "/api-access", icon: Code, isEnterprise: true },
+  {
+    name: "Integrations",
+    href: "/integrations",
+    icon: Zap,
+    isEnterprise: true,
+  },
   { name: "Settings", href: "/settings", icon: Settings, isDivider: true },
 ];
 
 export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
-  const { isFree } = useSubscription();
+  const { isFree, isEnterprise } = useSubscription();
 
   // Check if we're on mobile
   useEffect(() => {
@@ -95,6 +102,8 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   }) => {
     const isActive = pathname === item.href;
     const Icon = item.icon;
+    const showBadge =
+      (item.isPro && showCrown) || (item.isEnterprise && !isEnterprise);
 
     return (
       <Link
@@ -107,10 +116,10 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
       >
         <Icon className={`h-5 w-5 ${isCollapsed ? "" : "mr-3"} shrink-0`} />
         {!isCollapsed && <span className="truncate">{item.name}</span>}
-        {item.isPro && showCrown && !isCollapsed && (
+        {showBadge && !isCollapsed && (
           <Crown className="h-3 w-3 ml-auto text-accent" />
         )}
-        {item.isPro && showCrown && isCollapsed && (
+        {showBadge && isCollapsed && (
           <div className="absolute -top-1 -right-1">
             <Crown className="h-3 w-3 text-accent" />
           </div>

@@ -15,9 +15,6 @@ import {
   Calendar,
   PieChart,
   Zap,
-  Crown,
-  Lock,
-  CheckCircle,
 } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
 import {
@@ -28,6 +25,7 @@ import {
 } from "../../../components/ui/Card";
 import { useAnalytics, useSubscription } from "../../../hooks";
 import { StatCardSkeleton } from "../../../components/ui/Skeleton";
+import { FeatureLock } from "../../../components/shared/FeatureLock";
 
 // Platform icons/colors mapping
 const platformConfig: Record<
@@ -97,113 +95,31 @@ function AnalyticsContent() {
 
   if (isFree && !subLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center  overflow-hidden">
-        <div className="py-8 px-4 w-full flex items-center justify-center">
-          <Card
-            variant="outlined"
-            className="max-w-2xl w-full shadow-2xl border-2 border-accent/20 bg-surface"
-          >
-            <CardContent padding="lg">
-              <div className="text-center space-y-6">
-                {/* Icon */}
-                <div className="flex justify-center">
-                  <div className="relative">
-                    <div className="w-20 h-20 bg-linear-to-br from-accent to-accent-hover rounded-2xl flex items-center justify-center shadow-lg">
-                      <BarChart3 className="w-10 h-10 text-white" />
-                    </div>
-                    <div className="absolute -top-1 -right-1 w-8 h-8 bg-linear-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-md">
-                      <Lock className="w-4 h-4 text-white" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Headline */}
-                <div className="space-y-2">
-                  <h2 className="text-3xl font-bold text-primary">
-                    Unlock Advanced Analytics
-                  </h2>
-                  <p className="text-lg text-text-body max-w-md mx-auto">
-                    Upgrade to Pro to access detailed insights, performance
-                    tracking, and data-driven recommendations
-                  </p>
-                </div>
-
-                {/* Features */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left max-w-lg mx-auto py-4">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-semibold text-primary">
-                        Activity Trends
-                      </p>
-                      <p className="text-xs text-hint">
-                        Track your content performance over time
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-semibold text-primary">
-                        Platform Insights
-                      </p>
-                      <p className="text-xs text-hint">
-                        See which platforms perform best
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-semibold text-primary">
-                        Style Analytics
-                      </p>
-                      <p className="text-xs text-hint">
-                        Understand your content style preferences
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-semibold text-primary">
-                        Time Tracking
-                      </p>
-                      <p className="text-xs text-hint">
-                        See how much time you've saved
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
-                  <Link href="/upgrade" className="w-full sm:w-auto">
-                    <Button
-                      variant="primary"
-                      size="lg"
-                      leftIcon={<Crown className="w-5 h-5" />}
-                      className="w-full shadow-lg hover:shadow-xl transition-all duration-200"
-                    >
-                      Upgrade to Pro - $19/month
-                    </Button>
-                  </Link>
-                  <Link href="/pricing" className="w-full sm:w-auto">
-                    <Button variant="outline" size="lg" className="w-full">
-                      View All Plans
-                    </Button>
-                  </Link>
-                </div>
-
-                {/* Small note */}
-                <p className="text-xs text-hint">
-                  No credit card required • Cancel anytime
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <FeatureLock
+        icon={BarChart3}
+        title="Unlock Advanced Analytics"
+        description="Upgrade to Pro to access detailed insights, performance tracking, and data-driven recommendations"
+        features={[
+          {
+            title: "Activity Trends",
+            description: "Track your content performance over time",
+          },
+          {
+            title: "Platform Insights",
+            description: "See which platforms perform best",
+          },
+          {
+            title: "Style Analytics",
+            description: "Understand your content style preferences",
+          },
+          {
+            title: "Time Tracking",
+            description: "See how much time you've saved",
+          },
+        ]}
+        requiredPlan="pro"
+        fullPage={true}
+      />
     );
   }
 

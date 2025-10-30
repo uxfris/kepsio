@@ -1,6 +1,7 @@
 // Team components exports
 export { TeamCollaborationClient } from "./TeamCollaborationClient";
 export { TeamHeader } from "./TeamHeader";
+export { TeamPageWrapper } from "./TeamPageWrapper";
 export { TeamTabs } from "./TeamTabs";
 export { TeamStats } from "./TeamStats";
 export { TeamMembersTable } from "./TeamMembersTable";

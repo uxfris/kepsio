@@ -73,10 +73,35 @@ export function useBrandVoiceActions({
         });
 
         if (!response.ok) {
-          throw new Error("Failed to save settings");
+          const errorData = await response
+            .json()
+            .catch(() => ({ error: "Failed to save settings" }));
+
+          // Handle voice profile limit errors
+          if (errorData.voiceProfileLimitReached) {
+            const error = new Error(
+              errorData.message || "Voice profile limit exceeded"
+            ) as any;
+            error.voiceProfileLimitReached = true;
+            error.voiceProfiles = errorData.voiceProfiles;
+            error.requiredPlan = errorData.requiredPlan;
+            throw error;
+          }
+
+          throw new Error(errorData.error || "Failed to save settings");
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error saving onboarding data:", error);
+
+        // Handle voice profile limit errors with upgrade message
+        if (error?.voiceProfileLimitReached) {
+          showToast(
+            `${error.message} Upgrade to ${
+              error.requiredPlan === "pro" ? "Pro" : "Enterprise"
+            } for more voice profiles.`,
+            "error"
+          );
+        }
       }
     },
     []
@@ -129,7 +154,22 @@ export function useBrandVoiceActions({
         });
 
         if (!response.ok) {
-          throw new Error("Failed to add captions");
+          const errorData = await response
+            .json()
+            .catch(() => ({ error: "Failed to add captions" }));
+
+          // Handle voice profile limit errors
+          if (errorData.voiceProfileLimitReached) {
+            const error = new Error(
+              errorData.message || "Voice profile limit exceeded"
+            ) as any;
+            error.voiceProfileLimitReached = true;
+            error.voiceProfiles = errorData.voiceProfiles;
+            error.requiredPlan = errorData.requiredPlan;
+            throw error;
+          }
+
+          throw new Error(errorData.error || "Failed to add captions");
         }
 
         const data = await response.json();
@@ -140,12 +180,23 @@ export function useBrandVoiceActions({
           } added to your training data ✅`
         );
         return true;
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error adding captions:", error);
-        showToast(
-          "Could not add captions to training data. Please try again.",
-          "error"
-        );
+
+        // Handle voice profile limit errors with upgrade message
+        if (error?.voiceProfileLimitReached) {
+          showToast(
+            `${error.message} Upgrade to ${
+              error.requiredPlan === "pro" ? "Pro" : "Enterprise"
+            } for more voice profiles.`,
+            "error"
+          );
+        } else {
+          showToast(
+            "Could not add captions to training data. Please try again.",
+            "error"
+          );
+        }
         return false;
       }
     },

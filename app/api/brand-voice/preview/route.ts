@@ -18,6 +18,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Check subscription - AI Preview is Pro/Enterprise only
+    const subscription = await prisma.subscription.findFirst({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const plan = subscription?.plan || "free";
+    if (plan === "free") {
+      return NextResponse.json(
+        {
+          error: "Feature requires Pro plan",
+          message:
+            "AI Preview is available for Pro and Enterprise plans only. Upgrade to unlock this advanced feature.",
+          requiredPlan: "pro",
+        },
+        { status: 403 }
+      );
+    }
+
     const {
       platformName,
       toneName,
