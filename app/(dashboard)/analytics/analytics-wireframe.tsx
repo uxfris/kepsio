@@ -404,7 +404,7 @@ export default function AnalyticsScreen() {
                 <div className="flex items-start gap-4">
                   {/* Rank Badge */}
                   <div
-                    className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold ${
+                    className={`shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold ${
                       index === 0
                         ? "bg-yellow-100 text-yellow-700"
                         : index === 1
@@ -468,7 +468,7 @@ export default function AnalyticsScreen() {
                     </div>
                   </div>
 
-                  <button className="flex-shrink-0 px-3 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 text-sm font-medium rounded-lg transition-colors">
+                  <button className="shrink-0 px-3 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 text-sm font-medium rounded-lg transition-colors">
                     Reuse Style
                   </button>
                 </div>
@@ -519,7 +519,7 @@ export default function AnalyticsScreen() {
 
           <div className="mt-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
             <div className="flex items-start gap-3">
-              <Target className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+              <Target className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-gray-900 mb-1">
                   Recommendation
