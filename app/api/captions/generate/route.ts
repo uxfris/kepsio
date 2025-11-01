@@ -163,7 +163,12 @@ export async function POST(request: NextRequest) {
 
     // Build the AI prompt based on voice profile and options
     const systemPrompt = buildSystemPrompt(voiceProfile, options);
-    const userPrompt = buildUserPrompt(contentInput, contextInfo, options);
+    const userPrompt = buildUserPrompt(
+      contentInput,
+      contextInfo,
+      options,
+      variationsLimit
+    );
 
     // Build messages array - include image if present
     const messages: any[] = [{ role: "system", content: systemPrompt }];
@@ -212,7 +217,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse the response to extract individual captions
-    const captions = parseGeneratedCaptions(response);
+    const captions = parseGeneratedCaptions(response, variationsLimit);
 
     // Determine platform
     const platform = voiceProfile?.platform?.name?.toLowerCase() || "instagram";
@@ -323,9 +328,10 @@ function buildSystemPrompt(voiceProfile: any, options: any): string {
 function buildUserPrompt(
   contentInput: string,
   contextInfo: string,
-  options: any
+  options: any,
+  captionCount: number = 5
 ): string {
-  let prompt = `Generate 5 unique, engaging captions for the following content:\n\n${contentInput}${contextInfo}`;
+  let prompt = `Generate ${captionCount} unique, engaging captions for the following content:\n\n${contentInput}${contextInfo}`;
 
   if (options) {
     prompt += `\n\nRequirements:`;
@@ -379,24 +385,38 @@ function buildUserPrompt(
     }
   }
 
-  prompt += `\n\nGenerate 5 diverse captions with different styles:
-1. Hook-first (start with an attention-grabbing question or statement)
-2. Story-driven (tell a brief story or share an experience)
-3. Direct & actionable (clear, straightforward message)
-4. Question-based (engage with a thought-provoking question)
-5. Inspirational (motivational and uplifting)
+  const styles = [
+    "Hook-first (start with an attention-grabbing question or statement)",
+    "Story-driven (tell a brief story or share an experience)",
+    "Direct & actionable (clear, straightforward message)",
+    "Question-based (engage with a thought-provoking question)",
+    "Inspirational (motivational and uplifting)",
+    "Emotional & relatable (connect on a personal level)",
+    "Educational (teach something valuable)",
+    "Behind-the-scenes (give an insider perspective)",
+    "Humorous & playful (light and fun)",
+    "Controversial/Bold (challenge conventional thinking)",
+  ];
 
-IMPORTANT: Structure each caption in this order:
+  prompt += `\n\nGenerate ${captionCount} diverse captions with different styles:\n`;
+  for (let i = 0; i < captionCount; i++) {
+    prompt += `${i + 1}. ${styles[i] || styles[i % styles.length]}\n`;
+  }
+
+  prompt += `\nIMPORTANT: Structure each caption in this order:
 1. Main content/message
 2. Call-to-action (if specified)
 3. Hashtags (if specified)
 
-Format: Return ONLY the 5 captions, each on a new line, separated by "---"`;
+Format: Return ONLY the ${captionCount} captions, each on a new line, separated by "---"`;
 
   return prompt;
 }
 
-function parseGeneratedCaptions(response: string): string[] {
+function parseGeneratedCaptions(
+  response: string,
+  expectedCount: number = 5
+): string[] {
   // Try to split by --- first
   let captions = response
     .split("---")
@@ -419,12 +439,12 @@ function parseGeneratedCaptions(response: string): string[] {
       .filter((c) => c.length > 0);
   }
 
-  // Ensure we have exactly 5 captions
-  if (captions.length > 5) {
-    captions = captions.slice(0, 5);
-  } else if (captions.length < 5) {
-    // If we have fewer than 5, duplicate some with slight variations
-    while (captions.length < 5 && captions.length > 0) {
+  // Ensure we have the expected number of captions
+  if (captions.length > expectedCount) {
+    captions = captions.slice(0, expectedCount);
+  } else if (captions.length < expectedCount) {
+    // If we have fewer than expected, duplicate some with slight variations
+    while (captions.length < expectedCount && captions.length > 0) {
       captions.push(captions[captions.length - 1]);
     }
   }
@@ -433,13 +453,18 @@ function parseGeneratedCaptions(response: string): string[] {
 }
 
 function determineCaptionStyle(caption: string, index: number): string {
-  // Map index to intended style from our prompt
+  // Map index to intended style from our prompt (expanded for Pro/Enterprise plans)
   const styles = [
     "Hook-first",
     "Story-driven",
     "Direct",
     "Question-based",
     "Inspirational",
+    "Emotional",
+    "Educational",
+    "Behind-the-scenes",
+    "Humorous",
+    "Bold",
   ];
 
   // Also check content to determine style
@@ -467,7 +492,7 @@ function determineCaptionStyle(caption: string, index: number): string {
     return "Listicle";
   }
 
-  return styles[index] || "Engagement";
+  return styles[index % styles.length] || "Engagement";
 }
 
 function getCaptionMetadata(caption: string) {

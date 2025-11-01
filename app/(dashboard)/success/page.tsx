@@ -9,6 +9,8 @@ import {
   BarChart3,
   Copy,
   ArrowRight,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
 import { Card, CardContent } from "../../../components/ui/Card";
@@ -105,22 +107,85 @@ export default function PostUpgradeSuccessPage() {
   const { subscription, refetch } = useSubscription();
   const [countdown, setCountdown] = useState(5);
   const [showConfetti, setShowConfetti] = useState(true);
+  const [verifying, setVerifying] = useState(true);
+  const [verificationError, setVerificationError] = useState<string | null>(
+    null
+  );
+  const [paymentVerified, setPaymentVerified] = useState(false);
 
   const sessionId = searchParams.get("session_id");
 
-  // Refetch subscription when coming from successful checkout
+  // Verify the checkout session and wait for subscription update
   useEffect(() => {
-    if (sessionId) {
-      // Wait a moment for webhook to process, then refetch
-      const timer = setTimeout(() => {
-        refetch();
-      }, 2000);
-      return () => clearTimeout(timer);
+    if (!sessionId) {
+      setVerifying(false);
+      setPaymentVerified(true);
+      return;
     }
+
+    let pollCount = 0;
+    const maxPolls = 10;
+
+    const verifySession = async () => {
+      try {
+        const response = await fetch(
+          `/api/billing/verify-session?session_id=${sessionId}`
+        );
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to verify session");
+        }
+
+        // Check if payment was successful
+        if (data.success) {
+          // Check if subscription has been updated in database
+          if (
+            data.subscription &&
+            (data.subscription.plan === "pro" ||
+              data.subscription.plan === "enterprise")
+          ) {
+            setPaymentVerified(true);
+            setVerifying(false);
+            refetch();
+            return true;
+          }
+
+          // Payment succeeded but subscription not yet updated, keep polling
+          pollCount++;
+          if (pollCount < maxPolls) {
+            setTimeout(verifySession, 1500);
+          } else {
+            // Max polls reached, force refetch and show success anyway
+            setPaymentVerified(true);
+            setVerifying(false);
+            refetch();
+            return true;
+          }
+        } else {
+          throw new Error("Payment not completed");
+        }
+      } catch (error) {
+        console.error("Error verifying session:", error);
+        setVerificationError(
+          error instanceof Error
+            ? error.message
+            : "Failed to verify payment status"
+        );
+        setVerifying(false);
+      }
+      return false;
+    };
+
+    verifySession();
   }, [sessionId, refetch]);
 
-  // Auto-redirect countdown
+  // Auto-redirect countdown - only start after verification completes
   useEffect(() => {
+    if (!paymentVerified || verifying) {
+      return;
+    }
+
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -131,11 +196,11 @@ export default function PostUpgradeSuccessPage() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [paymentVerified, verifying]);
 
   // Handle auto-redirect when countdown reaches 0
   useEffect(() => {
-    if (countdown === 0) {
+    if (countdown === 0 && paymentVerified) {
       const redirectTimer = setTimeout(() => {
         try {
           router.push("/generate");
@@ -148,7 +213,7 @@ export default function PostUpgradeSuccessPage() {
 
       return () => clearTimeout(redirectTimer);
     }
-  }, [countdown, router]);
+  }, [countdown, router, paymentVerified]);
 
   // Hide confetti after 3 seconds
   useEffect(() => {
@@ -167,10 +232,63 @@ export default function PostUpgradeSuccessPage() {
     router.push("/dashboard");
   };
 
+  const handleRetry = () => {
+    window.location.reload();
+  };
+
+  // Show loading state while verifying payment
+  if (verifying) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-accent/5 via-surface to-accent/10 flex items-center justify-center p-6">
+        <div className="max-w-md w-full text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-accent/10 rounded-full mb-6">
+            <Loader2 className="w-12 h-12 text-accent animate-spin" />
+          </div>
+          <h1 className="text-3xl font-bold text-primary mb-4">
+            Verifying Your Payment...
+          </h1>
+          <p className="text-lg text-text-body">
+            Please wait while we confirm your subscription. This usually takes
+            just a few seconds.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if verification failed
+  if (verificationError) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-accent/5 via-surface to-accent/10 flex items-center justify-center p-6">
+        <div className="max-w-md w-full text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-red-500/10 rounded-full mb-6">
+            <AlertCircle className="w-12 h-12 text-red-500" />
+          </div>
+          <h1 className="text-3xl font-bold text-primary mb-4">
+            Verification Issue
+          </h1>
+          <p className="text-lg text-text-body mb-6">{verificationError}</p>
+          <p className="text-sm text-text-body mb-8">
+            Don't worry! Your payment was processed successfully. You can
+            refresh this page or check your subscription in your dashboard.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button onClick={handleRetry} variant="primary" size="lg">
+              Retry Verification
+            </Button>
+            <Button onClick={handleExploreFeatures} variant="outline" size="lg">
+              Go to Dashboard
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-linear-to-br from-accent/5 via-surface to-accent/10 flex items-center justify-center p-6">
       {/* Confetti Animation */}
-      {showConfetti && <ConfettiAnimation />}
+      {showConfetti && paymentVerified && <ConfettiAnimation />}
 
       <div className="max-w-4xl w-full">
         {/* Success Header */}
@@ -258,13 +376,15 @@ export default function PostUpgradeSuccessPage() {
         </div>
 
         {/* Auto-redirect notice */}
-        <div className="text-center mt-8">
-          <p className="text-sm text-text-body">
-            Auto-redirecting to dashboard in{" "}
-            <span className="font-semibold text-accent">{countdown}</span>{" "}
-            seconds
-          </p>
-        </div>
+        {paymentVerified && countdown > 0 && (
+          <div className="text-center mt-8">
+            <p className="text-sm text-text-body">
+              Auto-redirecting to dashboard in{" "}
+              <span className="font-semibold text-accent">{countdown}</span>{" "}
+              seconds
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

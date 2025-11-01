@@ -38,14 +38,32 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  // Protect dashboard routes
-  if (request.nextUrl.pathname.startsWith("/dashboard")) {
+  // Protect dashboard routes and related pages
+  const protectedRoutes = [
+    "/dashboard",
+    "/generate",
+    "/library",
+    "/brand-voice",
+    "/analytics",
+    "/settings",
+    "/team",
+    "/upgrade",
+    "/success",
+    "/integrations",
+    "/api-access",
+  ];
+
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    request.nextUrl.pathname.startsWith(route)
+  );
+
+  if (isProtectedRoute) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
     if (!user) {
-      // Allow access to login page
+      // Redirect unauthenticated users to home page
       const url = request.nextUrl.clone();
       url.pathname = "/";
       return NextResponse.redirect(url);

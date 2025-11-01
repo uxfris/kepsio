@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Filter } from "lucide-react";
-import { useRouter } from "next/navigation";
 import type {
   TeamMember,
   PendingInvite,
@@ -24,6 +23,7 @@ interface TeamCollaborationClientProps {
   initialPendingInvites: PendingInvite[];
   initialSharedCaptions: SharedCaption[];
   currentUserRole: string;
+  onDataRefresh?: () => Promise<void>;
 }
 
 export function TeamCollaborationClient({
@@ -31,8 +31,8 @@ export function TeamCollaborationClient({
   initialPendingInvites,
   initialSharedCaptions,
   currentUserRole,
+  onDataRefresh,
 }: TeamCollaborationClientProps) {
-  const router = useRouter();
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<TabType>("members");
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -45,9 +45,16 @@ export function TeamCollaborationClient({
   const [isUpdating, setIsUpdating] = useState(false);
 
   // Local state for optimistic updates
-  const [teamMembers] = useState(initialTeamMembers);
-  const [pendingInvites] = useState(initialPendingInvites);
-  const [sharedCaptions] = useState(initialSharedCaptions);
+  const [teamMembers, setTeamMembers] = useState(initialTeamMembers);
+  const [pendingInvites, setPendingInvites] = useState(initialPendingInvites);
+  const [sharedCaptions, setSharedCaptions] = useState(initialSharedCaptions);
+
+  // Refresh data function
+  const refreshData = async () => {
+    if (onDataRefresh) {
+      await onDataRefresh();
+    }
+  };
 
   const stats = {
     totalMembers: teamMembers.length,
@@ -91,19 +98,22 @@ export function TeamCollaborationClient({
         throw new Error(data.error || "Failed to send invitation");
       }
 
-      showToast({
-        title: "Invitation sent",
-        description: `An invitation has been sent to ${email}`,
-      });
+      showToast(`Invitation sent to ${email}`, "success");
 
-      // Refresh the page data
-      router.refresh();
+      // Optimistic update: Add new invite to pending list
+      const newInvite: PendingInvite = {
+        id: data.inviteId || crypto.randomUUID(),
+        email,
+        role: role as any,
+        sentBy: "You",
+        sentDate: "Just now",
+      };
+      setPendingInvites([newInvite, ...pendingInvites]);
+
+      // Refresh full data in background
+      await refreshData();
     } catch (error: any) {
-      showToast({
-        title: "Failed to send invitation",
-        description: error.message,
-        variant: "error",
-      });
+      showToast(error.message || "Failed to send invitation", "error");
     } finally {
       setIsInviting(false);
     }
@@ -125,20 +135,17 @@ export function TeamCollaborationClient({
         throw new Error(data.error || "Failed to resend invitation");
       }
 
-      showToast({
-        title: "Invitation resent",
-        description: "The invitation has been resent successfully",
-      });
+      showToast("Invitation resent successfully", "success");
     } catch (error: any) {
-      showToast({
-        title: "Failed to resend invitation",
-        description: error.message,
-        variant: "error",
-      });
+      showToast(error.message || "Failed to resend invitation", "error");
     }
   };
 
   const handleDeleteInvite = async (inviteId: string) => {
+    // Optimistic update: Remove invite from list immediately
+    const originalInvites = [...pendingInvites];
+    setPendingInvites(pendingInvites.filter((inv) => inv.id !== inviteId));
+
     try {
       const response = await fetch(`/api/team/invites?id=${inviteId}`, {
         method: "DELETE",
@@ -147,22 +154,14 @@ export function TeamCollaborationClient({
       const data = await response.json();
 
       if (!response.ok) {
+        // Rollback on error
+        setPendingInvites(originalInvites);
         throw new Error(data.error || "Failed to delete invitation");
       }
 
-      showToast({
-        title: "Invitation cancelled",
-        description: "The invitation has been cancelled",
-      });
-
-      // Refresh the page data
-      router.refresh();
+      showToast("Invitation cancelled successfully", "success");
     } catch (error: any) {
-      showToast({
-        title: "Failed to cancel invitation",
-        description: error.message,
-        variant: "error",
-      });
+      showToast(error.message || "Failed to cancel invitation", "error");
     }
   };
 
@@ -170,6 +169,14 @@ export function TeamCollaborationClient({
     sharedCaptionId: string,
     status: string
   ) => {
+    // Optimistic update: Update caption status immediately
+    const originalCaptions = [...sharedCaptions];
+    setSharedCaptions(
+      sharedCaptions.map((cap) =>
+        cap.id === sharedCaptionId ? { ...cap, status: status as any } : cap
+      )
+    );
+
     try {
       const response = await fetch("/api/team/shared-captions", {
         method: "PATCH",
@@ -182,24 +189,19 @@ export function TeamCollaborationClient({
       const data = await response.json();
 
       if (!response.ok) {
+        // Rollback on error
+        setSharedCaptions(originalCaptions);
         throw new Error(data.error || "Failed to update caption status");
       }
 
-      showToast({
-        title: "Status updated",
-        description: `Caption ${
+      showToast(
+        `Caption ${
           status === "approved" ? "approved" : "marked as needs changes"
         }`,
-      });
-
-      // Refresh the page data
-      router.refresh();
+        "success"
+      );
     } catch (error: any) {
-      showToast({
-        title: "Failed to update status",
-        description: error.message,
-        variant: "error",
-      });
+      showToast(error.message || "Failed to update status", "error");
     }
   };
 
@@ -213,6 +215,13 @@ export function TeamCollaborationClient({
 
   const handleConfirmEditRole = async (memberId: string, newRole: TeamRole) => {
     setIsUpdating(true);
+
+    // Optimistic update: Update member role immediately
+    const originalMembers = [...teamMembers];
+    setTeamMembers(
+      teamMembers.map((m) => (m.id === memberId ? { ...m, role: newRole } : m))
+    );
+
     try {
       const response = await fetch(`/api/team/members/${memberId}`, {
         method: "PATCH",
@@ -225,25 +234,20 @@ export function TeamCollaborationClient({
       const data = await response.json();
 
       if (!response.ok) {
+        // Rollback on error
+        setTeamMembers(originalMembers);
         throw new Error(data.error || "Failed to update role");
       }
 
-      showToast({
-        title: "Role updated",
-        description: `Successfully updated ${selectedMember?.name}'s role`,
-      });
+      showToast(
+        `Successfully updated ${selectedMember?.name}'s role`,
+        "success"
+      );
 
       setShowEditRoleModal(false);
       setSelectedMember(null);
-
-      // Refresh the page data
-      router.refresh();
     } catch (error: any) {
-      showToast({
-        title: "Failed to update role",
-        description: error.message,
-        variant: "error",
-      });
+      showToast(error.message || "Failed to update role", "error");
     } finally {
       setIsUpdating(false);
     }
@@ -261,6 +265,11 @@ export function TeamCollaborationClient({
     if (!selectedMember) return;
 
     setIsUpdating(true);
+
+    // Optimistic update: Remove member immediately
+    const originalMembers = [...teamMembers];
+    setTeamMembers(teamMembers.filter((m) => m.id !== selectedMember.id));
+
     try {
       const response = await fetch(`/api/team/members/${selectedMember.id}`, {
         method: "DELETE",
@@ -269,25 +278,20 @@ export function TeamCollaborationClient({
       const data = await response.json();
 
       if (!response.ok) {
+        // Rollback on error
+        setTeamMembers(originalMembers);
         throw new Error(data.error || "Failed to remove member");
       }
 
-      showToast({
-        title: "Member removed",
-        description: `${selectedMember.name} has been removed from the team`,
-      });
+      showToast(
+        `${selectedMember.name} has been removed from the team`,
+        "success"
+      );
 
       setShowRemoveDialog(false);
       setSelectedMember(null);
-
-      // Refresh the page data
-      router.refresh();
     } catch (error: any) {
-      showToast({
-        title: "Failed to remove member",
-        description: error.message,
-        variant: "error",
-      });
+      showToast(error.message || "Failed to remove member", "error");
     } finally {
       setIsUpdating(false);
     }

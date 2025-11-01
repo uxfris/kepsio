@@ -130,7 +130,7 @@ export function FeatureLock({
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
             <Link
-              href={requiredPlan === "pro" ? "/upgrade" : "/pricing"}
+              href={requiredPlan === "pro" ? "/upgrade" : "/upgrade"}
               className="w-full sm:w-auto"
             >
               <Button
@@ -142,7 +142,7 @@ export function FeatureLock({
                 {buttonText}
               </Button>
             </Link>
-            <Link href="/pricing" className="w-full sm:w-auto">
+            <Link href="/upgrade" className="w-full sm:w-auto">
               <Button variant="outline" size="lg" className="w-full">
                 View All Plans
               </Button>

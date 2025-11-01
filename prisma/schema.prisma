@@ -9,16 +9,17 @@ datasource db {
 }
 
 model User {
-  id                  String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email               String         @unique
-  name                String?
-  image               String?
-  onboardingCompleted Boolean        @default(false)
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
-  captions            Caption[]
-  subscriptions       Subscription[]
-  voiceProfiles       VoiceProfile[]
+  id                     String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email                  String         @unique
+  name                   String?
+  image                  String?
+  onboardingCompleted    Boolean        @default(false)
+  notificationPreferences Json?         @default("{\"emailNotifications\": true, \"weeklyDigest\": true, \"tipsAndTricks\": false, \"productUpdates\": true}")
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  captions               Caption[]
+  subscriptions          Subscription[]
+  voiceProfiles          VoiceProfile[]
 
   @@map("users")
 }

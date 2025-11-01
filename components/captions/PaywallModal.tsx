@@ -24,7 +24,7 @@ export default function PaywallModal({
   const router = useRouter();
 
   const handleViewPricing = () => {
-    router.push("/pricing");
+    router.push("/upgrade");
     onClose();
   };
 

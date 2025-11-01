@@ -87,6 +87,14 @@ export async function POST(request: NextRequest) {
       billingCycle as "monthly" | "annual"
     );
 
+    // Get the base URL for redirects
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+    console.log(
+      `[create-checkout] Creating checkout session for user ${user.id}, plan: ${planId}, cycle: ${billingCycle}`
+    );
+    console.log(`[create-checkout] Success URL: ${baseUrl}/success`);
+
     // Create Checkout Session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -98,12 +106,8 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${
-        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-      }/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${
-        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-      }/upgrade`,
+      success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/upgrade`,
       metadata: {
         userId: user.id,
         planId,
@@ -116,7 +120,13 @@ export async function POST(request: NextRequest) {
         },
       },
       allow_promotion_codes: true,
+      // Ensure automatic tax calculation is disabled if not configured
+      automatic_tax: { enabled: false },
     });
+
+    console.log(
+      `[create-checkout] ✅ Checkout session created: ${session.id}, URL: ${session.url}`
+    );
 
     return NextResponse.json({
       url: session.url,
