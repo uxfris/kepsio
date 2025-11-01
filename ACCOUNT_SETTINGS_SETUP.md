@@ -344,3 +344,4 @@ Permanently deletes the user's account and all associated data.
 - Email changes require verification before taking effect
 - Account deletion is permanent and cannot be undone
 - All related data (captions, voice profiles, subscriptions) is deleted with the account
+
