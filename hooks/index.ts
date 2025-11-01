@@ -7,3 +7,5 @@ export { usePaywall } from "./use-paywall";
 export { usePricing } from "./use-pricing";
 export { useTrainingSamples } from "./use-training-samples";
 export { useAnalytics } from "./use-analytics";
+export { useSavedCaptions } from "./use-saved-captions";
+export { useLibraryFilters } from "./use-library-filters";

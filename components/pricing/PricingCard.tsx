@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Check } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { Button } from "../ui";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui";
 
@@ -91,11 +91,16 @@ const PricingCard = memo<PricingCardProps>(
             className="w-full mb-8"
             disabled={isProcessing || isCurrentPlan}
           >
-            {isCurrentPlan
-              ? "Current Plan"
-              : isProcessing
-              ? "Processing..."
-              : plan.buttonText}
+            {isCurrentPlan ? (
+              "Current Plan"
+            ) : isProcessing ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              plan.buttonText
+            )}
           </Button>
 
           {/* Divider */}

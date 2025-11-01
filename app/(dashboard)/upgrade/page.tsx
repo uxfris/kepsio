@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { Zap, Loader2 } from "lucide-react";
+import { Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "../../../components/ui";
@@ -23,7 +23,7 @@ import { useToast } from "../../../components/ui/Toast";
 
 export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [processingPlanId, setProcessingPlanId] = useState<string | null>(null);
   const { subscription, isLoading } = useSubscription();
   const router = useRouter();
   const { showToast } = useToast();
@@ -52,7 +52,7 @@ export default function PricingPage() {
 
       // Handle Pro plan upgrade
       if (planId === "pro") {
-        setIsProcessing(true);
+        setProcessingPlanId(planId);
 
         try {
           const response = await fetch("/api/billing/create-checkout", {
@@ -86,7 +86,7 @@ export default function PricingPage() {
               : "Failed to start checkout process. Please try again.",
             "error"
           );
-          setIsProcessing(false);
+          setProcessingPlanId(null);
         }
       }
     },
@@ -143,7 +143,7 @@ export default function PricingPage() {
                 onUpgrade={handleUpgrade}
                 formatPrice={formatPrice}
                 getAnnualSavings={getAnnualSavings}
-                isProcessing={isProcessing}
+                isProcessing={processingPlanId === planId}
                 currentPlan={subscription?.plan}
               />
             ))}
@@ -166,21 +166,6 @@ export default function PricingPage() {
           </div> */}
         </div>
       </main>
-
-      {/* Loading Overlay */}
-      {isProcessing && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="bg-section border border-border rounded-2xl p-8 max-w-md mx-4 text-center shadow-2xl">
-            <Loader2 className="w-12 h-12 text-text-head mx-auto mb-4 animate-spin" />
-            <h3 className="text-xl font-semibold text-text-head mb-2">
-              Setting up your subscription
-            </h3>
-            <p className="text-text-body">
-              Redirecting you to secure checkout...
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
