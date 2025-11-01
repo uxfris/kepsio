@@ -197,7 +197,9 @@ const LibraryPageContent: React.FC = () => {
           onCopy={handleCopy}
           onEdit={handleEdit}
           onToggleSave={handleToggleSave}
-          onHoverChange={setHoveredCard}
+          onHoverChange={(id) =>
+            setHoveredCard(typeof id === "number" ? String(id) : id)
+          }
           hasActiveFilters={hasActiveFilters}
           onClearFilters={clearAllFilters}
         />

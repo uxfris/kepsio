@@ -433,7 +433,11 @@ export default function AnalyticsScreen() {
                               : "bg-sky-100 text-sky-700"
                           }`}
                         >
-                          {platformIcons[caption.platform]}
+                          {
+                            platformIcons[
+                              caption.platform as keyof typeof platformIcons
+                            ]
+                          }
                           {caption.platform.charAt(0).toUpperCase() +
                             caption.platform.slice(1)}
                         </div>

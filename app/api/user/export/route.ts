@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "../../../../lib/supabase/server";
-import prisma from "../../../../lib/db/prisma";
+import { prisma } from "../../../../lib/db/prisma";
 
 export async function GET(req: NextRequest) {
   try {
@@ -17,8 +17,8 @@ export async function GET(req: NextRequest) {
     }
 
     // Fetch all user data from various tables
-    const [userData, captions, voiceProfiles, subscription, teamMembership] =
-      await Promise.all([
+    const [userData, captions, voiceProfiles, subscription] = await Promise.all(
+      [
         // User data from public.users
         prisma.user.findUnique({
           where: { id: user.id },
@@ -79,17 +79,22 @@ export async function GET(req: NextRequest) {
             updatedAt: true,
           },
         }),
-        // Team membership
-        prisma.teamMember.findMany({
-          where: { userId: user.id },
-          select: {
-            role: true,
-            status: true,
-            joinedAt: true,
-            lastActiveAt: true,
-          },
-        }),
-      ]);
+      ]
+    );
+
+    // Fetch team membership using raw SQL (not a Prisma model)
+    const teamMembership = await prisma.$queryRaw<
+      Array<{
+        role: string;
+        status: string;
+        joinedAt: Date;
+        lastActiveAt: Date | null;
+      }>
+    >`
+      SELECT role, status, "joinedAt", "lastActiveAt"
+      FROM team_members
+      WHERE "userId" = ${user.id}::uuid
+    `;
 
     // Compile all data into a single export object
     const exportData = {

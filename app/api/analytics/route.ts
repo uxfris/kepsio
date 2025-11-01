@@ -33,8 +33,8 @@ export async function GET() {
 
     // Calculate statistics
     const totalCaptions = allCaptions.length;
-    const savedCaptions = allCaptions.filter((c) => c.isSaved).length;
-    const generationsUsed = subscription?.generationsUsed || 0;
+    const savedCaptions = allCaptions.filter((c) => (c as any).isSaved).length;
+    const generationsUsed = (subscription as any)?.generationsUsed || 0;
     const generationsLimit = planConfig?.limits.captionsPerMonth || 10;
 
     // Calculate unique generation batches (each batch is one generation click)

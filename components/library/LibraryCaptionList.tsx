@@ -20,7 +20,7 @@ interface LibraryCaptionListProps {
   onCopy: (caption: LibraryCaption) => void;
   onEdit: (caption: LibraryCaption) => void;
   onToggleSave: (captionId: string) => void;
-  onHoverChange: (id: string | null) => void;
+  onHoverChange: (id: string | number | null) => void;
 
   // Filter state for empty state
   hasActiveFilters: boolean;

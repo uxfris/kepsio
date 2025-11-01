@@ -5,7 +5,7 @@ import { getServerUser } from "@/lib/auth/server";
 // Update member role
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { memberId: string } }
+  { params }: { params: Promise<{ memberId: string }> }
 ) {
   try {
     const user = await getServerUser();
@@ -14,7 +14,7 @@ export async function PATCH(
     }
 
     const { role } = await req.json();
-    const { memberId } = params;
+    const { memberId } = await params;
 
     if (!role || !["owner", "admin", "editor", "viewer"].includes(role)) {
       return NextResponse.json({ error: "Invalid role" }, { status: 400 });
@@ -79,7 +79,7 @@ export async function PATCH(
 // Remove member from team
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { memberId: string } }
+  { params }: { params: Promise<{ memberId: string }> }
 ) {
   try {
     const user = await getServerUser();
@@ -87,7 +87,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { memberId } = params;
+    const { memberId } = await params;
 
     // Check current user's permissions
     const currentUserMember = await prisma.$queryRaw<Array<{ role: string }>>`
@@ -148,5 +148,3 @@ export async function DELETE(
     );
   }
 }
-
-

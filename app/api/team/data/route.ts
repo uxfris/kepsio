@@ -6,7 +6,7 @@ import { prisma } from "@/lib/db/prisma";
  * GET /api/team/data
  * Fetches all team-related data (members, invites, shared captions)
  */
-export async function GET(req: NextRequest) {
+export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     const user = await getServerUser();
 

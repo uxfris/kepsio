@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   CheckCircle,
@@ -101,7 +101,7 @@ const ConfettiAnimation = () => {
   );
 };
 
-export default function PostUpgradeSuccessPage() {
+function PostUpgradeSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { subscription, refetch } = useSubscription();
@@ -387,5 +387,24 @@ export default function PostUpgradeSuccessPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function PostUpgradeSuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-linear-to-br from-accent/5 via-surface to-accent/10 flex items-center justify-center p-6">
+          <div className="max-w-md w-full text-center">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-accent/10 rounded-full mb-6">
+              <Loader2 className="w-12 h-12 text-accent animate-spin" />
+            </div>
+            <h1 className="text-3xl font-bold text-primary mb-4">Loading...</h1>
+          </div>
+        </div>
+      }
+    >
+      <PostUpgradeSuccessContent />
+    </Suspense>
   );
 }
