@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Link from "next/link"
 
 export function Navbar() {
-    
+
     return <nav className="bg-background px-8 py-2 sticky top-0 z-50 border-b">
         <div className="flex items-center justify-between">
             <Image src="/kepsio.svg" width={94} height={28} alt={'kepsio'} />
@@ -13,6 +13,11 @@ export function Navbar() {
                     <Link href={"/library"}>Library</Link>
                     <Link href={"/voice"}>Voice</Link>
                 </div>
+            </div>
+            <div className="flex items-center justify-center gap-2 px-3 pt-2 pb-[10px] rounded-xl bg-secondary mr-3">
+                <p className="text-xs">Free Plan</p>
+                <div className="w-1 h-1 bg-[#D9D9D9] rounded-full" />
+                <p className="text-xs underline underline-offset-3 cursor-pointer">Upgrade</p>
             </div>
             <Avatar className="border-2 border-white">
                 <AvatarImage src="https://github.com/shadcn.pg" className="size-9" />
