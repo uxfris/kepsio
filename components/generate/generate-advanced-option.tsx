@@ -25,7 +25,7 @@ export function AdvancedOption() {
     <div className="shadow-shadowbrand rounded-2xl">
       <Accordion type="single" collapsible>
         <AccordionItem value="item-1">
-          <AccordionTrigger className="hover:bg-muted text-base font-body px-4 hover:no-underline">
+          <AccordionTrigger className="hover:bg-muted text-base font-normal font-body px-4 hover:no-underline">
             Advanced Options
           </AccordionTrigger>
           <AccordionContent>

@@ -7,7 +7,7 @@ import { Kbd } from "../ui/kbd";
 
 export default function GenerateInput() {
   return (
-    <aside className="min-h-screen w-[440px] p-8 border-r border-border">
+    <aside className="h-[calc(100vh-52px)] w-[440px] overflow-y-auto p-8 border-r border-border">
       <div className="relative pb-36">
         <PlatformInput />
         <ContentInput />
