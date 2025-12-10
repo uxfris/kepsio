@@ -2,6 +2,9 @@
 
 A modern Next.js application for generating and managing social media captions with an intuitive, component-driven interface.
 
+## 📸 Screenshots
+![Generate Page](https://kepsio.vercel.app/images/generate-screen.jpg)
+
 ## 🚀 Features
 
 - **Caption Generation**: Streamlined interface for creating social media captions
