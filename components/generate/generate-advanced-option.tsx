@@ -1,3 +1,5 @@
+"use client"
+
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Accordion,
@@ -15,8 +17,10 @@ import {
 import { Slider } from "../ui/slider";
 import { SelectItemIndicator } from "@radix-ui/react-select";
 import Image from "next/image";
+import { useState } from "react";
 
 export function AdvancedOption() {
+  const [sliderValue, setSliderValue] = useState<number>(5)
   return (
     <div className="shadow-shadowbrand rounded-2xl">
       <Accordion type="single" collapsible>
@@ -43,8 +47,9 @@ export function AdvancedOption() {
                 </Select>
               </div>
               <div className="flex flex-col gap-3">
-                <label htmlFor="hashtag">Hashtag: 5</label>
-                <Slider defaultValue={[5]} max={10} step={1} />
+                <label htmlFor="hashtag">Hashtag: <span className="text-accent">{sliderValue}</span></label>
+                <Slider defaultValue={[sliderValue]} max={10} step={1}
+                  onValueChange={(val: number[]) => setSliderValue(val[0])} />
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-muted-foreground-2">Min</p>
                   <p className="text-xs text-muted-foreground-2">Max</p>
