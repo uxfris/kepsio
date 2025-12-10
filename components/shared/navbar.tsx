@@ -20,7 +20,7 @@ export function Navbar() {
                 <p className="text-xs underline underline-offset-3 cursor-pointer">Upgrade</p>
             </div>
             <Avatar className="border-2 border-white">
-                <AvatarImage src="https://github.com/shadcn.pg" className="size-9" />
+                <AvatarImage src="/images/fris.jpg" className="size-9 object-cover" />
                 <AvatarFallback className="bg-muted text-muted-foreground-2 text-xs">CN</AvatarFallback>
             </Avatar>
         </div>
