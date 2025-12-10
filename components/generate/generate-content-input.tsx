@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
 import Image from "next/image";
 import GenerateImageInput from "./generate-image-input";
+import { GenerateDropdownMenuContent } from "./generate-dropdown-menu";
 
 export function ContentInput() {
   return (
@@ -18,14 +19,7 @@ export function ContentInput() {
           />
         </div>
         <div className="w-full flex items-end justify-between px-4">
-          <Button variant="outline" size="icon" className="rounded-full">
-            <Image
-              src={"/icons/add.svg"}
-              alt={"Add Icon"}
-              width={16}
-              height={16}
-            />
-          </Button>
+          <GenerateDropdownMenuContent />
           <p className="text-xs to-muted-foreground">27/500</p>
         </div>
         <div className="mt-3 px-4 bg-background">
