@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
@@ -5,23 +7,17 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { generateDropdownMenuContent } from "@/lib/constants"
+import { cn } from "@/lib/utils"
+import { useDropdownMenuStore } from "@/store/userDropdownMenuStore"
 import Image from "next/image"
 
 export function GenerateDropdownMenuContent() {
-    const menu = [
-        {
-            id: 1,
-            icon: "/icons/link.svg",
-            alt: "Link",
-            title: "Add product link",
-        },
-        {
-            id: 2,
-            icon: "/icons/image.svg",
-            alt: "image",
-            title: "Upload image",
-        }
-    ];
+    const { isProductLinkOpen, isUploadImageOpen, toggleProductLink, toggleUploadImage } = useDropdownMenuStore();
+    const menuStateMap: Record<string, { isOpen: boolean; toggle: () => void }> = {
+        productLink: { isOpen: isProductLinkOpen, toggle: toggleProductLink },
+        uploadImage: { isOpen: isUploadImageOpen, toggle: toggleUploadImage },
+    }
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -34,28 +30,31 @@ export function GenerateDropdownMenuContent() {
                     />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 rounded-2xl shadow-lg p-4" align="start">
-                {menu.map(({ id, icon, alt, title }) => (
-                    <DropdownMenuItem key={id} className="bg-sidebar-primary rounded-lg mb-1">
-                        <div className="flex items-center w-full">
-                            <div className="flex-1 flex items-center gap-2">
-                                <Image
-                                    src={icon}
-                                    alt={alt}
-                                    width={20}
-                                    height={20}
-                                />
-                                {title}
+            <DropdownMenuContent className="w-56 rounded-2xl shadow-lg p-2" align="start">
+                {generateDropdownMenuContent.map(({ id, icon, alt, title }) => {
+                    const state = menuStateMap[id]
+                    return (
+                        <DropdownMenuItem onClick={() => state.toggle()} key={id} className={cn("rounded-lg mb-1", state.isOpen && "bg-sidebar-primary")}>
+                            <div className="flex items-center w-full">
+                                <div className="flex-1 flex items-center gap-2">
+                                    <Image
+                                        src={icon}
+                                        alt={alt}
+                                        width={20}
+                                        height={20}
+                                    />
+                                    {title}
+                                </div>
+                                {state.isOpen && <Image
+                                    src={"/icons/check.svg"}
+                                    alt={"Check"}
+                                    width={24}
+                                    height={24}
+                                />}
                             </div>
-                            <Image
-                                src={"/icons/check.svg"}
-                                alt={"Check"}
-                                width={24}
-                                height={24}
-                            />
-                        </div>
-                    </DropdownMenuItem>
-                ))}
+                        </DropdownMenuItem>
+                    )
+                })}
             </DropdownMenuContent>
         </DropdownMenu>
     )
