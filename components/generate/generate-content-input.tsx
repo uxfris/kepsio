@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
-import Image from "next/image";
 import GenerateImageInput from "./generate-image-input";
 import { GenerateDropdownMenuContent } from "./generate-dropdown-menu";
 import { useDropdownMenuStore } from "@/store/userDropdownMenuStore";
+import { LinkIcon, ImageIcon } from "../icons";
 
 export function ContentInput() {
   const { isProductLinkOpen, isUploadImageOpen, toggleProductLink, toggleUploadImage } = useDropdownMenuStore();
@@ -33,24 +33,14 @@ export function ContentInput() {
               {isProductLinkOpen && <div
                 className="flex items-center shadow-sm bg-white gap-1 pl-2 rounded-lg"
               >
-                <Image
-                  src={"/icons/link.svg"}
-                  alt={"Link"}
-                  width={20}
-                  height={20}
-                />
+                <LinkIcon className="size-5" />
                 <p className="text-xs font-normal">Add product link</p>
                 <Button variant="ghost" size="icon-sm" onClick={() => toggleProductLink()}><X /></Button>
               </div>}
               {isUploadImageOpen && <div
                 className="flex items-center shadow-sm bg-white gap-1 pl-2 rounded-lg"
               >
-                <Image
-                  src={"/icons/image.svg"}
-                  alt={"Link"}
-                  width={20}
-                  height={20}
-                />
+                <ImageIcon className="size-5" />
                 <p className="text-xs font-normal">Upload Image</p>
                 <Button variant="ghost" size="icon-sm" onClick={() => toggleUploadImage()}><X /></Button>
               </div>}

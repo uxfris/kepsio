@@ -3,11 +3,12 @@ import { X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { Button } from "../ui/button";
+import { ImageSolidIcon } from "../icons";
 
 export default function GenerateImageInput() {
     const [preview, setPreview] = useState<string | null>(null)
     const [file, setFile] = useState<File | null>(null)
-    
+
     function handleFile(file: File | null) {
         if (!file) return
         setFile(file)
@@ -36,11 +37,11 @@ export default function GenerateImageInput() {
 
 
     return <div className="flex flex-col gap-3 my-5">
-                <label>Upload image</label>
-                <label htmlFor="image-upload"
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={handleDrop
-                }>
+        <label>Upload image</label>
+        <label htmlFor="image-upload"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={handleDrop
+            }>
             <input id="image-upload" type="file" accept="image/png, image/jpeg, image/gif" className="hidden"
                 onChange={handleInputChange} />
             {preview ?
@@ -51,13 +52,13 @@ export default function GenerateImageInput() {
                         e.stopPropagation();
                         clear()
                     }} variant="ghost" className="absolute top-3 right-3 rounded-full bg-black/30 w-8 h-8"><X className="text-white w-4 h-4" /></Button>
-            </div>
-            :
-                  <div className="flex flex-col items-center justify-center gap-2 rounded-2xl px-4 py-8 border-2 border-dashed border-border cursor-pointer">
-                    <Image src={"/icons/image-solid.svg"} alt={"Image"} width={32} height={32} />
+                </div>
+                :
+                <div className="flex flex-col items-center justify-center gap-2 rounded-2xl px-4 py-8 border-2 border-dashed border-border cursor-pointer">
+                    <ImageSolidIcon className="size-8" />
                     <p className="text-sm text-muted-foreground">Click to upload an image</p>
                     <p className="text-[10px] text-muted-foreground-2">PNG, JPG, GIF up to 10MB</p>
-                  </div>}
-                </label>
-              </div>
-    }
+                </div>}
+        </label>
+    </div>
+}

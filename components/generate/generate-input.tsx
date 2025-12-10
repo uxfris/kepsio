@@ -1,9 +1,9 @@
-import Image from "next/image";
 import { Button } from "../ui/button";
 import { AdvancedOption } from "./generate-advanced-option";
 import { ContentInput } from "./generate-content-input";
 import { PlatformInput } from "./generate-platform-input";
 import { Kbd } from "../ui/kbd";
+import { SettingAdjustIcon, SparkleFilledIcon } from "../icons";
 
 export default function GenerateInput() {
   return (
@@ -21,21 +21,17 @@ export default function GenerateInput() {
               size="icon-lg"
               className="border-primary rounded-2xl h-12 w-12"
             >
-              <Image
+              <SettingAdjustIcon className="size-12 p-3" />
+              {/* <Image
                 src={"/icons/setting-adjust.svg"}
                 alt={"Setting"}
                 width={48}
                 height={48}
                 className="p-3"
-              />
+              /> */}
             </Button>
             <Button className="w-full rounded-2xl h-12 text-base" size="lg">
-              <Image
-                src={"/icons/sparkle-filled.svg"}
-                alt={"Sparkle"}
-                width={24}
-                height={24}
-              />
+              <SparkleFilledIcon className="size-6" />
               Generate Captions
               <div className="flex items-center gap-1 ml-2">
                 <Kbd>⌘</Kbd>
