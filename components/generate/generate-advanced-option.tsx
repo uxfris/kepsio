@@ -15,10 +15,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "../ui/slider";
-import { SelectItemIndicator } from "@radix-ui/react-select";
-import Image from "next/image";
 import { useState } from "react";
 
+/**
+ * Advanced options component for the generate page.
+ * Provides additional configuration options including CTA selection, hashtag count, caption length, and emoji style.
+ */
 export function AdvancedOption() {
   const [sliderValue, setSliderValue] = useState<number>(5)
   return (

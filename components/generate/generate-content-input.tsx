@@ -6,14 +6,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
 import GenerateImageInput from "./generate-image-input";
 import { GenerateDropdownMenuContent } from "./generate-dropdown-menu";
-import { useDropdownMenuStore } from "@/store/userDropdownMenuStore";
+import { useDropdownMenuStore } from "@/store/dropdown-menu-store";
 import { LinkIcon, ImageIcon } from "../icons";
 
+/**
+ * Content input component for the generate page.
+ * Includes a textarea for content description and optional sections for product links and image uploads.
+ */
 export function ContentInput() {
   const { isProductLinkOpen, isUploadImageOpen, toggleProductLink, toggleUploadImage } = useDropdownMenuStore();
   return (
     <div className="flex flex-col gap-3 mb-8">
-      <label htmlFor="content">What's your content about</label>
+      <label htmlFor="content">What&apos;s your content about</label>
       <div className="rounded-[20px]  pt-3 pb-4 bg-white shadow-shadowbrand">
         <div className="px-3">
           <Textarea

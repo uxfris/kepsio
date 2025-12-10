@@ -1,5 +1,5 @@
 import { InitialState } from "@/components/generate/generate-initial-state";
-import GenerateInput from "@/components/generate/generate-input";
+import { GenerateInput } from "@/components/generate/generate-input";
 
 export default function GeneratePage() {
   return (

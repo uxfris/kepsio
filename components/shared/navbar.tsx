@@ -6,6 +6,10 @@ import Image from 'next/image'
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
+/**
+ * Main navigation bar component.
+ * Displays the app logo, navigation links with active state highlighting, plan information, and user avatar.
+ */
 export function Navbar() {
     const pathName = usePathname();
 

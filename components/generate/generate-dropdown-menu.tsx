@@ -9,15 +9,15 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { generateDropdownMenuContent } from "@/lib/constants"
 import { cn } from "@/lib/utils"
-import { useDropdownMenuStore } from "@/store/userDropdownMenuStore"
 import { AddIcon, CheckIcon } from "../icons"
+import { useDropdownMenuState } from "@/hooks"
 
+/**
+ * Dropdown menu component for adding optional content to the generate form.
+ * Allows users to add product links or upload images to their content.
+ */
 export function GenerateDropdownMenuContent() {
-    const { isProductLinkOpen, isUploadImageOpen, toggleProductLink, toggleUploadImage } = useDropdownMenuStore();
-    const menuStateMap: Record<string, { isOpen: boolean; toggle: () => void }> = {
-        productLink: { isOpen: isProductLinkOpen, toggle: toggleProductLink },
-        uploadImage: { isOpen: isUploadImageOpen, toggle: toggleUploadImage },
-    }
+    const menuStateMap = useDropdownMenuState(generateDropdownMenuContent);
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -26,7 +26,7 @@ export function GenerateDropdownMenuContent() {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 rounded-2xl shadow-lg p-2" align="start">
-                {generateDropdownMenuContent.map(({ id, icon: IconComponent, alt, title }) => {
+                {generateDropdownMenuContent.map(({ id, icon: IconComponent, title }) => {
                     const state = menuStateMap[id]
                     return (
                         <DropdownMenuItem onClick={() => state.toggle()} key={id} className={cn("rounded-lg mb-1", state.isOpen && "bg-sidebar-primary")}>

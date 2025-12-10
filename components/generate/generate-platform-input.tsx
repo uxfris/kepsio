@@ -1,9 +1,12 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Image from "next/image";
 import { InstagramIcon } from "../icons/instagram-icon";
 import { XIcon } from "../icons/x-icon";
 import { LinkedInIcon } from "../icons/linkedin-icon";
 
+/**
+ * Platform selection component for the generate page.
+ * Allows users to choose between Instagram, X (Twitter), and LinkedIn.
+ */
 export function PlatformInput() {
   return (
     <div className="flex flex-col gap-3 mb-8">

@@ -5,7 +5,11 @@ import { PlatformInput } from "./generate-platform-input";
 import { Kbd } from "../ui/kbd";
 import { SettingAdjustIcon, SparkleFilledIcon } from "../icons";
 
-export default function GenerateInput() {
+/**
+ * Main input sidebar component for the generate page.
+ * Contains platform selection, content input, advanced options, and generate button.
+ */
+export function GenerateInput() {
   return (
     <aside className="h-[calc(100vh-52px)] w-[440px] overflow-y-auto p-8 border-r border-border">
       <div className="relative pb-36">

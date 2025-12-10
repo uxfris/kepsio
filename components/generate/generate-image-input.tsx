@@ -7,7 +7,7 @@ import { ImageSolidIcon } from "../icons";
 
 export default function GenerateImageInput() {
     const [preview, setPreview] = useState<string | null>(null)
-    const [file, setFile] = useState<File | null>(null)
+    const [_file, setFile] = useState<File | null>(null)
 
     function handleFile(file: File | null) {
         if (!file) return
