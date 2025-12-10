@@ -1,0 +1,12 @@
+export { AddIcon } from './add-icon';
+export { BulbIcon } from './bulb-icon';
+export { CheckIcon } from './check-icon';
+export { ImageIcon } from './image-icon';
+export { ImageSolidIcon } from './image-solid-icon';
+export { InstagramIcon } from './instagram-icon';
+export { LinkIcon } from './link-icon';
+export { LinkedInIcon } from './linkedin-icon';
+export { LogoOutlineIcon } from './logo-outline-icon';
+export { SettingAdjustIcon } from './setting-adjust-icon';
+export { SparkleFilledIcon } from './sparkle-filled-icon';
+export { XIcon } from './x-icon';
