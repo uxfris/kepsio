@@ -13,6 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "../ui/slider";
+import { SelectItemIndicator } from "@radix-ui/react-select";
+import Image from "next/image";
 
 export function AdvancedOption() {
   return (
@@ -30,8 +32,8 @@ export function AdvancedOption() {
                   <SelectTrigger className="w-full bg-input rounded-2xl p-4 shadow-shadowbrand">
                     <SelectValue placeholder="Select Call-to-Action" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="link-in-bio">Link in bio</SelectItem>
+                  <SelectContent className="rounded-2xl">
+                    <SelectItem value="link-in-bio" className="rounded-md">Link in bio</SelectItem>
                     <SelectItem value="shop-now">Shop now</SelectItem>
                     <SelectItem value="dm-me">DM me</SelectItem>
                     <SelectItem value="comment-below">Comment below</SelectItem>
