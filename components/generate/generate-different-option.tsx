@@ -1,6 +1,10 @@
 import { Button } from "../ui/button";
 import { Sparkle2Icon } from "../icons/sparkle-2-icon";
 import { Badge } from "../ui/badge";
+import { StormIcon } from "../icons/storm-icon";
+import { ShortIcon } from "../icons/short-icon";
+import { CaseIcon } from "../icons/case-icon";
+import { SmileIcon } from "../icons/smile-icon";
 
 export function DifferentOption() {
     const options = [
@@ -9,19 +13,19 @@ export function DifferentOption() {
             text: "More Playful"
         },
         {
-            icon: <Sparkle2Icon />,
+            icon: <StormIcon />,
             text: "Add urgency"
         },
         {
-            icon: <Sparkle2Icon />,
+            icon: <ShortIcon />,
             text: "Shorter"
         },
         {
-            icon: <Sparkle2Icon />,
+            icon: <CaseIcon />,
             text: "More Professional"
         },
         {
-            icon: <Sparkle2Icon />,
+            icon: <SmileIcon />,
             text: "More casual"
         },
     ];
@@ -30,7 +34,7 @@ export function DifferentOption() {
             <p className="text-sm">Need different options? Try:</p>
             <div className="flex items-center gap-3">
                 {options.map((option) => (
-                    <Button key={option.text} variant="secondary" className="rounded-full text-foreground gap-0 text-sm font-normal">
+                    <Button key={option.text} variant="secondary" className="rounded-full text-foreground gap-1 text-sm font-normal">
                         {option.icon}
                         {option.text}
                     </Button>
@@ -41,7 +45,7 @@ export function DifferentOption() {
                     <Badge variant="secondary">Free Plan</Badge>
                     <p className="text-sm">5 variations per generation</p>
                 </div>
-                <Button variant="outline" size="sm">Upgrade for 10</Button>
+                <Button variant="outline" size="sm" className="font-normal">Upgrade for 10</Button>
             </div>
         </div>
     )
