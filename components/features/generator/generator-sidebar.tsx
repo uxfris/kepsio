@@ -57,9 +57,9 @@ export function GeneratorSidebar({ onSubmit, isLoading }: { onSubmit: (data: Gen
                     onCaptionLengthChange={(captionLength) => setForm((f) => ({ ...f, captionLength }))}
                     onEmojiStyleChange={(emojiStyle) => setForm((f) => ({ ...f, emojiStyle }))} />
             </div>
-            <div className="fixed bottom-0 left-0 w-[440px] border-r border-t border-border bg-background px-16 py-5">
-                <div className="flex flex-col items-center justify-center">
-                    <div className="flex items-center justify-center gap-3 mb-3">
+            <div className="fixed bottom-0 left-0 w-[440px] border-r border-t border-border bg-background py-5">
+                <div className="w-full flex flex-col items-center justify-center">
+                    <div className="w-full flex items-center justify-center gap-3 px-8 mb-3">
                         <Button
                             variant="outline"
                             size="icon-lg"
@@ -71,17 +71,23 @@ export function GeneratorSidebar({ onSubmit, isLoading }: { onSubmit: (data: Gen
                         <Button
                             onClick={() => onSubmit(form)}
                             disabled={isLoading}
-                            className="w-full rounded-2xl h-12 text-base"
+                            className="flex-1 rounded-2xl h-12 text-base flex items-center justify-center gap-2"
                             size="lg"
                             aria-label="Generate captions (⌘+Enter)"
                         >
-                            {isLoading ? <Spinner /> : <SparkleFilledIcon className="size-6" />}
-                            {isLoading ? "Generating" : "Generate Captions"}
-                            {!isLoading && <div className="flex items-center gap-1 ml-2">
+                            <span className="flex items-center justify-center w-6">
+                                {isLoading ? <Spinner className="w-5 h-5 animate-spin" /> : <SparkleFilledIcon className="size-6" />}
+                            </span>
+                            <span className="text-center">
+                                {isLoading ? "Generating..." : "Generate Captions"}
+                            </span>
+                            <span className="flex items-center gap-1 ml-2">
+                                {/* Always reserve space for the shortcut */}
                                 <Kbd>⌘</Kbd>
                                 <Kbd>Enter</Kbd>
-                            </div>}
+                            </span>
                         </Button>
+
                     </div>
                     <p className="text-center text-xs">
                         <span className="text-primary">{FREE_GENERATIONS_LEFT}/{MAX_FREE_GENERATIONS}</span> free generation left
