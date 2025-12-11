@@ -1,10 +1,15 @@
-import { LogoOutlineIcon, BulbIcon } from "../icons";
+import { LogoOutlineIcon, BulbIcon } from "@/components/icons";
 
 /**
  * Initial state component displayed when no content has been generated yet.
  * Shows the app logo, instructions, and a helpful tip.
+ * 
+ * @example
+ * ```tsx
+ * <GeneratorInitialState />
+ * ```
  */
-export function InitialState() {
+export function GeneratorInitialState() {
     return (
         <div className="flex flex-col items-center justify-center gap-12 pb-32">
             <LogoOutlineIcon className="w-[120px] h-[98px]" />

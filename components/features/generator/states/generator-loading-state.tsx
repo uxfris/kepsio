@@ -2,17 +2,18 @@
 
 import { useEffect, useRef, useState, useMemo } from "react";
 import { motion, AnimatePresence, useMotionValue, animate, AnimationPlaybackControls } from "framer-motion";
-import { LogoOutlineIcon, BulbIcon } from "../icons";
-import { ThemeIcon } from "../icons/theme-icon";
-import { Progress } from "../ui/progress";
+import { LogoOutlineIcon, BulbIcon } from "@/components/icons";
+import { ThemeIcon } from "@/components/icons/theme-icon";
+import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { BrainIcon } from "../icons/brain-icon";
-import { TargetIcon } from "../icons/target-icon";
-import { tips } from "@/lib/constants";
-import { Particles } from "../shared/particles";
+import { BrainIcon } from "@/components/icons/brain-icon";
+import { TargetIcon } from "@/components/icons/target-icon";
+import { CAPTION_TIPS } from "@/lib/constants";
+import { Particles } from "@/components/layout/particles";
 
-interface LoadingStateProps {
-    progress: number; // progress comes from parent (0-100)
+interface GeneratorLoadingStateProps {
+    /** Progress value from 0 to 100 */
+    progress: number;
 }
 
 interface PhaseConfig {
@@ -38,7 +39,7 @@ const PHASE_CONFIGS: PhaseConfig[] = [
         subtext: "Personalizing tone and style",
         color: "from-[#FF4602] to-[#FF025B]"
     }
-];
+] as const;
 
 const PHASE_ICONS = [BrainIcon, TargetIcon, ThemeIcon] as const;
 
@@ -62,9 +63,18 @@ const getPhaseIndex = (progress: number): number => {
 };
 
 /**
- * Loading state component with animated phases, progress bar, and rotating tips
+ * Loading state component with animated phases, progress bar, and rotating tips.
+ * Displays different phases as the generation progresses with smooth animations.
+ * 
+ * @param props - Component props
+ * @param props.progress - Current progress from 0-100
+ * 
+ * @example
+ * ```tsx
+ * <GeneratorLoadingState progress={progress} />
+ * ```
  */
-export function LoadingState({ progress }: LoadingStateProps) {
+export function GeneratorLoadingState({ progress }: GeneratorLoadingStateProps) {
     const motionProgress = useMotionValue(0);
     const [phaseIndex, setPhaseIndex] = useState(0);
     const [currentTip, setCurrentTip] = useState(0);
@@ -98,14 +108,15 @@ export function LoadingState({ progress }: LoadingStateProps) {
         return () => {
             animationRef.current?.stop();
         };
-    }, [progress]);
+    }, [progress, motionProgress]);
 
     // Tip rotation interval
     useEffect(() => {
-        if (tips.length === 0) return;
+        // if (CAPTION_TIPS.length === 0) return; // Removed redundant check since CAPTION_TIPS is constant
+
 
         const interval = setInterval(() => {
-            setCurrentTip(prev => (prev + 1) % tips.length);
+            setCurrentTip(prev => (prev + 1) % CAPTION_TIPS.length);
         }, TIP_ROTATION_INTERVAL);
 
         return () => clearInterval(interval);
@@ -164,7 +175,7 @@ export function LoadingState({ progress }: LoadingStateProps) {
             </div>
 
             {/* Tip rotation */}
-            {tips.length > 0 && (
+            {CAPTION_TIPS.length > 0 && (
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={currentTip}
@@ -175,7 +186,7 @@ export function LoadingState({ progress }: LoadingStateProps) {
                         transition={{ duration: 0.25 }}
                     >
                         <BulbIcon className="size-5" />
-                        <p className="text-sm">{tips[currentTip]}</p>
+                        <p className="text-sm">{CAPTION_TIPS[currentTip]}</p>
                     </motion.div>
                 </AnimatePresence>
             )}

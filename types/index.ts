@@ -5,9 +5,10 @@
 export type IconComponent = ({ className }: { className?: string }) => React.JSX.Element;
 
 /**
- * Represents a single item in the generate dropdown menu.
+ * Represents a single item in a dropdown menu.
+ * Generic interface that can be used across different features.
  */
-export interface GenerateDropdownMenuItem {
+export interface DropdownMenuItem {
     /** Unique identifier for the menu item */
     id: string;
     /** Icon component to display */
@@ -19,16 +20,7 @@ export interface GenerateDropdownMenuItem {
 }
 
 /**
- * State and actions for the dropdown menu store.
- * Manages the open/closed state of product link and image upload sections.
+ * Represents a single item in the generate dropdown menu.
+ * @deprecated Use feature-specific types from @/features/generator/types instead
  */
-export interface DropdownMenuStore {
-    /** Whether the product link section is open */
-    isProductLinkOpen: boolean;
-    /** Whether the upload image section is open */
-    isUploadImageOpen: boolean;
-    /** Toggle the product link section */
-    toggleProductLink: () => void;
-    /** Toggle the upload image section */
-    toggleUploadImage: () => void;
-}
+export type GenerateDropdownMenuItem = DropdownMenuItem;

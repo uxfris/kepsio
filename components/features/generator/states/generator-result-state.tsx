@@ -1,16 +1,25 @@
 "use client"
 
 import React, { useState } from "react";
-import { Button } from "../ui/button";
-import { captionResultFilters, captions } from "@/lib/constants";
+import { Button } from "@/components/ui/button";
+import { CAPTION_RESULT_FILTERS, MOCK_CAPTIONS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { CaptionCard } from "./generate-caption-card";
-import { DifferentOption } from "./generate-different-option";
+import { CaptionCard } from "../result/caption-card";
+import { GeneratorDifferentOption } from "../generator-different-option";
 
-export function ResultState() {
+/**
+ * Result state component displaying generated captions with filtering options.
+ * Shows a grid of caption cards with filter buttons and additional options.
+ * 
+ * @example
+ * ```tsx
+ * <GeneratorResultState />
+ * ```
+ */
+export function GeneratorResultState() {
     const [activeFilter, setActiveFilter] = useState("All")
 
-    const filteredCaptions = captions.filter((caption) => {
+    const filteredCaptions = MOCK_CAPTIONS.filter((caption) => {
         if (activeFilter === "All") return true;
 
         if (caption.length === activeFilter) return true;
@@ -25,7 +34,7 @@ export function ResultState() {
         <div className="h-[calc(100vh-52px)] w-full overflow-y-auto py-8 space-y-5 pb-36">
             <h2 className="text-2xl font-heading">5 Captions ready for Instagram</h2>
             <div className="flex items-center gap-1">
-                {captionResultFilters.map((filter, index) => (
+                {CAPTION_RESULT_FILTERS.map((filter, index) => (
                     <React.Fragment key={filter}>
                         {/* Add divider after the 4th button */}
                         {index === 4 && <div className="border-r border-border h-7 w-1 pl-2 mr-2" />}
@@ -49,7 +58,7 @@ export function ResultState() {
                 ))}
             </div>
 
-            <DifferentOption />
+            <GeneratorDifferentOption />
         </div>
     );
 }

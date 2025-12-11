@@ -7,17 +7,23 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { generateDropdownMenuContent } from "@/lib/constants"
+import { GENERATE_DROPDOWN_MENU_ITEMS } from "@/lib/constants"
 import { cn } from "@/lib/utils"
-import { AddIcon, CheckIcon } from "../icons"
+import { AddIcon, CheckIcon } from "@/components/icons"
 import { useDropdownMenuState } from "@/hooks"
 
 /**
- * Dropdown menu component for adding optional content to the generate form.
- * Allows users to add product links or upload images to their content.
+ * Dropdown menu for adding optional content sections.
+ * Allows users to add product links or upload images to their content input.
+ * 
+ * @example
+ * ```tsx
+ * <GeneratorDropdownMenu />
+ * ```
  */
-export function GenerateDropdownMenuContent() {
-    const menuStateMap = useDropdownMenuState(generateDropdownMenuContent);
+export function GeneratorDropdownMenu() {
+    const menuStateMap = useDropdownMenuState(GENERATE_DROPDOWN_MENU_ITEMS);
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -26,10 +32,14 @@ export function GenerateDropdownMenuContent() {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 rounded-2xl shadow-lg p-2" align="start">
-                {generateDropdownMenuContent.map(({ id, icon: IconComponent, title }) => {
+                {GENERATE_DROPDOWN_MENU_ITEMS.map(({ id, icon: IconComponent, title }) => {
                     const state = menuStateMap[id]
                     return (
-                        <DropdownMenuItem onClick={() => state.toggle()} key={id} className={cn("rounded-lg mb-1", state.isOpen && "bg-sidebar-primary")}>
+                        <DropdownMenuItem
+                            onClick={() => state.toggle()}
+                            key={id}
+                            className={cn("rounded-lg mb-1", state.isOpen && "bg-sidebar-primary")}
+                        >
                             <div className="flex items-center w-full">
                                 <div className="flex-1 flex items-center gap-2">
                                     <IconComponent className="size-5" />
@@ -39,8 +49,7 @@ export function GenerateDropdownMenuContent() {
                             </div>
                         </DropdownMenuItem>
                     )
-                })}
-            </DropdownMenuContent>
+                })}</DropdownMenuContent>
         </DropdownMenu>
     )
 }

@@ -1,58 +1,46 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react";
-import { Button } from "../ui/button";
-import { ChevronDownIcon } from "../icons/chevron-down-icon";
-import { Badge } from "../ui/badge";
-import { StarFilledIcon } from "../icons/start-filled-icon";
-import { CheckIcon, SparkleFilledIcon } from "../icons";
-import { CopyIcon } from "../icons/copy-icon";
-import { EditIcon } from "../icons/edit-icon";
-import { SaveIcon } from "../icons/save-icon";
-import { cn, copyToClipboard } from "@/lib/utils";
+import { useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { ChevronDownIcon } from "@/components/icons/chevron-down-icon";
+import { Badge } from "@/components/ui/badge";
+import { StarFilledIcon } from "@/components/icons/start-filled-icon";
+import { CheckIcon, SparkleFilledIcon } from "@/components/icons";
+import { CopyIcon } from "@/components/icons/copy-icon";
+import { EditIcon } from "@/components/icons/edit-icon";
+import { SaveIcon } from "@/components/icons/save-icon";
+import { cn } from "@/lib/utils";
+import { useCaptionCard, useClipboard } from "@/features/generator/hooks";
+import type { Caption } from "@/features/generator/types";
 
-interface caption {
-    id: string,
-    isTopPick: boolean,
-    isHighPotential: boolean,
-    text: string,
-    length: string,
-    style: string
+interface CaptionCardProps {
+    /** Caption data to display */
+    caption: Caption;
+    /** Optional className for styling */
+    className?: string;
 }
 
-export function CaptionCard({ caption, className }: { caption: caption; className?: string }) {
-    const [expanded, setExpanded] = useState(false);
-    const [showReadMore, setShowReadMore] = useState(false);
-    const [maxHeight, setMaxHeight] = useState<number | undefined>(undefined);
+/**
+ * Card component for displaying a generated caption with expand/collapse and copy functionality.
+ * 
+ * Features:
+ * - Expandable text with "Read more" for non-top picks
+ * - Copy to clipboard functionality
+ * - Edit and save buttons
+ * - Badges for length, style, and high-potential marking
+ * - Special banner for top picks
+ */
+export function CaptionCard({ caption, className }: CaptionCardProps) {
     const textRef = useRef<HTMLParagraphElement>(null);
 
-    const [copied, setCopied] = useState(false)
+    // Custom hooks for business logic
+    const { expanded, showReadMore, maxHeight, toggleExpanded, checkReadMore } = useCaptionCard();
+    const { copied, handleCopy } = useClipboard();
 
+    // Check if "Read more" is needed when caption changes
     useEffect(() => {
-        if (!caption.isTopPick && textRef.current) {
-            const el = textRef.current;
-
-            // Compute line height safely
-            const lineHeight = parseInt(getComputedStyle(el).lineHeight) || 24;
-            const twoLinesHeight = lineHeight * 2;
-
-            // Determine if "Read more" button is needed
-            setShowReadMore(el.scrollHeight > twoLinesHeight);
-
-            // Set maxHeight for collapsed state
-            setMaxHeight(twoLinesHeight);
-        }
-    }, [caption.text, caption.isTopPick]);
-
-    const handleCopy = async () => {
-        const success = await copyToClipboard(caption.text);
-        if (success) {
-            setCopied(true);
-            setTimeout(() => {
-                setCopied(false)
-            }, 2000);
-        }
-    }
+        checkReadMore(textRef.current, caption.isTopPick);
+    }, [caption.text, caption.isTopPick, checkReadMore]);
 
     return (
         <div
@@ -90,7 +78,7 @@ export function CaptionCard({ caption, className }: { caption: caption; classNam
                     <Button
                         variant="ghost"
                         className=" text-accent gap-1 inline-flex p-0 hover:bg-transparent hover:text-accent rounded-full h-8"
-                        onClick={() => setExpanded(!expanded)}
+                        onClick={toggleExpanded}
                     >
                         <p className="text-xs">{expanded ? "Read less" : "Read more"}</p>
                         <ChevronDownIcon
@@ -113,7 +101,10 @@ export function CaptionCard({ caption, className }: { caption: caption; classNam
 
             {/* Hover button group */}
             <div className="absolute bottom-4 left-6 right-6 flex items-center gap-2 opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
-                <Button onClick={handleCopy} className="flex-1 bg-foreground hover:bg-foreground/95">
+                <Button
+                    onClick={() => handleCopy(caption.text)}
+                    className="flex-1 bg-foreground hover:bg-foreground/95"
+                >
                     {copied ? <CheckIcon /> : <CopyIcon />}
                     {copied ? "Copied" : "Copy"}
                 </Button>
