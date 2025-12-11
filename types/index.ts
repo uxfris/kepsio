@@ -2,7 +2,7 @@
  * Type definition for icon components used throughout the application.
  * Icon components accept an optional className prop for styling.
  */
-export type IconComponent = ({ className }: { className?: string }) => React.JSX.Element;
+export type IconComponent = (props: React.ComponentProps<"svg">) => React.JSX.Element;
 
 /**
  * Represents a single item in a dropdown menu.

@@ -126,7 +126,7 @@ export function GeneratorLoadingState({ progress }: GeneratorLoadingStateProps) 
             <AnimatePresence mode="wait">
                 <motion.div
                     key={phaseIndex}
-                    className={cn(`absolute bg-linear-to-r w-${BACKGROUND_GLOW_SIZE} h-${BACKGROUND_GLOW_SIZE} rounded-full blur-[150px]`, currentPhase.color)}
+                    className={cn("absolute bg-linear-to-r w-56 h-56 rounded-full blur-[150px]", currentPhase.color)}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -139,10 +139,16 @@ export function GeneratorLoadingState({ progress }: GeneratorLoadingStateProps) 
                 {particles}
             </div>
 
-            <LogoOutlineIcon className={`w-[${LOGO_SIZE.width}px] h-[${LOGO_SIZE.height}px] z-10`} />
+            <LogoOutlineIcon
+                className="z-10"
+                style={{ width: LOGO_SIZE.width, height: LOGO_SIZE.height }}
+            />
 
             {/* Phase content - using absolute positioning to prevent layout shifts */}
-            <div className={`relative w-full h-[${PHASE_CONTENT_HEIGHT}px] flex items-center justify-center`}>
+            <div
+                className="relative w-full flex items-center justify-center"
+                style={{ height: PHASE_CONTENT_HEIGHT }}
+            >
                 <AnimatePresence mode="popLayout">
                     <motion.div
                         key={phaseIndex}
@@ -168,7 +174,7 @@ export function GeneratorLoadingState({ progress }: GeneratorLoadingStateProps) 
             </div>
 
             {/* Progress bar - using motion value directly */}
-            <div className={`w-[${PROGRESS_BAR_WIDTH}px]`}>
+            <div style={{ width: PROGRESS_BAR_WIDTH }}>
                 <Progress motionValue={motionProgress} />
             </div>
 
