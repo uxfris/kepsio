@@ -30,8 +30,12 @@ const MAX_HASHTAG_COUNT = 10;
  * <GeneratorAdvancedOptions />
  * ```
  */
-export function GeneratorAdvancedOptions() {
-    const [hashtagCount, setHashtagCount] = useState<number>(DEFAULT_HASHTAG_COUNT);
+export function GeneratorAdvancedOptions(
+    { cta, hashtagCount, captionLength, emojiStyle, onCTAChange, onHashtagCountChange, onCaptionLengthChange, onEmojiStyleChange }: {
+        cta?: string, hashtagCount?: number; captionLength?: string; emojiStyle?: string; onCTAChange: (val: string) => void; onHashtagCountChange: (val: number) => void; onCaptionLengthChange: (val: string) => void; onEmojiStyleChange: (val: string) => void
+    }
+) {
+    // const [hashtagCounter, setHashtagCounter] = useState<number>(DEFAULT_HASHTAG_COUNT);
 
     return (
         <div className="shadow-shadowbrand rounded-2xl">
@@ -45,7 +49,7 @@ export function GeneratorAdvancedOptions() {
                             {/* Call-to-Action Selection */}
                             <div className="flex flex-col gap-3">
                                 <label htmlFor="cta">Call-to-Action</label>
-                                <Select>
+                                <Select value={cta} onValueChange={(val: string) => onCTAChange(val)}>
                                     <SelectTrigger className="w-full bg-input rounded-2xl p-4 shadow-shadowbrand">
                                         <SelectValue placeholder="Select Call-to-Action" />
                                     </SelectTrigger>
@@ -69,10 +73,10 @@ export function GeneratorAdvancedOptions() {
                                     Hashtags: <span className="text-accent">{hashtagCount}</span>
                                 </label>
                                 <Slider
-                                    defaultValue={[hashtagCount]}
+                                    defaultValue={[hashtagCount ?? DEFAULT_HASHTAG_COUNT]}
                                     max={MAX_HASHTAG_COUNT}
                                     step={1}
-                                    onValueChange={(val: number[]) => setHashtagCount(val[0])}
+                                    onValueChange={(val: number[]) => onHashtagCountChange(val[0])}
                                 />
                                 <div className="flex items-center justify-between">
                                     <p className="text-xs text-muted-foreground-2">Min</p>
@@ -83,7 +87,7 @@ export function GeneratorAdvancedOptions() {
                             {/* Caption Length Selection */}
                             <div className="flex flex-col gap-3">
                                 <label htmlFor="caption-length">Caption length</label>
-                                <Tabs defaultValue="Medium" className="w-full">
+                                <Tabs defaultValue="Medium" value={captionLength} onValueChange={(val) => onCaptionLengthChange(val)} className="w-full">
                                     <TabsList className="w-full">
                                         {CAPTION_LENGTH_OPTIONS.map((length) => (
                                             <TabsTrigger key={length} value={length}>
@@ -97,7 +101,7 @@ export function GeneratorAdvancedOptions() {
                             {/* Emoji Style Selection */}
                             <div className="flex flex-col gap-3">
                                 <label htmlFor="emoji-style">Emoji Style</label>
-                                <Tabs defaultValue="Minimal" className="w-full">
+                                <Tabs defaultValue="Minimal" value={emojiStyle} onValueChange={(val) => onEmojiStyleChange(val)} className="w-full">
                                     <TabsList className="w-full">
                                         {EMOJI_STYLE_OPTIONS.map((style) => (
                                             <TabsTrigger key={style} value={style}>

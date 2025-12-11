@@ -10,11 +10,11 @@ import { InstagramIcon, LinkedInIcon, XIcon } from "@/components/icons";
  * <GeneratorPlatformSelector />
  * ```
  */
-export function GeneratorPlatformSelector() {
+export function GeneratorPlatformSelector({ value, onChange }: { value: "instagram" | "x" | "linkedin", onChange: (val: "instagram" | "x" | "linkedin") => void }) {
     return (
         <div className="flex flex-col gap-3 mb-8">
             <label htmlFor="platform">Platform</label>
-            <Tabs defaultValue="instagram" className="w-full">
+            <Tabs defaultValue="instagram" value={value} onValueChange={(val) => onChange(val as any)} className="w-full">
                 <TabsList className="w-full h-[52px]">
                     <TabsTrigger value="instagram" className="data-[state=active]:text-foreground text-secondary-foreground">
                         <InstagramIcon className="size-5 fill-current" />

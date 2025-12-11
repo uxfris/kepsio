@@ -112,8 +112,6 @@ export function GeneratorLoadingState({ progress }: GeneratorLoadingStateProps) 
 
     // Tip rotation interval
     useEffect(() => {
-        // if (CAPTION_TIPS.length === 0) return; // Removed redundant check since CAPTION_TIPS is constant
-
 
         const interval = setInterval(() => {
             setCurrentTip(prev => (prev + 1) % CAPTION_TIPS.length);

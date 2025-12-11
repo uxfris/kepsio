@@ -3,8 +3,9 @@
  * Supports versioning, nested endpoints, and dynamic parameters.
  */
 
-const API_VERSION = "v1";
-const API_BASE = `/api/${API_VERSION}`;
+// const API_VERSION = "v1";
+// const API_BASE = `/api/${API_VERSION}`;
+const API_BASE = `/api`;
 
 export const API_ROUTES = {
     // Generate endpoints

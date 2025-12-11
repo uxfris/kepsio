@@ -20,7 +20,7 @@ const MAX_CONTENT_LENGTH = 500;
  * <GeneratorContentInput />
  * ```
  */
-export function GeneratorContentInput() {
+export function GeneratorContentInput({ value, onChange, productLink, onProductLinkChange }: { value: string; onChange: (val: string) => void; productLink?: string, onProductLinkChange?: (val: string) => void }) {
     const { isProductLinkOpen, isUploadImageOpen, toggleProductLink, toggleUploadImage } = useGeneratorStore();
 
     return (
@@ -30,6 +30,8 @@ export function GeneratorContentInput() {
                 <div className="px-3">
                     <Textarea
                         id="content"
+                        value={value}
+                        onChange={(e) => onChange(e.target.value)}
                         className="h-20 resize-none w-full shadow-none"
                         placeholder="product launch, announcement, event recap, milestone, etc."
                         maxLength={MAX_CONTENT_LENGTH}
@@ -37,7 +39,7 @@ export function GeneratorContentInput() {
                 </div>
                 <div className="w-full flex items-end justify-between px-4">
                     <GeneratorDropdownMenu />
-                    <p className="text-xs to-muted-foreground">27/{MAX_CONTENT_LENGTH}</p>
+                    <p className="text-xs to-muted-foreground">{value.length}/{MAX_CONTENT_LENGTH}</p>
                 </div>
                 {(isProductLinkOpen || isUploadImageOpen) && <div className="mt-3 px-4 bg-background">
                     <div className="border-b" />
@@ -63,6 +65,8 @@ export function GeneratorContentInput() {
                     {isProductLinkOpen && <div className="flex flex-col gap-3 my-5">
                         <label htmlFor="product-link">Product Link</label>
                         <Input
+                            value={productLink}
+                            onChange={(e) => onProductLinkChange?.(e.target.value)}
                             id="product-link"
                             type="url"
                             placeholder="https://example.com/product"

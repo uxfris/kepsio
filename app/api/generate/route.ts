@@ -1,15 +1,25 @@
 import { openai } from "@/lib/openai";
 import { generateChatResponse } from "@/services/ai-services";
 
-
+function delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
 export async function POST(req: Request) {
-    const { message } = await req.json();
+    const form = await req.json();
 
-    const response = await generateChatResponse(message);
+    console.log(form);
 
-    console.log(response.output_text);
+    await delay(5000)
+
+
+    // const response = await generateChatResponse(message);
+
+    // console.log(response.output_text);
 
     return Response.json({
-        reply: response.output_text
+        reply: form
     })
+    // return Response.json({
+    //     reply: response.output_text
+    // })
 }
