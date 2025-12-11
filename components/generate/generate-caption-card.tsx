@@ -5,23 +5,31 @@ import { Button } from "../ui/button";
 import { ChevronDownIcon } from "../icons/chevron-down-icon";
 import { Badge } from "../ui/badge";
 import { StarFilledIcon } from "../icons/start-filled-icon";
-import { SparkleFilledIcon } from "../icons";
+import { CheckIcon, SparkleFilledIcon } from "../icons";
 import { CopyIcon } from "../icons/copy-icon";
 import { EditIcon } from "../icons/edit-icon";
 import { SaveIcon } from "../icons/save-icon";
-import { cn } from "@/lib/utils";
+import { cn, copyToClipboard } from "@/lib/utils";
 
-export function CaptionCard({ isTopPick, className }: { isTopPick: boolean; className?: string }) {
+interface caption {
+    id: string,
+    isTopPick: boolean,
+    isHighPotential: boolean,
+    text: string,
+    length: string,
+    style: string
+}
+
+export function CaptionCard({ caption, className }: { caption: caption; className?: string }) {
     const [expanded, setExpanded] = useState(false);
     const [showReadMore, setShowReadMore] = useState(false);
     const [maxHeight, setMaxHeight] = useState<number | undefined>(undefined);
     const textRef = useRef<HTMLParagraphElement>(null);
 
-    const text =
-        "We've been working hard behind the scenes, and it's finally time to unveil our latest creations. Stay tuned for amazing content that will inspire and engage your audience!";
+    const [copied, setCopied] = useState(false)
 
     useEffect(() => {
-        if (!isTopPick && textRef.current) {
+        if (!caption.isTopPick && textRef.current) {
             const el = textRef.current;
 
             // Compute line height safely
@@ -34,18 +42,28 @@ export function CaptionCard({ isTopPick, className }: { isTopPick: boolean; clas
             // Set maxHeight for collapsed state
             setMaxHeight(twoLinesHeight);
         }
-    }, [text, isTopPick]);
+    }, [caption.text, caption.isTopPick]);
+
+    const handleCopy = async () => {
+        const success = await copyToClipboard(caption.text);
+        if (success) {
+            setCopied(true);
+            setTimeout(() => {
+                setCopied(false)
+            }, 2000);
+        }
+    }
 
     return (
         <div
             className={cn(
                 "relative group flex flex-col bg-card shadow-shadowbrand rounded-2xl overflow-clip",
-                isTopPick ? "pb-6 gap-5" : "py-6 gap-5",
+                caption.isTopPick ? "pb-6 gap-5" : "py-6 gap-5",
                 className
             )}
         >
             {/* Top pick banner */}
-            {isTopPick && (
+            {caption.isTopPick && (
                 <div className="flex items-center gap-[6px] px-3 py-2 bg-secondary border-b border-border">
                     <SparkleFilledIcon className="size-4" />
                     <p className="font-medium text-sm">Our top pick for you</p>
@@ -56,7 +74,7 @@ export function CaptionCard({ isTopPick, className }: { isTopPick: boolean; clas
                 <div
                     className="overflow-hidden transition-[max-height] duration-300"
                     style={{
-                        maxHeight: isTopPick
+                        maxHeight: caption.isTopPick
                             ? undefined
                             : expanded
                                 ? textRef.current?.scrollHeight
@@ -64,11 +82,11 @@ export function CaptionCard({ isTopPick, className }: { isTopPick: boolean; clas
                     }}
                 >
                     <p ref={textRef} className="text-card-foreground text-[14px] leading-6">
-                        {text}
+                        {caption.text}
                     </p>
                 </div>
 
-                {!isTopPick && showReadMore && (
+                {!caption.isTopPick && showReadMore && (
                     <Button
                         variant="ghost"
                         className=" text-accent gap-1 inline-flex p-0 hover:bg-transparent hover:text-accent rounded-full h-8"
@@ -85,19 +103,19 @@ export function CaptionCard({ isTopPick, className }: { isTopPick: boolean; clas
 
             {/* Badge row */}
             <div className="flex items-center gap-1 px-6 opacity-100 translate-y-0 transition-all duration-300 group-hover:opacity-0 group-hover:translate-y-2">
-                <Badge variant="secondary">Long</Badge>
-                <Badge variant="secondary">Story-driven</Badge>
-                <Badge variant="secondary">
+                <Badge variant="secondary">{caption.length}</Badge>
+                <Badge variant="secondary">{caption.style}</Badge>
+                {caption.isHighPotential && <Badge variant="secondary">
                     <StarFilledIcon />
                     High-potential
-                </Badge>
+                </Badge>}
             </div>
 
             {/* Hover button group */}
             <div className="absolute bottom-4 left-6 right-6 flex items-center gap-2 opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
-                <Button className="flex-1 bg-foreground hover:bg-foreground">
-                    <CopyIcon />
-                    Copy
+                <Button onClick={handleCopy} className="flex-1 bg-foreground hover:bg-foreground/95">
+                    {copied ? <CheckIcon /> : <CopyIcon />}
+                    {copied ? "Copied" : "Copy"}
                 </Button>
                 <Button variant="secondary" className="text-foreground">
                     <EditIcon />

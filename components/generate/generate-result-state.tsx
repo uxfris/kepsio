@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Button } from "../ui/button";
-import { captionResultFilters } from "@/lib/constants";
+import { captionResultFilters, captions } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { CaptionCard } from "./generate-caption-card";
 import { DifferentOption } from "./generate-different-option";
@@ -29,12 +29,16 @@ export function ResultState() {
                     </React.Fragment>
                 ))}
             </div>
-            <CaptionCard isTopPick={true} className="mb-6" />
             <div className="grid grid-cols-2 gap-5 gap-y-6">
-                {[1, 2, 3, 4].map((caption) => (
-                    <CaptionCard key={caption} isTopPick={false} />
+                {captions.map((caption, index) => (
+                    <CaptionCard
+                        key={caption.id}
+                        caption={caption}
+                        className={index === 0 ? "col-span-2" : ""}
+                    />
                 ))}
             </div>
+
             <DifferentOption />
         </div>
     );
