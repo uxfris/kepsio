@@ -10,6 +10,16 @@ import { DifferentOption } from "./generate-different-option";
 export function ResultState() {
     const [activeFilter, setActiveFilter] = useState("All")
 
+    const filteredCaptions = captions.filter((caption) => {
+        if (activeFilter === "All") return true;
+
+        if (caption.length === activeFilter) return true;
+
+        if (caption.style === activeFilter) return true;
+
+        return false;
+    })
+
 
     return (
         <div className="h-[calc(100vh-52px)] w-full overflow-y-auto py-8 space-y-5 pb-36">
@@ -30,11 +40,11 @@ export function ResultState() {
                 ))}
             </div>
             <div className="grid grid-cols-2 gap-5 gap-y-6">
-                {captions.map((caption, index) => (
+                {filteredCaptions.map((caption, index) => (
                     <CaptionCard
                         key={caption.id}
                         caption={caption}
-                        className={index === 0 ? "col-span-2" : ""}
+                        className={cn(index === 0 && "col-span-2", filteredCaptions.length % 2 == 0 && "col-span-2")}
                     />
                 ))}
             </div>
