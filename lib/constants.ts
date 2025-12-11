@@ -19,3 +19,10 @@ export const generateDropdownMenuContent: GenerateDropdownMenuItem[] = [
         title: "Upload image",
     }
 ];
+
+export const tips = [
+    'Questions boost engagement by 23%',
+    'First 3 words determine if people keep reading',
+    'Emoji placement matters—start or end, not middle',
+    'Story-led captions get 2x more saves',
+];
