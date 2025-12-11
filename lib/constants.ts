@@ -26,3 +26,14 @@ export const tips = [
     'Emoji placement matters—start or end, not middle',
     'Story-led captions get 2x more saves',
 ];
+
+export const captionResultFilters = [
+    "All",
+    "Short",
+    "Medium",
+    "Long",
+    "Hook-first",
+    "Question-based",
+    "Story-driven",
+    "CTA-focused",
+];
