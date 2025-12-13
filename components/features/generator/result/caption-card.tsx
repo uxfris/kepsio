@@ -100,7 +100,7 @@ export function CaptionCard({ caption, className }: CaptionCardProps) {
             </div>
 
             {/* Hover button group */}
-            <div className="absolute bottom-4 left-6 right-6 flex items-center gap-2 opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+            <div className="md:absolute bottom-4 left-6 right-6 flex items-center gap-2 px-4 md:px-0 md:opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
                 <Button
                     onClick={() => handleCopy(caption.text)}
                     className="flex-1 bg-foreground hover:bg-foreground/95"
