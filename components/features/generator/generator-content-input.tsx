@@ -8,6 +8,7 @@ import { GeneratorImageUpload } from "./generator-image-upload";
 import { GeneratorDropdownMenu } from "./generator-dropdown-menu";
 import { useGeneratorStore } from "@/features/generator";
 import { LinkIcon, ImageIcon } from "@/components/icons";
+import { useEffect, useRef } from "react";
 
 const MAX_CONTENT_LENGTH = 500;
 
@@ -22,6 +23,22 @@ const MAX_CONTENT_LENGTH = 500;
  */
 export function GeneratorContentInput({ value, onChange, productLink, onProductLinkChange, onImageChange }: { value: string; onChange: (val: string) => void; productLink?: string, onProductLinkChange?: (val: string) => void, onImageChange?: (file: File | null) => void }) {
     const { isProductLinkOpen, isUploadImageOpen, toggleProductLink, toggleUploadImage } = useGeneratorStore();
+
+    // Effect to clear product link when closed
+    useEffect(() => {
+        if (!isProductLinkOpen && productLink) {
+            onProductLinkChange?.("");
+        }
+    }, [isProductLinkOpen, productLink, onProductLinkChange]);
+
+    // Effect to clear image when closed
+    const prevIsUploadImageOpen = useRef(isUploadImageOpen);
+    useEffect(() => {
+        if (prevIsUploadImageOpen.current && !isUploadImageOpen) {
+            onImageChange?.(null);
+        }
+        prevIsUploadImageOpen.current = isUploadImageOpen;
+    }, [isUploadImageOpen, onImageChange]);
 
     return (
         <div className="flex flex-col gap-3 mb-8">

@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     return Response.json(captionsWithIDs)
 
     //for tesing
-    await delay(2000);
+    // await delay(2000);
 
     // return Response.json([
     //     {
