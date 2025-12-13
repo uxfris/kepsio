@@ -32,7 +32,7 @@ const MAX_HASHTAG_COUNT = 10;
  */
 export function GeneratorAdvancedOptions(
     { cta, hashtagCount, captionLength, emojiStyle, onCTAChange, onHashtagCountChange, onCaptionLengthChange, onEmojiStyleChange }: {
-        cta?: string, hashtagCount?: number; captionLength?: string; emojiStyle?: string; onCTAChange: (val: string) => void; onHashtagCountChange: (val: number) => void; onCaptionLengthChange: (val: string) => void; onEmojiStyleChange: (val: string) => void
+        cta?: string, hashtagCount?: number; captionLength: 'Short' | 'Medium' | 'Long'; emojiStyle: "Minimal" | "None" | "Generous"; onCTAChange: (val: string) => void; onHashtagCountChange: (val: number) => void; onCaptionLengthChange: (val: 'Short' | 'Medium' | 'Long') => void; onEmojiStyleChange: (val: "Minimal" | "None" | "Generous") => void
     }
 ) {
     // const [hashtagCounter, setHashtagCounter] = useState<number>(DEFAULT_HASHTAG_COUNT);
@@ -87,7 +87,7 @@ export function GeneratorAdvancedOptions(
                             {/* Caption Length Selection */}
                             <div className="flex flex-col gap-3">
                                 <label htmlFor="caption-length">Caption length</label>
-                                <Tabs defaultValue="Medium" value={captionLength} onValueChange={(val) => onCaptionLengthChange(val)} className="w-full">
+                                <Tabs defaultValue="Medium" value={captionLength} onValueChange={(val) => onCaptionLengthChange(val as 'Short' | 'Medium' | 'Long')} className="w-full">
                                     <TabsList className="w-full">
                                         {CAPTION_LENGTH_OPTIONS.map((length) => (
                                             <TabsTrigger key={length} value={length}>
@@ -101,7 +101,7 @@ export function GeneratorAdvancedOptions(
                             {/* Emoji Style Selection */}
                             <div className="flex flex-col gap-3">
                                 <label htmlFor="emoji-style">Emoji Style</label>
-                                <Tabs defaultValue="Minimal" value={emojiStyle} onValueChange={(val) => onEmojiStyleChange(val)} className="w-full">
+                                <Tabs defaultValue="Minimal" value={emojiStyle} onValueChange={(val) => onEmojiStyleChange(val as 'None' | 'Minimal' | 'Generous')} className="w-full">
                                     <TabsList className="w-full">
                                         {EMOJI_STYLE_OPTIONS.map((style) => (
                                             <TabsTrigger key={style} value={style}>

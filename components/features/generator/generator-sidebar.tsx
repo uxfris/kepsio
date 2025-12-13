@@ -6,9 +6,11 @@ import { GeneratorContentInput } from "./generator-content-input";
 import { GeneratorPlatformSelector } from "./generator-platform-selector";
 import { Kbd } from "@/components/ui/kbd";
 import { SettingAdjustIcon, SparkleFilledIcon } from "@/components/icons";
-import { GeneratorForm } from "@/app/(dashboard)/generate/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
+import { CaptionForm } from "@/types";
+import { getCommandKey } from "@/lib/utils";
+import { Shortcut } from "./states/generator-shortcut";
 
 const FREE_GENERATIONS_LEFT = 10;
 const MAX_FREE_GENERATIONS = 10;
@@ -24,8 +26,8 @@ const MAX_HASHTAG_COUNT = 10;
  * <GeneratorSidebar />
  * ```
  */
-export function GeneratorSidebar({ onSubmit, isLoading }: { onSubmit: (data: GeneratorForm) => void; isLoading: boolean }) {
-    const [form, setForm] = useState<GeneratorForm>({
+export function GeneratorSidebar({ onSubmit, isLoading }: { onSubmit: (data: CaptionForm) => void; isLoading: boolean }) {
+    const [form, setForm] = useState<CaptionForm>({
         platform: "instagram",
         cta: "",
         content: "",
@@ -33,6 +35,22 @@ export function GeneratorSidebar({ onSubmit, isLoading }: { onSubmit: (data: Gen
         captionLength: "Medium",
         emojiStyle: "Minimal",
     })
+
+    const cmdKey = getCommandKey(); // "⌘" or "Ctrl"
+
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            const isEnter = e.key === "Enter";
+            const isCmdOrCtrl = e.metaKey || e.ctrlKey; // metaKey = Cmd on Mac
+            if (isEnter && isCmdOrCtrl && !isLoading) {
+                e.preventDefault();
+                onSubmit(form);
+            }
+        };
+
+        window.addEventListener("keydown", handler);
+        return () => window.removeEventListener("keydown", handler);
+    }, [form, onSubmit, isLoading]);
 
     return (
         <aside className="h-[calc(100vh-52px)] w-[440px] overflow-y-auto p-8 border-r border-border">
@@ -81,11 +99,7 @@ export function GeneratorSidebar({ onSubmit, isLoading }: { onSubmit: (data: Gen
                             <span className="text-center">
                                 {isLoading ? "Generating..." : "Generate Captions"}
                             </span>
-                            <span className="flex items-center gap-1 ml-2">
-                                {/* Always reserve space for the shortcut */}
-                                <Kbd>⌘</Kbd>
-                                <Kbd>Enter</Kbd>
-                            </span>
+                            <Shortcut />
                         </Button>
 
                     </div>
