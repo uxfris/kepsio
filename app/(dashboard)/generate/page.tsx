@@ -40,11 +40,9 @@ export default function GeneratePage() {
 
     try {
       const response = await api.post<AICaption[]>(API_ROUTES.generate.base, form)
-      console.log(`Response`, response);
       setCaptions(response);
       setState("result")
     } catch (error) {
-      console.log("Error generating captions:", error);
       setState("initial")
     }
   }

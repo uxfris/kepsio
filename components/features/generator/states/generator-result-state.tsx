@@ -41,8 +41,6 @@ const itemVariants: Variants = {
 export function GeneratorResultState({ captions, onGenerateVariation }: { captions: AICaption[], onGenerateVariation: (variation: string) => void }) {
     const [activeFilter, setActiveFilter] = useState("All")
 
-    console.log("GeneratorResultState received captions:", captions);
-
     if (!captions || captions.length === 0) {
         return <div className="p-8 text-center text-muted-foreground">No captions generated.</div>;
     }

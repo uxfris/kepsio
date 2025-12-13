@@ -13,9 +13,6 @@ export async function POST(req: Request) {
 
     const captions = await generateResponse(form);
 
-    console.log(captions);
-
-
     const captionsWithIDs = captions.map((c: any) => ({
         id: randomUUID(),
         platform: form.platform,

@@ -5,7 +5,6 @@ import { CaptionForm } from "@/types";
 import { buildCaptionPrompt } from "./prompt-builders/caption-prompt";
 
 export async function generateResponse(form: CaptionForm) {
-    console.log(form);
 
     const prompt = buildCaptionPrompt(form);
 
@@ -28,8 +27,6 @@ export async function generateResponse(form: CaptionForm) {
                 ],
             },
         ];
-        console.log("DEBUG: imageBase64 type:", typeof form.imageBase64);
-        console.log("DEBUG: Payload:", JSON.stringify(input, null, 2));
     }
 
     let response;
