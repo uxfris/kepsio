@@ -14,7 +14,6 @@ import { Shortcut } from "./states/generator-shortcut";
 
 const FREE_GENERATIONS_LEFT = 10;
 const MAX_FREE_GENERATIONS = 10;
-const MAX_HASHTAG_COUNT = 10;
 
 /**
  * Main input sidebar component for the generator page.
@@ -53,8 +52,8 @@ export function GeneratorSidebar({ onSubmit, isLoading }: { onSubmit: (data: Cap
     }, [form, onSubmit, isLoading]);
 
     return (
-        <aside className="h-[calc(100vh-52px)] w-[440px] overflow-y-auto p-8 border-r border-border">
-            <div className="relative pb-36">
+        <aside className="md:h-[calc(100vh-52px)] w-full md:w-[440px] md:overflow-y-auto p-4 md:p-8 md:border-r border-border z-10 bg-background">
+            <div className="relative pb-8 md:pb-36">
                 <GeneratorPlatformSelector
                     value={form.platform}
                     onChange={(platform) => setForm((f) => ({ ...f, platform }))}
@@ -86,9 +85,9 @@ export function GeneratorSidebar({ onSubmit, isLoading }: { onSubmit: (data: Cap
                     onCaptionLengthChange={(captionLength) => setForm((f) => ({ ...f, captionLength }))}
                     onEmojiStyleChange={(emojiStyle) => setForm((f) => ({ ...f, emojiStyle }))} />
             </div>
-            <div className="fixed bottom-0 left-0 w-[440px] border-r border-t border-border bg-background py-5">
+            <div className="md:fixed bottom-0 left-0 w-full md:w-[440px] md:border-r border-t border-border bg-background py-8 md:py-5">
                 <div className="w-full flex flex-col items-center justify-center">
-                    <div className="w-full flex items-center justify-center gap-3 px-8 mb-3">
+                    <div className="w-full flex items-center justify-center gap-3 md:px-8 mb-3">
                         <Button
                             variant="outline"
                             size="icon-lg"

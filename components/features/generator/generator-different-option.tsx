@@ -46,7 +46,7 @@ export function GeneratorDifferentOption({ onOptionSelect }: GeneratorDifferentO
     return (
         <div className="flex flex-col p-5 gap-5 bg-card rounded-2xl shadow-shadowbrand">
             <p className="text-sm">Need different options? Try:</p>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
                 {VARIATION_OPTIONS.map((option) => (
                     <Button
                         key={option.text}
@@ -59,7 +59,7 @@ export function GeneratorDifferentOption({ onOptionSelect }: GeneratorDifferentO
                     </Button>
                 ))}
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <div className="flex items-center gap-2">
                     <Badge variant="secondary">Free Plan</Badge>
                     <p className="text-sm">5 variations per generation</p>

@@ -58,9 +58,9 @@ export function GeneratorResultState({ captions, onGenerateVariation }: { captio
 
 
     return (
-        <div className="h-[calc(100vh-52px)] w-full overflow-y-auto py-8 space-y-5 pb-36">
-            <h2 className="text-2xl font-heading">5 Captions ready for <span className="capitalize">{captions[0].platform}</span></h2>
-            <div className="flex items-center gap-1">
+        <div className="md:h-[calc(100vh-52px)] max-w-96 md:max-w-fit md:overflow-y-auto px-4 md:py-8 space-y-5 pb-36">
+            <h2 className="text-xl md:text-2xl font-heading">5 Captions ready for <span className="capitalize">{captions[0].platform}</span></h2>
+            <div className="flex items-center gap-1 overflow-x-scroll md:overflow-x-auto">
                 {CAPTION_RESULT_FILTERS.map((filter, index) => (
                     <React.Fragment key={filter}>
                         {/* Add divider after the 4th button */}
@@ -76,7 +76,7 @@ export function GeneratorResultState({ captions, onGenerateVariation }: { captio
                 ))}
             </div>
             <motion.div
-                className="grid grid-cols-2 gap-5 gap-y-6"
+                className="grid grid-cols-1 md:grid-cols-2 gap-5 gap-y-6"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
