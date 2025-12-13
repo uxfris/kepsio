@@ -1,25 +1,22 @@
-import { openai } from "@/lib/openai";
-import { generateChatResponse } from "@/services/ai-services";
+import { generateResponse } from "@/services/ai-services";
+import { CaptionForm } from "@/types";
+import { randomUUID } from "crypto";
 
-function delay(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms))
-}
+
 export async function POST(req: Request) {
-    const form = await req.json();
+    const form = await req.json() as CaptionForm;
 
-    console.log(form);
+    const captions = await generateResponse(form);
 
-    await delay(5000)
+    console.log(captions);
 
 
-    // const response = await generateChatResponse(message);
+    const captionsWithIDs = captions.map((c: any) => ({
+        id: randomUUID(),
+        platform: form.platform,
+        ...c,
+    }));
 
-    // console.log(response.output_text);
 
-    return Response.json({
-        reply: form
-    })
-    // return Response.json({
-    //     reply: response.output_text
-    // })
+    return Response.json(captionsWithIDs)
 }

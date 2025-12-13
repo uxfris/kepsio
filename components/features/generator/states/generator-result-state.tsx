@@ -6,6 +6,7 @@ import { CAPTION_RESULT_FILTERS, MOCK_CAPTIONS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { CaptionCard } from "../result/caption-card";
 import { GeneratorDifferentOption } from "../generator-different-option";
+import { AICaption, CaptionForm } from "@/types";
 
 /**
  * Result state component displaying generated captions with filtering options.
@@ -16,10 +17,11 @@ import { GeneratorDifferentOption } from "../generator-different-option";
  * <GeneratorResultState />
  * ```
  */
-export function GeneratorResultState() {
+export function GeneratorResultState({ captions }: { captions: AICaption[] }) {
     const [activeFilter, setActiveFilter] = useState("All")
 
-    const filteredCaptions = MOCK_CAPTIONS.filter((caption) => {
+
+    const filteredCaptions = captions.filter((caption) => {
         if (activeFilter === "All") return true;
 
         if (caption.length === activeFilter) return true;
@@ -32,7 +34,7 @@ export function GeneratorResultState() {
 
     return (
         <div className="h-[calc(100vh-52px)] w-full overflow-y-auto py-8 space-y-5 pb-36">
-            <h2 className="text-2xl font-heading">5 Captions ready for Instagram</h2>
+            <h2 className="text-2xl font-heading">5 Captions ready for <span className="capitalize">{captions[0].platform}</span></h2>
             <div className="flex items-center gap-1">
                 {CAPTION_RESULT_FILTERS.map((filter, index) => (
                     <React.Fragment key={filter}>
