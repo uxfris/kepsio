@@ -48,7 +48,7 @@ export async function apiFetch<TResponse = any, TBody = any>(
         method = "GET",
         body,
         headers = {},
-        timeoutMs = 15000, // default timeout
+        timeoutMs = 60000, // default timeout
     } = options;
 
     const fetchOptions: RequestInit = {

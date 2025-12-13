@@ -1,6 +1,6 @@
 export const AI_MODELS = {
-    fast: "gpt-4.1-mini",
-    strong: "gpt-4.1",
+    fast: "gpt-4o-mini",
+    strong: "gpt-4o",
     reasoning: "o1-mini",
-    vision: "gpt-4.1",
+    vision: "gpt-4o",
 };

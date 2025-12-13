@@ -3,6 +3,7 @@ import { CaptionForm } from "@/types";
 export function buildCaptionPrompt(data: CaptionForm) {
   return `
 You are an expert social media copywriter and growth strategist.
+${data.productLink ? `IMPORTANT: You have access to a web search tool. You MUST browse the "Product Link" provided below to understand the product details, features, and selling points before generating captions.` : ""}
 
 TASK:
 Generate exactly 5 caption variations for ${data.platform}.
@@ -14,6 +15,8 @@ INPUT SETTINGS:
 - Number of hashtags: ${data.hashtagCount}
 - Call to action: ${data.cta || "None"}
 - Content idea: ${data.content || "General brand content"}
+- Product Link: ${data.productLink || "None"}
+${data.imageBase64 ? "- Context: Image attached" : ""}
 ${data.refinement ? `- VARIATION REQUEST: ${data.refinement}` : ""}
 
 VARIATION RULE:

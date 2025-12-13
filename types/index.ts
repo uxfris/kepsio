@@ -35,7 +35,7 @@ export type CaptionForm = {
     captionLength: 'Short' | 'Medium' | 'Long';
     emojiStyle: 'None' | 'Minimal' | 'Generous';
     refinement?: string;
-    // Add more fields if needed, e.g., image uploads
+    imageBase64?: string;
 };
 
 // types/caption.ts

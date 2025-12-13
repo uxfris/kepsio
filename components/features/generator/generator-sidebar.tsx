@@ -64,7 +64,18 @@ export function GeneratorSidebar({ onSubmit, isLoading }: { onSubmit: (data: Cap
                     productLink={form.productLink}
                     onChange={(content) => setForm((f) => ({ ...f, content }))}
                     onProductLinkChange={(productLink) => setForm((f) => ({ ...f, productLink }))}
-
+                    onImageChange={(file) => {
+                        if (!file) {
+                            setForm((f) => ({ ...f, imageBase64: undefined }));
+                            return;
+                        }
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            const base64 = reader.result as string;
+                            setForm((f) => ({ ...f, imageBase64: base64 }));
+                        };
+                        reader.readAsDataURL(file);
+                    }}
                 />
                 <GeneratorAdvancedOptions cta={form.cta}
                     hashtagCount={form.hashtagCount}

@@ -18,7 +18,7 @@ const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/gif"];
  * <GeneratorImageUpload />
  * ```
  */
-export function GeneratorImageUpload() {
+export function GeneratorImageUpload({ onFileSelect }: { onFileSelect?: (file: File | null) => void }) {
     const [preview, setPreview] = useState<string | null>(null)
     const [file, setFile] = useState<File | null>(null)
     const [error, setError] = useState<string | null>(null)
@@ -44,10 +44,11 @@ export function GeneratorImageUpload() {
         if (!file || !validateFile(file)) return;
 
         setFile(file)
+        onFileSelect?.(file);
 
         const url = URL.createObjectURL(file)
         setPreview(url)
-    }, [validateFile]);
+    }, [validateFile, onFileSelect]);
 
     const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] ?? null
@@ -65,7 +66,8 @@ export function GeneratorImageUpload() {
         setPreview(null)
         setFile(null)
         setError(null)
-    }, [preview]);
+        onFileSelect?.(null);
+    }, [preview, onFileSelect]);
 
     return (
         <div className="flex flex-col gap-3 my-5">

@@ -20,7 +20,7 @@ const MAX_CONTENT_LENGTH = 500;
  * <GeneratorContentInput />
  * ```
  */
-export function GeneratorContentInput({ value, onChange, productLink, onProductLinkChange }: { value: string; onChange: (val: string) => void; productLink?: string, onProductLinkChange?: (val: string) => void }) {
+export function GeneratorContentInput({ value, onChange, productLink, onProductLinkChange, onImageChange }: { value: string; onChange: (val: string) => void; productLink?: string, onProductLinkChange?: (val: string) => void, onImageChange?: (file: File | null) => void }) {
     const { isProductLinkOpen, isUploadImageOpen, toggleProductLink, toggleUploadImage } = useGeneratorStore();
 
     return (
@@ -72,7 +72,7 @@ export function GeneratorContentInput({ value, onChange, productLink, onProductL
                             placeholder="https://example.com/product"
                         />
                     </div>}
-                    {isUploadImageOpen && <GeneratorImageUpload />}
+                    {isUploadImageOpen && <GeneratorImageUpload onFileSelect={onImageChange} />}
                 </div>}
             </div>
         </div>
