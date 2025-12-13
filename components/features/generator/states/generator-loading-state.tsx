@@ -50,7 +50,7 @@ const PHASE_ICONS = [BrainIcon, TargetIcon, ThemeIcon] as const;
 const PHASE_THRESHOLDS = [33, 66] as const;
 
 const PROGRESS_ANIMATION_DURATION = 0.6;
-const TIP_ROTATION_INTERVAL = 2000;
+const TIP_ROTATION_INTERVAL = 4000;
 
 const LOGO_SIZE = { width: 120, height: 98 };
 const PHASE_CONTENT_HEIGHT = 88;
