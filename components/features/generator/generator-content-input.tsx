@@ -65,7 +65,7 @@ export function GeneratorContentInput({ value, onChange, productLink, onProductL
                     {isProductLinkOpen && <div className="flex flex-col gap-3 my-5">
                         <label htmlFor="product-link">Product Link</label>
                         <Input
-                            value={productLink}
+                            value={productLink ?? ""}
                             onChange={(e) => onProductLinkChange?.(e.target.value)}
                             id="product-link"
                             type="url"
