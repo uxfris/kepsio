@@ -7,6 +7,27 @@ import { cn } from "@/lib/utils";
 import { CaptionCard } from "../result/caption-card";
 import { GeneratorDifferentOption } from "../generator-different-option";
 import { AICaption, CaptionForm } from "@/types";
+import { motion, AnimatePresence, Variants } from "framer-motion";
+
+const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1
+    }
+};
+
+const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i: number) => ({
+        opacity: 1,
+        y: 0,
+        transition: {
+            delay: i * 0.1,
+            duration: 0.4,
+            ease: "easeOut"
+        }
+    })
+};
 
 /**
  * Result state component displaying generated captions with filtering options.
@@ -50,15 +71,32 @@ export function GeneratorResultState({ captions }: { captions: AICaption[] }) {
                     </React.Fragment>
                 ))}
             </div>
-            <div className="grid grid-cols-2 gap-5 gap-y-6">
-                {filteredCaptions.map((caption, index) => (
-                    <CaptionCard
-                        key={caption.id}
-                        caption={caption}
-                        className={cn(index === 0 && "col-span-2", filteredCaptions.length % 2 == 0 && "col-span-2")}
-                    />
-                ))}
-            </div>
+            <motion.div
+                className="grid grid-cols-2 gap-5 gap-y-6"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+            >
+                <AnimatePresence mode="popLayout">
+                    {filteredCaptions.map((caption, index) => (
+                        <motion.div
+                            key={caption.id}
+                            layout
+                            custom={index}
+                            variants={itemVariants}
+                            initial="hidden"
+                            animate="visible"
+                            exit="hidden"
+                            className={cn(index === 0 && "col-span-2", filteredCaptions.length % 2 == 0 && "col-span-2")}
+                        >
+                            <CaptionCard
+                                caption={caption}
+                                className="h-full"
+                            />
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
+            </motion.div>
 
             <GeneratorDifferentOption />
         </div>
