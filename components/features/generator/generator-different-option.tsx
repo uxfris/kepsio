@@ -29,22 +29,31 @@ const VARIATION_OPTIONS = [
     },
 ] as const;
 
+interface GeneratorDifferentOptionProps {
+    onOptionSelect: (option: string) => void;
+}
+
 /**
  * Component displaying alternative caption generation options.
  * Allows users to request different variations of captions with different tones and styles.
  * 
  * @example
  * ```tsx
- * <GeneratorDifferentOption />
+ * <GeneratorDifferentOption onOptionSelect={(opt) => console.log(opt)} />
  * ```
  */
-export function GeneratorDifferentOption() {
+export function GeneratorDifferentOption({ onOptionSelect }: GeneratorDifferentOptionProps) {
     return (
         <div className="flex flex-col p-5 gap-5 bg-card rounded-2xl shadow-shadowbrand">
             <p className="text-sm">Need different options? Try:</p>
             <div className="flex items-center gap-3">
                 {VARIATION_OPTIONS.map((option) => (
-                    <Button key={option.text} variant="secondary" className="rounded-full text-foreground gap-1 text-sm font-normal">
+                    <Button
+                        key={option.text}
+                        variant="secondary"
+                        className="rounded-full text-foreground gap-1 text-sm font-normal"
+                        onClick={() => onOptionSelect(option.text)}
+                    >
                         {option.icon}
                         {option.text}
                     </Button>

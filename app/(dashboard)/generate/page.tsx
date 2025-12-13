@@ -18,6 +18,7 @@ export default function GeneratePage() {
   const [state, setState] = useState<GeneratorState>("initial")
   const [progress, setProgress] = useState(0);
   const [captions, setCaptions] = useState<AICaption[]>([])
+  const [lastForm, setLastForm] = useState<CaptionForm | null>(null);
 
   // Simulate progress when loading
   useEffect(() => {
@@ -35,6 +36,7 @@ export default function GeneratePage() {
 
   async function handleSubmit(form: CaptionForm) {
     setState("loading")
+    setLastForm(form);
 
     try {
       const response = await api.post<AICaption[]>(API_ROUTES.generate.base, form)
@@ -47,6 +49,17 @@ export default function GeneratePage() {
     }
   }
 
+  const handleVariation = (variation: string) => {
+    if (!lastForm) return;
+
+    const newForm = {
+      ...lastForm,
+      refinement: variation
+    };
+
+    handleSubmit(newForm);
+  };
+
 
   return (
     <div className="flex items-start h-[calc(100vh-52px)]">
@@ -54,7 +67,7 @@ export default function GeneratePage() {
       <main className="flex-1 h-[calc(100vh-52px)] overflow-hidden flex items-center justify-center px-8 ">
         {state === "initial" && <GeneratorInitialState />}
         {state === "loading" && <GeneratorLoadingState progress={progress} />}
-        {state === "result" && <GeneratorResultState captions={captions} />}
+        {state === "result" && <GeneratorResultState captions={captions} onGenerateVariation={handleVariation} />}
       </main>
     </div>
   );

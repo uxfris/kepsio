@@ -14,6 +14,10 @@ INPUT SETTINGS:
 - Number of hashtags: ${data.hashtagCount}
 - Call to action: ${data.cta || "None"}
 - Content idea: ${data.content || "General brand content"}
+${data.refinement ? `- VARIATION REQUEST: ${data.refinement}` : ""}
+
+VARIATION RULE:
+${data.refinement ? `The user wants you to modify the previous output to be: ${data.refinement}. strictly follow this instruction.` : "Generate diverse options."}
 
 PRIMARY LENGTH RULE:
 - Exactly 3 captions must use length = "${data.captionLength}"

@@ -38,7 +38,7 @@ const itemVariants: Variants = {
  * <GeneratorResultState />
  * ```
  */
-export function GeneratorResultState({ captions }: { captions: AICaption[] }) {
+export function GeneratorResultState({ captions, onGenerateVariation }: { captions: AICaption[], onGenerateVariation: (variation: string) => void }) {
     const [activeFilter, setActiveFilter] = useState("All")
 
 
@@ -98,7 +98,7 @@ export function GeneratorResultState({ captions }: { captions: AICaption[] }) {
                 </AnimatePresence>
             </motion.div>
 
-            <GeneratorDifferentOption />
+            <GeneratorDifferentOption onOptionSelect={onGenerateVariation} />
         </div>
     );
 }

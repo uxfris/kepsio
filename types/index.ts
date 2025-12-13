@@ -34,6 +34,7 @@ export type CaptionForm = {
     hashtagCount: number;
     captionLength: 'Short' | 'Medium' | 'Long';
     emojiStyle: 'None' | 'Minimal' | 'Generous';
+    refinement?: string;
     // Add more fields if needed, e.g., image uploads
 };
 
