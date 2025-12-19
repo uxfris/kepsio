@@ -1,4 +1,4 @@
-import { generateResponse } from "@/services/ai-services";
+import { generateResponse } from "@/services/openai/ai-services";
 import { CaptionForm } from "@/types";
 import { randomUUID } from "crypto";
 
