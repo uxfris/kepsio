@@ -108,6 +108,7 @@ export function GeneratorLoadingState({ progress }: GeneratorLoadingStateProps) 
         w-full min-h-screen
         flex flex-col items-center justify-center
         gap-12
+        px-4 md:px-8
         pt-12 md:pt-0 pb-32
         overflow-hidden
       "

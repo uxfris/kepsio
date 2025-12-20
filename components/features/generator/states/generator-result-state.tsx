@@ -58,9 +58,9 @@ export function GeneratorResultState({ captions, onGenerateVariation }: { captio
 
 
     return (
-        <div className="max-w-96 md:max-w-fit md:overflow-y-auto px-4 md:py-8 space-y-5 pb-36">
+        <div className="w-full max-w-full md:h-[calc(100vh-52px)] md:max-w-fit md:overflow-y-auto px-4 md:px-12 md:py-8 space-y-5 pb-36 overflow-x-hidden">
             <h2 className="text-xl md:text-2xl font-heading">5 Captions ready for <span className="capitalize">{captions[0].platform}</span></h2>
-            <div className="flex items-center gap-1 overflow-x-scroll md:overflow-x-auto">
+            <div className="w-full max-w-96 sm:max-w-[600px] flex items-center gap-1 overflow-x-auto pb-2 no-scrollbar">
                 {CAPTION_RESULT_FILTERS.map((filter, index) => (
                     <React.Fragment key={filter}>
                         {/* Add divider after the 4th button */}
@@ -91,7 +91,7 @@ export function GeneratorResultState({ captions, onGenerateVariation }: { captio
                             initial="hidden"
                             animate="visible"
                             exit="hidden"
-                            className={cn(index === 0 && "col-span-2", filteredCaptions.length % 2 == 0 && "col-span-2")}
+                            className={cn(index === 0 && "md:col-span-2", filteredCaptions.length % 2 == 0 && "md:col-span-2")}
                         >
                             <CaptionCard
                                 caption={caption}

@@ -11,7 +11,7 @@ import { LogoOutlineIcon, BulbIcon } from "@/components/icons";
  */
 export function GeneratorInitialState() {
     return (
-        <div className="flex flex-col items-center justify-center gap-12 pt-12 md:pt-0 pb-32">
+        <div className="flex flex-col items-center justify-center gap-12 px-4 md:px-8 pt-12 md:pt-0 pb-32">
             <LogoOutlineIcon className="w-[120px] h-[98px]" />
             <div className="space-y-5 text-center">
                 <h2 className="text-2xl md:text-3xl font-heading">Your content will appear here</h2>

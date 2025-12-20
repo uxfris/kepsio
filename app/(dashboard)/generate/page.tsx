@@ -62,7 +62,7 @@ export default function GeneratePage() {
   return (
     <div className="flex items-center md:items-start md:h-[calc(100vh-52px)] flex-col md:flex-row">
       <GeneratorSidebar onSubmit={handleSubmit} isLoading={state === "loading"} />
-      <main className="flex-1 h-[calc(100vh-52px)] overflow-hidden flex  items-center justify-center px-4 md:px-8">
+      <main className="flex-1 h-[calc(100vh-52px)] overflow-hidden flex  items-center justify-center ">
         {state === "initial" && <GeneratorInitialState />}
         {state === "loading" && <GeneratorLoadingState progress={progress} />}
         {state === "result" && <GeneratorResultState captions={captions} onGenerateVariation={handleVariation} />}
