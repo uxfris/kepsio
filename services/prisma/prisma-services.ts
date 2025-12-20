@@ -5,9 +5,9 @@ export async function saveGeneratedCaptions(
     platform: string,
     captions: any[]
 ) {
-    return await prisma.$transaction(
-        captions.map((caption) =>
-            prisma.generatedCaption.create({
+    return await prisma.$transaction(async (tx) => {
+        const promises = captions.map((caption) =>
+            tx.generatedCaption.create({
                 data: {
                     userId,
                     platform,
@@ -18,6 +18,10 @@ export async function saveGeneratedCaptions(
                     isHighPotential: caption.isHighPotential ?? false,
                 },
             })
-        )
-    );
+        );
+        return await Promise.all(promises);
+    }, {
+        maxWait: 10000,
+        timeout: 20000,
+    });
 }
