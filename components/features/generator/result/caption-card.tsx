@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronDownIcon } from "@/components/icons/chevron-down-icon";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import { EditIcon } from "@/components/icons/edit-icon";
 import { SaveIcon } from "@/components/icons/save-icon";
 import { cn } from "@/lib/utils";
 import { useCaptionCard, useClipboard } from "@/features/generator/hooks";
+import { EditCaptionModal } from "./edit-caption-modal";
 import type { Caption } from "@/features/generator/types";
 
 interface CaptionCardProps {
@@ -36,6 +37,7 @@ export function CaptionCard({ caption, className }: CaptionCardProps) {
     // Custom hooks for business logic
     const { expanded, showReadMore, maxHeight, toggleExpanded, checkReadMore } = useCaptionCard();
     const { copied, handleCopy } = useClipboard();
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     // Check if "Read more" is needed when caption changes
     useEffect(() => {
@@ -108,7 +110,11 @@ export function CaptionCard({ caption, className }: CaptionCardProps) {
                     {copied ? <CheckIcon /> : <CopyIcon />}
                     {copied ? "Copied" : "Copy"}
                 </Button>
-                <Button variant="secondary" className="text-foreground">
+                <Button
+                    variant="secondary"
+                    className="text-foreground"
+                    onClick={() => setIsEditModalOpen(true)}
+                >
                     <EditIcon />
                     Edit
                 </Button>
@@ -117,6 +123,16 @@ export function CaptionCard({ caption, className }: CaptionCardProps) {
                     Save
                 </Button>
             </div>
+
+            <EditCaptionModal
+                isOpen={isEditModalOpen}
+                onOpenChange={setIsEditModalOpen}
+                initialCaption={caption.text}
+                onSave={(newCaption) => {
+                    // TODO: Implement actual save logic
+                    console.log("Saving caption:", newCaption);
+                }}
+            />
         </div>
     );
 }
