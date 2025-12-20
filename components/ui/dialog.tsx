@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 // and swap it if I see a better one in the next turn if this fails checking. 
 // Actually, standard shadcn uses Lucide `X` usually.
 import { X } from "lucide-react"
+import { CloseIcon } from "../icons/close-icon"
 
 const Dialog = DialogPrimitive.Root
 
@@ -49,7 +50,9 @@ const DialogContent = React.forwardRef<
         >
             {children}
             <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-                <X className="h-4 w-4" />
+                <div className="bg-secondary rounded-full p-2">
+                    <CloseIcon className="h-4 w-4 text-foreground" />
+                </div>
                 <span className="sr-only">Close</span>
             </DialogPrimitive.Close>
         </DialogPrimitive.Content>

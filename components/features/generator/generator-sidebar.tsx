@@ -57,6 +57,8 @@ export function GeneratorSidebar({ onSubmit, isLoading }: { onSubmit: (data: Cap
                 <GeneratorPlatformSelector
                     value={form.platform}
                     onChange={(platform) => setForm((f) => ({ ...f, platform }))}
+                    className="mb-8"
+
                 />
                 <GeneratorContentInput
                     value={form.content}
