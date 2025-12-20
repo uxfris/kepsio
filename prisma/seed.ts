@@ -37,15 +37,24 @@ async function main() {
         const captions = [
             {
                 content: "Discover the magic of minimalism. ✨ #MinimalistDesign #InteriorInspo",
-                userId: user.id
+                userId: user.id,
+                platform: "instagram",
+                length: "short",
+                style: "minimalist"
             },
             {
                 content: "Boost your productivity with these simple tips! 🚀 #ProductivityHacks #WorkSmart",
-                userId: user.id
+                userId: user.id,
+                platform: "twitter",
+                length: "medium",
+                style: "professional"
             },
             {
                 content: "Sunday vibes. ☕️ #SundayFunday #CoffeeLovers",
-                userId: user.id
+                userId: user.id,
+                platform: "instagram",
+                length: "short",
+                style: "casual"
             }
         ];
 

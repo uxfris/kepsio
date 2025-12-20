@@ -1,11 +1,15 @@
 "use client";
 
+import { useState } from "react";
+
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { GoogleIcon } from "../icons/google-icon";
 import Link from "next/link";
+import { signIn } from "@/lib/auth-client";
+import { Spinner } from "../ui/spinner";
 
 
 interface AuthDialogProps {
@@ -15,6 +19,8 @@ interface AuthDialogProps {
 }
 
 export function AuthDialog({ trigger, open, onOpenChange }: AuthDialogProps) {
+    const [isLoading, setIsLoading] = useState(false);
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
@@ -36,13 +42,33 @@ export function AuthDialog({ trigger, open, onOpenChange }: AuthDialogProps) {
                     {/* Form Container */}
                     <div className="bg-popover flex flex-col gap-5 p-8 rounded-3xl shadow-shadowbrand w-full relative border border-border">
 
+
                         {/* Google Button */}
                         <Button
                             variant="outline"
-                            className="w-full h-14 bg-white border-border rounded-xl shadow-shadowbrand hover:bg-white/5 flex items-center justify-center gap-3"
+                            className="w-full h-14 bg-white border-border rounded-xl shadow-shadowbrand! hover:bg-white/5 flex items-center justify-center gap-3"
+                            disabled={isLoading}
+                            onClick={async () => {
+                                setIsLoading(true);
+                                try {
+                                    await signIn.social({
+                                        provider: "google",
+                                        callbackURL: "/generate"
+                                    });
+                                } catch (error) {
+                                    console.error(error);
+                                    setIsLoading(false);
+                                }
+                            }}
                         >
-                            <GoogleIcon />
-                            <span>Continue with Google</span>
+                            {isLoading ? (
+                                <Spinner className="w-6 h-6" />
+                            ) : (
+                                <>
+                                    <GoogleIcon />
+                                    <span>Continue with Google</span>
+                                </>
+                            )}
                         </Button>
 
                         {/* Divider */}
